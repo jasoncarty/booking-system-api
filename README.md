@@ -1,3 +1,7 @@
+<p align="center">
+    [![Coverage Status](https://coveralls.io/repos/github/jasoncarty/booking-system-api/badge.svg?branch=master)](https://coveralls.io/github/jasoncarty/booking-system-api?branch=master)
+</p>
+
 ## Description
 
 An API for a booking system. Built with NestJS.
