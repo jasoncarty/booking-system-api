@@ -1,0 +1,118 @@
+doctype html
+html
+  head
+    meta(charset='utf-8')
+    title Welcome
+    style.
+      html, body{
+      background-color: #f1f2f6;
+      font-family: helvetica, verdana, sans-serif;
+      height: 100%;
+      font-size: 15px;
+      color: #677483;
+      font-weight: 300;
+      }
+      h1, h2, h3, h4, h5, h6{
+      margin:0;
+      margin-bottom: 5px;
+      color: #445359;
+      font-family: helvetica, verdana, sans-serif;
+      font-weight: normal;
+      }
+      h1, h2, h3{
+      font-weight: 100;
+      }
+      h4, h5, h6{
+      font-weight: 200;
+      font-weight: 300;
+      }
+      hr{
+      border-top: #66b238 solid 1px;
+      border-bottom: none;
+      }
+      a{
+      color: rgb(9, 137, 216);
+      text-decoration: none;
+      }
+      p{
+      color: #677483;
+      font-size: 14px;
+      margin: 5px 0;
+      font-weight: 300;
+      line-height: 22px;
+      font-family: arial, verdana, sans-serif;
+      }
+      td{
+      font-family: arial, verdana, sans-serif;
+      color: #677483;
+      font-size: 14px;
+      font-weight: 300;
+      }
+      ul{
+      padding: 0;
+      margin-left: 20px
+      }
+      img{
+      max-width: 100%;
+      }
+      .gray a{
+      background-color: #2ecc71;
+      padding: 13px 18px;
+      display: inline-block;
+      text-align: center;
+      color: white;
+      font-size: 16px;
+      -webkit-border-radius: 3px;
+      -moz-border-radius: 3px;
+      border-radius: 3px;
+      border: 1px solid #22BE64;
+      }
+  body(style="font-family: 'Open Sans', arial, verdana, sans-serif; font-size: 13px; margin:0;")
+    table.wrapper(style='padding-top: 60px; padding-bottom: 60px;', width='100%', cellspacing='0', cellpadding='0', border='0', bgcolor='#f1f2f6')
+      tbody
+        tr
+          td(align='center')
+            table(width='660', cellspacing='0', cellpadding='0', border='0', bgcolor='white')
+              tbody
+                // - header start
+                tr
+                  td(width='660')
+                    table(width='660', cellspacing='0', cellpadding='0', border='0', bgcolor='#4285F4')
+                      tbody
+                        tr
+                          td(style='padding-top: 5px;', width='320', valign='middle', height='75', align='center')
+                            h1(style='color: #fff;') Booking System
+                // - header end
+                // -top-img start
+                tr
+                  td(style='padding-left: 40px; padding-right: 40px; padding-top: 20px; padding-bottom: 20px;', width='640')
+                    p
+                      | You have been sent an invitation to the Booking System. To verify you account, please click on the link below.
+                // -top-img end
+                // - gray-1 start
+                tr
+                  td.gray(style='border-top: 1px solid #e7e7ea; border-bottom: 1px solid #e7e7ea; padding-left: 40px; padding-right: 40px; padding-top: 30px; padding-bottom: 30px;', width='640', valign='top', bgcolor='#f9f9fb', align='center')
+                    p
+                      a(href=confirmUrl) Verify email
+                // - gray-1 end
+                // - col-bottom start
+                tr
+                  td(width='660')
+                    table(width='660', cellspacing='0', cellpadding='0', border='0')
+                      tbody
+                        tr
+                          td.col2(style='padding-left: 40px; padding-right: 40px; padding-top: 40px; padding-bottom: 40px;', width='640', valign='top')
+                            h4  
+                            h4 Thanks,
+                            p
+                              em Booking System
+                // - col-bottom end
+                // - footer start
+                tr
+                  td(width='660')
+                    table(width='660', cellspacing='0', cellpadding='0', border='0')
+                      tbody
+                        tr
+                          td(style='padding-left: 20px; padding-right: 30px; padding-top: 20px; padding-bottom: 10px;', width='330', valign='top')
+                          td(style='padding-left: 20px; padding-right: 30px; padding-top: 20px; padding-bottom: 10px;', width='330', valign='top', align='right')
+                // - footer end

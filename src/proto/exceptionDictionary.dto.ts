@@ -1,0 +1,49 @@
+import { HttpStatus } from '@nestjs/common';
+import { CustomException } from './../utils/customException';
+import { ErrorCode } from './errorCode.enum';
+
+const getError = (
+  errorCode: ErrorCode,
+  message?: string,
+  status?: HttpStatus,
+): CustomException => {
+  return new CustomException(message, status, errorCode);
+};
+
+export const ExceptionDictionary = {
+  USER_NOT_FOUND: getError(
+    ErrorCode.USER_NOT_FOUND,
+    'User not found',
+    HttpStatus.NOT_FOUND,
+  ),
+  USER_CREATION_ERROR: getError(
+    ErrorCode.USER_CREATION_ERROR,
+    'User creation error',
+    HttpStatus.INTERNAL_SERVER_ERROR,
+  ),
+  USER_UPDATE_ERROR: getError(
+    ErrorCode.USER_UPDATE_ERROR,
+    'Update user error',
+    HttpStatus.INTERNAL_SERVER_ERROR,
+  ),
+  GENERIC: getError(
+    ErrorCode.GENERIC,
+    'An error occured',
+    HttpStatus.INTERNAL_SERVER_ERROR,
+  ),
+  NOT_AUTHORIZED: getError(
+    ErrorCode.NOT_AUTHORIZED,
+    'Not authorized',
+    HttpStatus.UNAUTHORIZED,
+  ),
+  EMAIL_SENDING_ERROR: getError(
+    ErrorCode.EMAIL_SENDING_ERROR,
+    'Error sending email',
+    HttpStatus.INTERNAL_SERVER_ERROR,
+  ),
+  AUTHENTICATION_FAILED: getError(
+    ErrorCode.AUTHENTICATION_FAILED,
+    'Authentication failed',
+    HttpStatus.FORBIDDEN,
+  ),
+};
