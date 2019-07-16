@@ -1,5 +1,5 @@
 <p align="center">
-    [![Coverage Status](https://coveralls.io/repos/github/jasoncarty/booking-system-api/badge.svg?branch=master)](https://coveralls.io/github/jasoncarty/booking-system-api?branch=master)
+    <a href='https://coveralls.io/github/jasoncarty/booking-system-api?branch=master'><img src='https://coveralls.io/repos/github/jasoncarty/booking-system-api/badge.svg?branch=master' alt='Coverage Status' /></a>
 </p>
 
 ## Description
