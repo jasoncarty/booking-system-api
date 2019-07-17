@@ -1,5 +1,9 @@
 <p align="center">
-    <a href='https://coveralls.io/github/jasoncarty/booking-system-api?branch=master'><img src='https://coveralls.io/repos/github/jasoncarty/booking-system-api/badge.svg?branch=master' alt='Coverage Status' /></a>
+    <a href='https://coveralls.io/github/jasoncarty/booking-system-api?branch=master'>
+        <img src='https://coveralls.io/repos/github/jasoncarty/booking-system-api/badge.svg?branch=master' alt='Coverage Status' /></a>
+    <a href="https://travis-ci.org/jasoncarty/booking_system_ruby.svg?branch=master">
+        <img src="https://travis-ci.org/jasoncarty/booking-system-api.svg?branch=master" alt="build">
+    </a>
 </p>
 
 ## Description
