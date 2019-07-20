@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { generate } from 'rand-token';
 
-import { User } from './../User/user.entity';
+import { User } from '../../Repositories/user.entity';
 import { UpdateUserAsAdminDto, CreateUserDto, ExceptionDictionary } from '../../proto';
 import { AppMailerService } from '../AppMailer/appMailer.service';
 

@@ -6,7 +6,7 @@ import { Repository } from 'typeorm';
 import { compare, hash, genSalt } from 'bcryptjs';
 import { generate } from 'rand-token';
 
-import { User } from './user.entity';
+import { User } from '../../Repositories/user.entity';
 import {
   UserDto,
   UserLoginDto,

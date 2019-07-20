@@ -3,5 +3,5 @@
         "dist"
     ],
     "ext": "ts",
-    "exec": "node dist/main"
+    "exec": "node dist/src/main"
 }

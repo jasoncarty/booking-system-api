@@ -1,4 +1,4 @@
-import { Module, Scope } from '@nestjs/common';
+import { Module, Scope, OnApplicationBootstrap } from '@nestjs/common';
 import { APP_FILTER, APP_PIPE, APP_INTERCEPTOR } from '@nestjs/core';
 import { PugAdapter, MailerModule } from '@nest-modules/mailer';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -13,6 +13,10 @@ import { ValidationPipe } from './utils/validationPipe';
 import { AuthModule } from './components/Auth/auth.module';
 import { AdminModule } from './components/Admin/admin.module';
 import { TimeoutInterceptor, AuthInterceptor, LoggingInterceptor } from './interceptors';
+import * as childProcess from 'child_process';
+import { promisify } from 'util';
+
+const exec = promisify(childProcess.exec);
 
 const getMailTransport = (configService: ConfigService): object | string => {
   return configService.envConfig.NODE_ENV === 'production'
@@ -83,6 +87,12 @@ const getMailTransport = (configService: ConfigService): object | string => {
     },
   ],
 })
-export class AppModule {
+export class AppModule implements OnApplicationBootstrap {
   constructor(private readonly connection: Connection) {}
+
+  onApplicationBootstrap(): void {
+    if (process.env.NODE_ENV === 'test-ci') {
+      exec('npm run e2e:test:newTab');
+    }
+  }
 }

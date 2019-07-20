@@ -1,7 +1,7 @@
 /* eslint @typescript-eslint/camelcase: 0 */
 
 import { UserRole, AuthenticatedUserDto } from './../proto';
-import { User } from './../components/User/user.entity';
+import { User } from '../Repositories/user.entity';
 import { AppMailerService } from './../components/AppMailer/appMailer.service';
 import { Repository, UpdateResult } from 'typeorm';
 

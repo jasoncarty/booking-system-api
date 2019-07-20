@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 import { IsEmail } from 'class-validator';
 
-import { UserRole } from '../../proto';
+import { UserRole } from '../proto';
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity {
