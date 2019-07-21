@@ -25,7 +25,6 @@
         "e2e:test:newTab": "ttab npm run e2e:test",
         "e2e:prepare": "ts-node ./e2e/scripts/prepareTestDatabase.ts",
         "e2e:clean": "ts-node ./e2e/scripts/dropTestDB.ts",
-        "ci": "npm run e2e:test:execute",
         "kill-server": "kill $(lsof -t -i :3000)",
         "new-tab-start-test": "npm run kill-server && ttab 'NODE_ENV='test-ci' npm run start'"
     },
