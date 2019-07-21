@@ -21,12 +21,14 @@
         "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
         "test:e2e": "run-s e2e:prepare",
         "e2e:test:execute": "run-s e2e:clean e2e:prepare new-tab-start-test",
+        "e2e:test:ci": "run-s e2e:clean e2e:prepare new-ci-tab",
         "e2e:test": "jest --config ./e2e/jest-e2e.json",
         "e2e:test:newTab": "ttab npm run e2e:test",
         "e2e:prepare": "ts-node ./e2e/scripts/prepareTestDatabase.ts",
         "e2e:clean": "ts-node ./e2e/scripts/dropTestDB.ts",
         "kill-server": "kill $(lsof -t -i :3000)",
-        "new-tab-start-test": "npm run kill-server && ttab 'NODE_ENV='test-ci' npm run start'"
+        "new-tab-start-test": "npm run kill-server && ttab 'NODE_ENV='test-ci' npm run start'",
+        "new-ci-tab": "ttab 'NODE_ENV='test-ci' npm run start'"
     },
     "dependencies": {
         "@hapi/joi": "^15.1.0",
