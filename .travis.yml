@@ -1,5 +1,5 @@
 language: node_js
 os: osx
-before_script:
-  - pg_ctl -D /usr/local/var/postgres start
+services:
+  - postgresql
 script: npm run e2e:test:ci
