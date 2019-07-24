@@ -14,7 +14,7 @@ import { AuthModule } from './components/Auth/auth.module';
 import { AdminModule } from './components/Admin/admin.module';
 import { TimeoutInterceptor, AuthInterceptor, LoggingInterceptor } from './interceptors';
 
-const getMailTransport = (configService: ConfigService): object | string => {
+export const getMailTransport = (configService: ConfigService): object | string => {
   return configService.envConfig.NODE_ENV === 'production'
     ? `smtps://${configService.envConfig.MAIL_EMAIL}:${configService.envConfig.MAIL_PASSWORD}@smtp.gmail.com`
     : {
