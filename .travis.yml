@@ -2,6 +2,7 @@ language: node_js
 services: docker
 before_install:
   - docker -v
+  - sudo /etc/init.d/postgresql stop
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
 install:
   - docker build -t jason.carty/booking-system-api .
