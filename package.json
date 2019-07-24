@@ -23,8 +23,8 @@
         "e2e:test:execute": "run-s e2e:clean e2e:prepare e2e:test",
         "e2e:test:ci": "run-s e2e:clean e2e:prepare new-ci-tab",
         "e2e:test": "jest --config ./e2e/jest-e2e.json",
-        "e2e:prepare": "ts-node ./e2e/scripts/prepareTestDatabase.ts",
-        "e2e:clean": "ts-node ./e2e/scripts/dropTestDB.ts"
+        "e2e:prepare": "ts-node ./scripts/prepareTestDatabase.ts",
+        "e2e:clean": "ts-node ./scripts/dropTestDB.ts"
     },
     "dependencies": {
         "@hapi/joi": "^15.1.0",
@@ -97,9 +97,13 @@
             "json",
             "ts"
         ],
-        "rootDir": "src",
+        "testPathIgnorePatterns": [
+            "<rootDir>/e2e/",
+            "<rootDir>/dist/"
+        ],
+        "rootDir": ".",
         "testRegex": ".spec.ts$",
-        "coverageDirectory": "../coverage",
+        "coverageDirectory": "<rootDir>/coverage",
         "testEnvironment": "node",
         "preset": "ts-jest"
     }

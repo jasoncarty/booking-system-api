@@ -4,6 +4,7 @@ import { UserRole, AuthenticatedUserDto } from './../proto';
 import { User } from '../Repositories/user.entity';
 import { AppMailerService } from './../components/AppMailer/appMailer.service';
 import { Repository, UpdateResult } from 'typeorm';
+import { Client } from 'pg';
 
 export const mailSentSuccess = {
   success: true,
@@ -38,6 +39,12 @@ export const authenticatedUser = Promise.resolve({
 export const appMailer = ({
   newUserMail: (): {} => mailSentSuccess,
 } as unknown) as AppMailerService;
+
+export const mockClient = ({
+  connect: jest.fn(),
+  query: jest.fn(),
+  end: jest.fn(),
+} as unknown) as Client;
 
 export const singleUser = Promise.resolve({
   ...mockUser,

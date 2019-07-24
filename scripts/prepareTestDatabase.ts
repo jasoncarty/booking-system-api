@@ -8,9 +8,9 @@ import { echoMessage } from './echoMessage';
 import { connectToDBasPG } from './connectToDBasPG';
 import { getSeedScripts } from './getSeedScripts';
 
-const getClient = (): Client => new Client(getDBConfig());
+export const getClient = (): Client => new Client(getDBConfig());
 
-const createNewDatabase = async (): Promise<void> => {
+export const createNewDatabase = async (): Promise<void> => {
   const { host, password, port, user, database } = getDBConfig();
   const client = connectToDBasPG({ host, password, port });
   await client.connect();
@@ -18,7 +18,10 @@ const createNewDatabase = async (): Promise<void> => {
   await client.end();
 };
 
-const getConnection = async (client: Client, database: string): Promise<Client> => {
+export const getConnection = async (
+  client: Client,
+  database: string,
+): Promise<Client> => {
   try {
     await client.connect();
     echoMessage(Colours.green, 'Test database exists');
@@ -35,7 +38,7 @@ const getConnection = async (client: Client, database: string): Promise<Client> 
   }
 };
 
-const seedDatabase = async (client: Client): Promise<void> => {
+export const seedDatabase = async (client: Client): Promise<void> => {
   const scripts = await getSeedScripts();
   for (let i = 0; i < scripts.length; i++) {
     const res = await client.query(scripts[i].preScript);
@@ -45,7 +48,7 @@ const seedDatabase = async (client: Client): Promise<void> => {
   }
 };
 
-const synchronizeDatabase = async (): Promise<Connection> => {
+export const synchronizeDatabase = async (): Promise<Connection> => {
   const { host, password, port, user, database } = getDBConfig();
   return await createConnection({
     type: 'postgres' as 'postgres',
@@ -60,7 +63,7 @@ const synchronizeDatabase = async (): Promise<Connection> => {
   });
 };
 
-const prepareTestDatabase = async (): Promise<void> => {
+export const prepareTestDatabase = async (): Promise<void> => {
   echoMessage(Colours.blue, 'Preparing test database...');
   const disconnectedClient = getClient();
   const { database } = getDBConfig();

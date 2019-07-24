@@ -11,6 +11,10 @@ describe('HttpExceptionFilter', () => {
     httpExceptionFilter = new HttpExceptionFilter();
   });
 
+  beforeAll(() => {
+    jest.spyOn(console, 'log').mockImplementation(jest.fn());
+  });
+
   describe('catch', () => {
     it('calls request.json with options', () => {
       const error = new Error('mock error');

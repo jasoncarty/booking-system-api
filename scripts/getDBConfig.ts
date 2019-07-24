@@ -8,7 +8,8 @@ export const getDBConfig = (): ClientConfig => {
   if (!environment) {
     environment = 'test';
   }
-  const filePath = `./../../.env-${environment}`;
+
+  const filePath = `./../.env-${environment}`;
   const config = parse(readFileSync(resolve(__dirname, filePath)));
   const {
     DATABASE,
