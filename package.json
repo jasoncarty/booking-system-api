@@ -1,8 +1,8 @@
 {
-    "name": "booking-system",
+    "name": "booking-system-api",
     "version": "0.0.1",
     "description": "",
-    "author": "",
+    "author": "Jason Carty",
     "license": "MIT",
     "scripts": {
         "build": "gulp && tsc -p tsconfig.build.json",
@@ -11,7 +11,7 @@
         "start:dev": "gulp && concurrently --handle-input \"wait-on dist/src/main.js && nodemon\" \"tsc -w -p tsconfig.build.json\" ",
         "start:debug": "nodemon --config nodemon-debug.json",
         "prestart:prod": "rimraf dist && npm run build",
-        "start:prod": "NODE_ENV='production' node dist/main.js",
+        "start:prod": "NODE_ENV='production' node dist/src/main.js",
         "lint": "eslint",
         "lint:fix": "eslint --fix .",
         "test": "jest",
@@ -23,12 +23,12 @@
         "e2e:test:execute": "run-s e2e:clean e2e:prepare new-tab-start-test",
         "e2e:test:ci": "run-s e2e:clean e2e:prepare new-ci-tab",
         "e2e:test": "jest --config ./e2e/jest-e2e.json",
-        "e2e:test:newTab": "ttab npm run e2e:test",
+        "e2e:test:newTab": "npm run e2e:test",
         "e2e:prepare": "ts-node ./e2e/scripts/prepareTestDatabase.ts",
         "e2e:clean": "ts-node ./e2e/scripts/dropTestDB.ts",
         "kill-server": "kill $(lsof -t -i :3000)",
-        "new-tab-start-test": "npm run kill-server && ttab 'NODE_ENV='test-ci' npm run start'",
-        "new-ci-tab": "ttab 'NODE_ENV='test-ci' npm run start'"
+        "new-tab-start-test": "npm run kill-server && npm run start'",
+        "new-ci-tab": "'NODE_ENV='test-ci' npm run start'"
     },
     "dependencies": {
         "@hapi/joi": "^15.1.0",
@@ -89,7 +89,6 @@
         "ts-jest": "24.0.2",
         "ts-node": "8.3.0",
         "tsconfig-paths": "3.8.0",
-        "ttab": "^0.6.1",
         "typescript": "3.5.3",
         "wait-on": "^3.2.0"
     },

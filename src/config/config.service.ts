@@ -1,7 +1,7 @@
 import { parse } from 'dotenv';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
-import { ObjectSchema, string, number, object, validate } from '@hapi/joi';
+import { ObjectSchema, string, number, object, validate, StringSchema } from '@hapi/joi';
 
 interface EnvConfig {
   [key: string]: string;
@@ -36,8 +36,20 @@ export class ConfigService {
     } else {
       CONFIG_KEYS.forEach((key): string => (config[key] = process.env[key]));
     }
-
     this.envConfig = this.validateInput(config, environment);
+  }
+
+  validateDbPassword(environment: string): StringSchema {
+    switch (environment) {
+      case 'production':
+        return string();
+      case 'development':
+        return string().valid('');
+      case 'test':
+        return string().valid('');
+      default:
+        return string();
+    }
   }
 
   private getSchema(environment: string): ObjectSchema {
@@ -45,14 +57,14 @@ export class ConfigService {
       BASE_URL: string().required(),
       DATABASE: string().required(),
       DATABASE_USER: string().required(),
-      DATABASE_PASSWORD: environment !== 'production' ? string().valid('') : string(),
+      DATABASE_PASSWORD: this.validateDbPassword(environment),
       DATABASE_HOST: string().required(),
       DATABASE_PORT: number().required(),
       JWT_SECRET: string().required(),
       MAIL_EMAIL: string().required(),
       MAIL_PASSWORD: string().required(),
       NODE_ENV: string()
-        .valid(['development', 'test', 'production'])
+        .valid(['development', 'test', 'test-ci', 'production'])
         .default('development'),
       PORT: number().default(3000),
     });

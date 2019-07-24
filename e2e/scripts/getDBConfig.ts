@@ -4,7 +4,11 @@ import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
 export const getDBConfig = (): ClientConfig => {
-  const filePath = './../../.env-test';
+  let environment = process.env.NODE_ENV;
+  if (!environment) {
+    environment = 'test';
+  }
+  const filePath = `./../../.env-${environment}`;
   const config = parse(readFileSync(resolve(__dirname, filePath)));
   const {
     DATABASE,
