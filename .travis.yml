@@ -7,4 +7,4 @@ before_install:
 install:
   - docker build -t jason.carty/booking-system-api .
 script:
-  - docker-compose up \ --abort-on-container-exit \ --exit-code-from app2
+  - docker-compose up --abort-on-container-exit --exit-code-from app2
