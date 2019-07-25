@@ -57,8 +57,7 @@ export const synchronizeDatabase = async (): Promise<Connection> => {
     username: user,
     password,
     database,
-    logging: 'all',
-    entities: [__dirname + './../../src/Repositories/*.entity{.ts,.js}'],
+    entities: [__dirname + './../src/Repositories/*.entity{.ts,.js}'],
     synchronize: true,
   });
 };
