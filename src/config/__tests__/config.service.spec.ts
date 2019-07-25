@@ -35,7 +35,39 @@ describe('ConfigService', () => {
       expect(configService.envConfig).toBeDefined();
     });
 
-    it('throws an error', () => {
+    it('allows empty string for non-production db', () => {
+      process.env.NODE_ENV = 'test';
+      process.env.DATABASE = 'dumped_db';
+      process.env.DATABASE_USER = 'jason.carty';
+      process.env.DATABASE_PASSWORD = '';
+      process.env.DATABASE_HOST = 'localhost';
+      process.env.DATABASE_PORT = '5432';
+      process.env.JWT_SECRET = '9a8sydf';
+      process.env.MAIL_EMAIL = 'test@gmail.com';
+      process.env.MAIL_PASSWORD = 'qwerty123';
+      process.env.BASE_URL = 'http://localhost:3000';
+      process.env.PORT = '3000';
+      const configService = new ConfigService();
+      expect(configService.envConfig).toBeDefined();
+    });
+
+    it('works for test-ci', () => {
+      process.env.NODE_ENV = 'test-ci';
+      process.env.DATABASE = 'dumped_db';
+      process.env.DATABASE_USER = 'jason.carty';
+      process.env.DATABASE_PASSWORD = 'postgres';
+      process.env.DATABASE_HOST = 'localhost';
+      process.env.DATABASE_PORT = '5432';
+      process.env.JWT_SECRET = '9a8sydf';
+      process.env.MAIL_EMAIL = 'test@gmail.com';
+      process.env.MAIL_PASSWORD = 'qwerty123';
+      process.env.BASE_URL = 'http://localhost:3000';
+      process.env.PORT = '3000';
+      const configService = new ConfigService();
+      expect(configService.envConfig).toBeDefined();
+    });
+
+    it('does not allow empty string for production db', () => {
       process.env.NODE_ENV = 'production';
       process.env.DATABASE = 'dumped_db';
       process.env.DATABASE_USER = 'jason.carty';

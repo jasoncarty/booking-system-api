@@ -1,0 +1,36 @@
+version: "3"
+
+services:
+  app1:
+    image: jason.carty/booking-system-api
+    ports:
+      - 3000:3000
+    command: bash -c '
+      while !</dev/tcp/db/5432; do sleep 1; done;
+      npm run build
+      && npm run e2e:clean
+      && npm run e2e:prepare
+      && NODE_ENV=test-ci npm run start'
+    depends_on:
+      - db
+    environment:
+      NODE_ENV: test-ci
+  app2:
+    image: jason.carty/booking-system-api
+    command: bash -c 'while !</dev/tcp/app1/3000; do sleep 1; done; npm run e2e:test'
+    environment:
+      E2E_TARGET: app1
+    ports:
+      - 3001:3000
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - pg_data:/var/lib/postgres/data
+
+volumes:
+  pg_data:

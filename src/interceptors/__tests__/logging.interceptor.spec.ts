@@ -3,6 +3,10 @@ import { ExecutionContext, CallHandler } from '@nestjs/common';
 import * as operators from 'rxjs/operators';
 
 describe('LoggingInterceptor', () => {
+  beforeAll(() => {
+    jest.spyOn(console, 'log').mockImplementation(jest.fn());
+  });
+
   describe('intercept', () => {
     it('calls next.handle().pipe(tap)', () => {
       const context = ({

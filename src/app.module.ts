@@ -14,7 +14,7 @@ import { AuthModule } from './components/Auth/auth.module';
 import { AdminModule } from './components/Admin/admin.module';
 import { TimeoutInterceptor, AuthInterceptor, LoggingInterceptor } from './interceptors';
 
-const getMailTransport = (configService: ConfigService): object | string => {
+export const getMailTransport = (configService: ConfigService): object | string => {
   return configService.envConfig.NODE_ENV === 'production'
     ? `smtps://${configService.envConfig.MAIL_EMAIL}:${configService.envConfig.MAIL_PASSWORD}@smtp.gmail.com`
     : {
@@ -30,7 +30,7 @@ const getMailTransport = (configService: ConfigService): object | string => {
         type: 'postgres' as 'postgres',
         host: configService.envConfig.DATABASE_HOST,
         port: Number(configService.envConfig.DATABASE_PORT),
-        username: configService.envConfig.DATABASE_USERNAME,
+        username: configService.envConfig.DATABASE_USER,
         password: configService.envConfig.DATABASE_PASSWORD,
         database: configService.envConfig.DATABASE,
         entities: [__dirname + '/**/*.entity{.ts,.js}'],

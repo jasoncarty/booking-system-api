@@ -4,7 +4,7 @@ import { Module } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { AdminController } from './admin.controller';
 import { AppMailerModule } from '../AppMailer/appMailer.module';
-import { User } from '../User/user.entity';
+import { User } from '../../Repositories/user.entity';
 
 @Module({
   providers: [AdminService],
