@@ -6,8 +6,9 @@ import { Repository } from 'typeorm';
 import { generate } from 'rand-token';
 
 import { User } from '../../Repositories/user.entity';
-import { UpdateUserAsAdminDto, CreateUserDto, ExceptionDictionary } from '../../proto';
+import { ExceptionDictionary } from '../../proto';
 import { AppMailerService } from '../AppMailer/appMailer.service';
+import { UserUpdateDto, UserCreateDto } from './dto';
 
 @Injectable()
 export class AdminService {
@@ -37,8 +38,12 @@ export class AdminService {
     });
   }
 
-  async createUser(user: CreateUserDto): Promise<User> {
-    user.verification_token = generate(40);
+  async createUser(values: UserCreateDto): Promise<User> {
+    const user = {
+      ...values,
+      verification_token: generate(40),
+    };
+
     let savedUser: User;
     try {
       savedUser = await this.userRepository.save(user);
@@ -57,7 +62,7 @@ export class AdminService {
     }
   }
 
-  async updateUser(id: number, values: UpdateUserAsAdminDto): Promise<User> {
+  async updateUser(id: number, values: UserUpdateDto): Promise<User> {
     const user = await this.getUser(id);
     try {
       const userEntity = new User();

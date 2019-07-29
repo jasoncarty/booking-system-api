@@ -1,4 +1,3 @@
-export { validate } from './validate';
 export { CustomException } from './customException';
 export { extractToken } from './extractToken';
 export { HttpExceptionFilter } from './httpExceptionFilter';

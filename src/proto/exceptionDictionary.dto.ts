@@ -46,4 +46,19 @@ export const ExceptionDictionary = {
     'Authentication failed',
     HttpStatus.FORBIDDEN,
   ),
+  VALIDATION_ERROR: getError(
+    ErrorCode.VALIDATION_ERROR,
+    'Validation Error',
+    HttpStatus.BAD_REQUEST,
+  ),
+  VALIDATION_ERROR_INVALID_EMAIL: getError(
+    ErrorCode.VALIDATION_ERROR_INVALID_EMAIL,
+    'Validation Error',
+    HttpStatus.BAD_REQUEST,
+  ),
+  VALIDATION_ERROR_PASSWORD_STRENGTH: getError(
+    ErrorCode.VALIDATION_ERROR_PASSWORD_STRENGTH,
+    'Validation Error',
+    HttpStatus.BAD_REQUEST,
+  ),
 };

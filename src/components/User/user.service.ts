@@ -7,15 +7,11 @@ import { compare, hash, genSalt } from 'bcryptjs';
 import { generate } from 'rand-token';
 
 import { User } from '../../Repositories/user.entity';
-import {
-  UserDto,
-  UserLoginDto,
-  AuthenticatedUserDto,
-  ExceptionDictionary,
-} from '../../proto';
-import { extractToken, verifyToken, createAuthToken, validate } from '../../utils';
-import { UserConfirmationValidator, UserUpdateValidator } from './validators';
+import { UserDto, ExceptionDictionary } from '../../proto';
+import { extractToken, verifyToken, createAuthToken } from '../../utils';
+import { UserConfirmAccountDto, UserUpdateDto, UserConfirmRequestDto } from './dto';
 import { AppMailerService } from '../AppMailer/appMailer.service';
+import { AuthenticationCreateDto, AuthenticatedUserDto } from './../Auth/dto';
 
 @Injectable()
 export class UserService {
@@ -63,8 +59,7 @@ export class UserService {
     return user;
   }
 
-  async updateUser(authHeader: string, values: UserUpdateValidator): Promise<UserDto> {
-    await validate(values, UserUpdateValidator);
+  async updateUser(authHeader: string, values: UserUpdateDto): Promise<UserDto> {
     const user = await this.getProfile(authHeader);
     const userEntity = new User();
     Object.assign(userEntity, values);
@@ -76,7 +71,7 @@ export class UserService {
     }
   }
 
-  async requestConfirmation(email: string): Promise<{}> {
+  async requestConfirmation({ email }: UserConfirmRequestDto): Promise<{}> {
     const user = await this.getUserByEmail(email);
     const userEntity = new User();
     userEntity.verification_token = generate(40);
@@ -104,7 +99,7 @@ export class UserService {
   }*/
 
   async confirmAccount(
-    values: UserConfirmationValidator,
+    values: UserConfirmAccountDto,
     verificationToken: string,
   ): Promise<UserDto> {
     const user = await this.userRepository.findOne({
@@ -117,7 +112,6 @@ export class UserService {
       throw ExceptionDictionary.USER_NOT_FOUND;
     }
 
-    await validate(values, UserConfirmationValidator);
     const newValues = {
       password: await this.hashPassword(values.password),
       confirmed: true,
@@ -139,7 +133,7 @@ export class UserService {
     return await hash(password, salt);
   }
 
-  async loginUser(data: UserLoginDto): Promise<AuthenticatedUserDto> {
+  async loginUser(data: AuthenticationCreateDto): Promise<AuthenticatedUserDto> {
     const user = await this.getUserByEmail(data.email);
     if (await compare(data.password, user.password)) {
       const { email } = user;

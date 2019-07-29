@@ -2,7 +2,6 @@ import * as bcryptjs from 'bcryptjs';
 
 import { UserService } from '../user.service';
 import { ExceptionDictionary } from './../../../proto';
-import { UserUpdateValidator } from '../validators';
 import * as utils from './../../../utils';
 import {
   appMailer,
@@ -117,7 +116,7 @@ describe('UserService', () => {
         await userService.updateUser(authHeader, {
           name: 'Roger',
           email: 'some@email.com',
-        } as UserUpdateValidator),
+        }),
       ).toEqual(res);
     });
 
@@ -130,7 +129,7 @@ describe('UserService', () => {
         userService.updateUser(authHeader, {
           name: 'Roger',
           email: 'some@email.com',
-        } as UserUpdateValidator),
+        }),
       ).rejects.toEqual(userNotFoundException);
     });
 
@@ -144,7 +143,7 @@ describe('UserService', () => {
         userService.updateUser(authHeader, {
           name: 'Roger',
           email: 'some@email.com',
-        } as UserUpdateValidator),
+        }),
       ).rejects.toEqual(updateUserException);
     });
   });
@@ -154,7 +153,7 @@ describe('UserService', () => {
       jest.spyOn(userService, 'getUserByEmail').mockImplementationOnce(() => singleUser);
       jest.spyOn(repositoryMock, 'update').mockImplementationOnce(() => updatedUser);
 
-      expect(await userService.requestConfirmation('some@email.com')).toEqual({
+      expect(await userService.requestConfirmation({ email: 'some@email.com' })).toEqual({
         mailSent: true,
         details: mailSentSuccess,
       });
@@ -168,9 +167,9 @@ describe('UserService', () => {
       jest.spyOn(userService, 'getUserByEmail').mockImplementationOnce(() => singleUser);
       jest.spyOn(repositoryMock, 'update').mockImplementationOnce(() => updatedUser);
 
-      expect(userService.requestConfirmation('some@email.com')).rejects.toEqual(
-        emailSendingException,
-      );
+      expect(
+        userService.requestConfirmation({ email: 'some@email.com' }),
+      ).rejects.toEqual(emailSendingException);
     });
   });
 
