@@ -1,16 +1,23 @@
 import { ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
 
 const tests = [
-  new RegExp(/[a-z]/, 'g'),
-  new RegExp(/[A-Z]/, 'g'),
-  new RegExp(/[0-9]/, 'g'),
-  new RegExp(/[^\w]/, 'g'),
+  new RegExp(/[a-z]/),
+  new RegExp(/[A-Z]/),
+  new RegExp(/[0-9]/),
+  new RegExp(/[^\w]/),
 ];
 
 @ValidatorConstraint({ name: 'isStrongPassword', async: false })
 export class IsStrongPassword implements ValidatorConstraintInterface {
   validate(password: string): boolean {
-    return tests.every((test): boolean => test.test(password));
+    let result = true;
+    for (let i = 0; i < tests.length; i++) {
+      if (!tests[i].test(password)) {
+        result = false;
+        break;
+      }
+    }
+    return result;
   }
 
   defaultMessage(): string {
