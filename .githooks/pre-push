@@ -1,0 +1,48 @@
+#!/bin/sh
+
+CYAN='\033[0;36m'
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+YELLOW='\033[0;33m'
+RED='\033[0;31m'
+
+function coloredEcho {
+    NC='\033[0m'
+    printf "# $1 $2 ${NC}\n"
+}
+
+function separatorEcho {
+    if [ $1 ]; then
+        COLOUR=$1
+    else
+        COLOUR=$CYAN
+    fi
+    coloredEcho ${COLOUR} "-----------------------------------------"
+}
+
+separatorEcho ${BLUE}
+coloredEcho ${BLUE} "Running pre-push...."
+separatorEcho ${BLUE}
+
+STAGED_FILES=$(git diff --name-only origin/master)
+
+if [[ $STAGED_FILES ]]; then
+    echo "STAGED_FILES = $STAGED_FILES"
+    jest --findRelatedTests --bail --silent $STAGED_FILES
+    if [[ "$?" == 0 ]]; then
+        separatorEcho ${GREEN}
+        coloredEcho ${GREEN} "Tests passed. Pushing to github"
+        separatorEcho ${GREEN}
+    else
+        separatorEcho ${RED}
+        coloredEcho ${RED} "Tests failed. Exiting..."
+        separatorEcho ${RED}
+        exit 1
+    fi
+else
+    echo "No code changes that can be tested, skipping tests."
+fi
+separatorEcho ${GREEN}
+coloredEcho ${GREEN} "Done"
+separatorEcho ${GREEN}
+exit 0
