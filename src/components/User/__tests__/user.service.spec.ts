@@ -183,7 +183,7 @@ describe('UserService', () => {
         await userService.confirmAccount(
           {
             email: 'some@email.com',
-            password: 'qwerty123',
+            password: 'Qwerty123!',
           },
           'kjlaskjdlfkjasdf',
         ),
@@ -199,7 +199,7 @@ describe('UserService', () => {
         userService.confirmAccount(
           {
             email: 'some@email.com',
-            password: 'qwerty123',
+            password: 'Qwerty123!',
           },
           'kjlaskjdlfkjasdf',
         ),
@@ -219,7 +219,7 @@ describe('UserService', () => {
         userService.confirmAccount(
           {
             email: 'some@email.com',
-            password: 'qwerty123',
+            password: 'Qwerty123!',
           },
           'kjlaskjdlfkjasdf',
         ),
@@ -235,7 +235,7 @@ describe('UserService', () => {
       expect(
         await userService.loginUser({
           email: 'some@email.com',
-          password: 'qwerty123',
+          password: 'Qwerty123!',
         }),
       ).toEqual({
         user: await singleUser,
@@ -253,7 +253,7 @@ describe('UserService', () => {
       expect(
         userService.loginUser({
           email: 'some@email.com',
-          password: 'qwerty123',
+          password: 'Qwerty123!',
         }),
       ).rejects.toEqual(userNotFoundException);
     });
@@ -267,7 +267,7 @@ describe('UserService', () => {
       expect(
         userService.loginUser({
           email: 'some@email.com',
-          password: 'qwerty123',
+          password: 'Qwerty123!',
         }),
       ).rejects.toEqual(notAuthorizedException);
     });
