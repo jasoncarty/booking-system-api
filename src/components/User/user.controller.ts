@@ -3,6 +3,7 @@ import { Request } from 'express';
 
 import { UserService } from './user.service';
 import { UserDto } from '../../proto';
+import { UserConfirmAccountDto, UserUpdateDto, UserConfirmRequestDto } from './dto';
 
 @Controller('users')
 export class UserController {
@@ -14,17 +15,23 @@ export class UserController {
   }
 
   @Put()
-  updateUser(@Body() body, @Req() request: Request): Promise<UserDto> {
-    return this.service.updateUser(request.headers.authorization, body);
+  updateUser(
+    @Body() userUpdateDto: UserUpdateDto,
+    @Req() request: Request,
+  ): Promise<UserDto> {
+    return this.service.updateUser(request.headers.authorization, userUpdateDto);
   }
 
   @Post('/confirmation/request')
-  requestConfirmation(@Body() body): Promise<{}> {
-    return this.service.requestConfirmation(body.email);
+  requestConfirmation(@Body() userConfirmRequestDto: UserConfirmRequestDto): Promise<{}> {
+    return this.service.requestConfirmation(userConfirmRequestDto);
   }
 
   @Post('/confirmation/confirm/:verificationToken')
-  confirmAccount(@Body() body, @Param() params): Promise<UserDto> {
-    return this.service.confirmAccount(body, params.verificationToken);
+  confirmAccount(
+    @Body() userConfirmAccountDto: UserConfirmAccountDto,
+    @Param() params,
+  ): Promise<UserDto> {
+    return this.service.confirmAccount(userConfirmAccountDto, params.verificationToken);
   }
 }

@@ -4,6 +4,7 @@ import * as assert from 'assert';
 
 import { ValidationPipe } from './../validationPipe';
 import { ValidationError } from 'class-validator';
+import { ExceptionDictionary } from './../../proto/exceptionDictionary.dto';
 
 let validationPipe: ValidationPipe;
 describe('validationPipe', () => {
@@ -71,16 +72,32 @@ describe('validationPipe', () => {
 
       assert.rejects(validationPipe.transform(value, argMetaData), expectedError);
     });
-  });
 
-  it('returns value if errors is empty array', async () => {
-    const value = [];
-    const argMetaData = ({
-      metatype: Function,
-    } as unknown) as ArgumentMetadata;
+    it('returns value if errors is empty array', async () => {
+      const value = [];
+      const argMetaData = ({
+        metatype: Function,
+      } as unknown) as ArgumentMetadata;
 
-    jest.spyOn(classValidator, 'validate').mockImplementation(() => Promise.resolve([]));
+      jest
+        .spyOn(classValidator, 'validate')
+        .mockImplementation(() => Promise.resolve([]));
 
-    expect(await validationPipe.transform(value, argMetaData)).toEqual(value);
+      expect(await validationPipe.transform(value, argMetaData)).toEqual(value);
+    });
+
+    describe('mapException', () => {
+      it('throws VALIDATION_ERROR_INVALID_EMAIL', () => {
+        expect(() =>
+          validationPipe['mapException']({ isEmail: 'Invalid email address' }),
+        ).toThrow(ExceptionDictionary.VALIDATION_ERROR_INVALID_EMAIL);
+      });
+
+      it('throws VALIDATION_ERROR 1', () => {
+        expect(() =>
+          validationPipe['mapException']({ someKey: 'Invalid email address' }),
+        ).toThrow(ExceptionDictionary.VALIDATION_ERROR);
+      });
+    });
   });
 });

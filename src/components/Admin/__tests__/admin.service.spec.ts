@@ -1,9 +1,5 @@
 import { AdminService } from './../admin.service';
-import {
-  CreateUserDto,
-  UpdateUserAsAdminDto,
-  ExceptionDictionary,
-} from './../../../proto';
+import { ExceptionDictionary } from './../../../proto';
 import {
   appMailer,
   singleUser,
@@ -77,7 +73,7 @@ describe('AdminService', () => {
         await adminService.createUser({
           name: 'some name',
           email: 'some@email.com',
-        } as CreateUserDto),
+        }),
       ).toBe(await singleUser);
     });
 
@@ -91,7 +87,7 @@ describe('AdminService', () => {
         adminService.createUser({
           name: 'some name',
           email: 'some@email.com',
-        } as CreateUserDto),
+        }),
       ).rejects.toEqual(userCreationException);
     });
   });
@@ -129,7 +125,7 @@ describe('AdminService', () => {
         await adminService.updateUser(1, {
           email: 'some@email.com',
           name: 'some name',
-        } as UpdateUserAsAdminDto),
+        }),
       ).toEqual(await updatedUser);
     });
 
@@ -142,7 +138,7 @@ describe('AdminService', () => {
         adminService.updateUser(1, {
           email: 'some@email.com',
           name: 'some name',
-        } as UpdateUserAsAdminDto),
+        }),
       ).rejects.toEqual(userNotFoundException);
     });
 
@@ -156,7 +152,7 @@ describe('AdminService', () => {
         adminService.updateUser(1, {
           email: 'some@email.com',
           name: 'some name',
-        } as UpdateUserAsAdminDto),
+        }),
       ).rejects.toEqual(userUpdateException);
     });
   });

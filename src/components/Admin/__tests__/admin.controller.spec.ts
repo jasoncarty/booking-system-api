@@ -1,4 +1,3 @@
-import { CreateUserDto, UpdateUserDto } from './../../../proto';
 import { AdminController } from './../admin.controller';
 import { AdminService } from './../admin.service';
 import { appMailer, repositoryMock, allUsers, singleUser } from './../../../mocks';
@@ -36,7 +35,7 @@ describe('AdminController', () => {
         await adminController.createUser({
           email: 'some@email.com',
           name: 'some name',
-        } as CreateUserDto),
+        }),
       ).toEqual(await singleUser);
     });
   });
@@ -47,11 +46,11 @@ describe('AdminController', () => {
 
       expect(
         await adminController.updateUser(
+          { id: 1 },
           {
             email: 'some@email.com',
             name: 'some name',
-          } as UpdateUserDto,
-          { id: 1 },
+          },
         ),
       ).toEqual(await singleUser);
     });

@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Param, Body, Put, Delete } from '@nestjs/common';
 
 import { AdminService } from './admin.service';
-import { CreateUserDto } from '../../proto';
 import { User } from '../../Repositories/user.entity';
+import { UserUpdateDto, UserCreateDto } from './dto';
 
 @Controller('admin')
 export class AdminController {
@@ -19,13 +19,13 @@ export class AdminController {
   }
 
   @Post('users/create')
-  createUser(@Body() user: CreateUserDto): Promise<User> {
-    return this.adminService.createUser(user);
+  createUser(@Body() userCreateDto: UserCreateDto): Promise<User> {
+    return this.adminService.createUser(userCreateDto);
   }
 
   @Put('users/update/:id')
-  updateUser(@Param() params, @Body() body): Promise<User> {
-    return this.adminService.updateUser(params.id, body);
+  updateUser(@Param() params, @Body() userUpdateDto: UserUpdateDto): Promise<User> {
+    return this.adminService.updateUser(params.id, userUpdateDto);
   }
 
   @Delete('users/delete/:id')

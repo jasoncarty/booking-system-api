@@ -1,7 +1,5 @@
 import { Client } from 'pg';
 import {
-  prepareTestDatabase,
-  synchronizeDatabase,
   seedDatabase,
   getConnection,
   createNewDatabase,
@@ -10,6 +8,8 @@ import {
 import * as prepareTestDatabaseModule from '../prepareTestDatabase';
 import * as connectToDBasPGModule from './../connectToDBasPG';
 import * as mocks from './../../src/mocks';
+import { getSeedScripts } from './../getSeedScripts';
+import { SeedScriptObject } from './../seedScriptObject.dto';
 
 jest.mock('./../echoMessage', () => ({
   echoMessage: jest.fn(),
@@ -97,9 +97,27 @@ describe('prepareTestDatabase', () => {
       const client = await getConnection(_mockClient, 'database');
       expect(client).toBeDefined();
     });
+
+    it('throws', async () => {
+      const _mockClient = ({
+        ...mocks.mockClient,
+        connect: () => Promise.reject(new Error('some error')),
+      } as unknown) as Client;
+
+      jest
+        .spyOn(prepareTestDatabaseModule, 'getClient')
+        .mockImplementationOnce(() => mocks.mockClient);
+
+      expect(await getConnection(_mockClient, 'database')).toBe(undefined);
+    });
   });
 
   describe('seedDatabase', () => {
+    let seedScripts: SeedScriptObject[];
+    beforeAll(async () => {
+      seedScripts = await getSeedScripts();
+    });
+
     it('executes scripts in a loop', async () => {
       const querySpy = jest.fn(() => Promise.resolve({ rows: [undefined] }));
       const _mockClient = ({
@@ -108,7 +126,18 @@ describe('prepareTestDatabase', () => {
       } as unknown) as Client;
 
       await seedDatabase(_mockClient);
-      expect(querySpy).toHaveBeenCalled();
+      expect(querySpy).toHaveBeenCalledTimes(seedScripts.length * 2);
+    });
+
+    it('does not execute script', async () => {
+      const querySpy = jest.fn(() => Promise.resolve({ rows: [1] }));
+      const _mockClient = ({
+        ...mocks.mockClient,
+        query: querySpy,
+      } as unknown) as Client;
+
+      await seedDatabase(_mockClient);
+      expect(querySpy).toHaveBeenCalledTimes(seedScripts.length);
     });
   });
 });

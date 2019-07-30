@@ -7,7 +7,7 @@ describe('auth', () => {
       url: '/authentication/create',
       data: {
         email: 'some1@email.com',
-        password: 'qwerty123',
+        password: 'Qwerty123!',
       },
     });
 

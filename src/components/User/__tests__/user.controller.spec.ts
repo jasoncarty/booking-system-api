@@ -2,12 +2,7 @@ import { Request } from 'express';
 
 import { UserController } from '../user.controller';
 import { UserService } from '../user.service';
-import {
-  appMailer,
-  singleUser,
-  repositoryMock,
-  mailSentSuccess,
-} from './../../../mocks/index';
+import { appMailer, singleUser, repositoryMock } from './../../../mocks/index';
 
 describe('UserController', () => {
   let userService: UserService;
@@ -72,7 +67,7 @@ describe('UserController', () => {
         await userController.confirmAccount(
           {
             email: 'ljahsdf@ldhjkafs.com',
-            password: 'qwerty123',
+            password: 'Qwerty123!',
           },
           '8a7ds987asdf9',
         ),

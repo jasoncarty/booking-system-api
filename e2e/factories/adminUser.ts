@@ -1,4 +1,4 @@
 export const adminUser = {
   email: 'some1@email.com',
-  password: 'qwerty123',
+  password: 'Qwerty123!',
 };

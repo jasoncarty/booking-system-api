@@ -112,7 +112,7 @@ describe('User', () => {
         url: `/users/confirmation/confirm/${userToConfirm.verification_token}`,
         data: {
           email: 'some1@email.com',
-          password: 'qwerty123',
+          password: 'Qwerty123!',
         },
       });
 
