@@ -6,8 +6,12 @@ before_install:
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
 install:
   - docker build -t jason.carty/booking-system-api .
-script:
-  - npm install
-  - npm run test
-  - docker-compose up --abort-on-container-exit --exit-code-from app2
-
+jobs:
+  include:
+    - stage: "Install"
+      script: npm install
+    - stage: "Unit tests"
+      script: docker-compose up --abort-on-container-exit --exit-code-from app2
+    - stage: "Coveralls"
+      if: branch = master
+      script: npm run test:coveralls
