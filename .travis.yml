@@ -10,10 +10,8 @@ jobs:
     - stage: "Unit tests"
       script: npm run test
     - stage: "e2e tests"
-      script: docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-      script: docker build -t jason.carty/booking-system-api .
-      script: docker-compose up --abort-on-container-exit --exit-code-from app2
+      install: docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+      script: docker build -t jason.carty/booking-system-api . && docker-compose up --abort-on-container-exit --exit-code-from app2
     - stage: "Coveralls"
       if: branch = master
-      script: npm i -g coveralls
-      script: COVERALLS_REPO_TOKEN=$COVERALLS_REPO_TOKEN npm run test:coveralls
+      script: npm i -g coveralls && COVERALLS_REPO_TOKEN=$COVERALLS_REPO_TOKEN npm run test:coveralls
