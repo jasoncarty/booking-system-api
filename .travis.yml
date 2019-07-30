@@ -10,5 +10,6 @@ script:
   - npm install
   - npm run test
   - docker-compose up --abort-on-container-exit --exit-code-from app2
+after_success:
   if: branch = master
   - COVERALLS_REPO_TOKEN=$COVERALLS_REPO_TOKEN npm run test:coverage
