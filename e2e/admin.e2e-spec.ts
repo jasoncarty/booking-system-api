@@ -38,7 +38,6 @@ describe('Admin', () => {
 
       const { data: result } = res;
       expect(result).toBeDefined();
-      console.log(result);
       expect(result.errorCode).toEqual(ErrorCode.AUTHENTICATION_FAILED);
     });
   });
@@ -70,7 +69,6 @@ describe('Admin', () => {
 
       const { data: result } = res;
       expect(result).toBeDefined();
-      console.log(result);
       expect(result.errorCode).toEqual(ErrorCode.AUTHENTICATION_FAILED);
     });
   });
@@ -111,7 +109,6 @@ describe('Admin', () => {
 
       const { data: result } = res;
       expect(result).toBeDefined();
-      console.log(result);
       expect(result.errorCode).toEqual(ErrorCode.AUTHENTICATION_FAILED);
     });
   });
@@ -150,7 +147,6 @@ describe('Admin', () => {
 
       const { data: result } = res;
       expect(result).toBeDefined();
-      console.log(result);
       expect(result.errorCode).toEqual(ErrorCode.AUTHENTICATION_FAILED);
     });
   });
@@ -183,7 +179,6 @@ describe('Admin', () => {
 
       const { data: result } = res;
       expect(result).toBeDefined();
-      console.log(result);
       expect(result.errorCode).toEqual(ErrorCode.AUTHENTICATION_FAILED);
     });
 
@@ -198,7 +193,6 @@ describe('Admin', () => {
 
       const { data: result } = res;
       expect(result).toBeDefined();
-      console.log(result);
       expect(result.errorCode).toEqual(ErrorCode.USER_DELETION_ERROR_SELF_DELETION);
     });
   });
