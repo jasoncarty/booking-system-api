@@ -16,6 +16,13 @@ An API for a booking system. Built with NestJS.
 $ npm install
 ```
 
+## Setting up githooks
+
+```bash
+$ git config core.hooksPath .githooks
+$ chmod +x .githooks/*
+```
+
 ## Running the app
 
 ```bash
@@ -29,15 +36,37 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
-## Test
+## Unit tests
 
 ```bash
 # unit tests
 $ npm run test
 
-# e2e tests
-$ npm run test:e2e
-
 # test coverage
 $ npm run test:cov
+```
+
+## E2E tests local
+
+In 1 terminal
+```bash
+$ npm run e2e:prepare
+```
+
+In another terminal
+```bash
+$ npm run build
+$ npm NODE_ENV=test run start
+```
+
+In first terminal
+```bash
+$ npm run e2e:test:execute
+```
+
+## E2E tests in docker
+
+```bash
+$ docker build -t jason.carty/booking-system-api .
+$ docker-compose up --abort-on-container-exit --exit-code-from app2
 ```

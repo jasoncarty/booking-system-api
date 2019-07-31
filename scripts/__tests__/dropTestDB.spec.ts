@@ -6,6 +6,7 @@ import * as getDBConfigModule from './../getDBConfig';
 jest.mock('./../echoMessage', () => ({
   echoMessage: jest.fn(),
 }));
+jest.mock('pg');
 
 describe('dropTestDB', () => {
   let processExitSpy: jest.Mock;
