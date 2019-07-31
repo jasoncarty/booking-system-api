@@ -1,3 +1,6 @@
+import { Request } from 'express';
+
+import { UserService } from './../../User/user.service';
 import { AdminController } from './../admin.controller';
 import { AdminService } from './../admin.service';
 import { appMailer, repositoryMock, allUsers, singleUser } from './../../../mocks';
@@ -5,9 +8,17 @@ import { appMailer, repositoryMock, allUsers, singleUser } from './../../../mock
 describe('AdminController', () => {
   let adminService: AdminService;
   let adminController: AdminController;
+  let userService: UserService;
+
+  const request = ({
+    headers: {
+      authorization: 'Bearer lkajsdfölkjasdf',
+    },
+  } as unknown) as Request;
 
   beforeEach(() => {
-    adminService = new AdminService(repositoryMock, appMailer);
+    userService = new UserService(repositoryMock, appMailer);
+    adminService = new AdminService(repositoryMock, appMailer, userService);
     adminController = new AdminController(adminService);
   });
 
@@ -60,7 +71,7 @@ describe('AdminController', () => {
     it('returns the deleted user', async () => {
       jest.spyOn(adminService, 'deleteUser').mockImplementationOnce(() => singleUser);
 
-      expect(await adminController.deleteUser(1)).toEqual(await singleUser);
+      expect(await adminController.deleteUser(1, request)).toEqual(await singleUser);
     });
   });
 });

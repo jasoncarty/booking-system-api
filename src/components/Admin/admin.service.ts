@@ -8,6 +8,7 @@ import { generate } from 'rand-token';
 import { User } from '../../Repositories/user.entity';
 import { ExceptionDictionary } from '../../proto';
 import { AppMailerService } from '../AppMailer/appMailer.service';
+import { UserService } from './../User/user.service';
 import { UserUpdateDto, UserCreateDto } from './dto';
 
 @Injectable()
@@ -16,6 +17,7 @@ export class AdminService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly appMailer: AppMailerService,
+    private readonly userService: UserService,
   ) {}
 
   async getUser(id: number): Promise<User> {
@@ -74,7 +76,11 @@ export class AdminService {
     }
   }
 
-  async deleteUser(id: number): Promise<User> {
+  async deleteUser(authHeader: string, id: number): Promise<User> {
+    const currentUser = await this.userService.getProfile(authHeader);
+    if (currentUser.id === Number(id)) {
+      throw ExceptionDictionary.USER_DELETION_ERROR_SELF_DELETION;
+    }
     const user = await this.getUser(id);
     return await this.userRepository.remove(user);
   }
