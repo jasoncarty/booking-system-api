@@ -1,4 +1,7 @@
+import { Request } from 'express';
+
 import { AdminService } from './../admin.service';
+import { UserService } from './../../User/user.service';
 import { ExceptionDictionary } from './../../../proto';
 import {
   appMailer,
@@ -21,15 +24,28 @@ jest.mock('../../../utils', () => ({
   }),
 }));
 
+const request = ({
+  headers: {
+    authorization: 'Bearer lkajsdfölkjasdf',
+  },
+} as unknown) as Request;
+
+const otherUser = {
+  ...singleUser,
+  id: 2,
+};
+
 const userNotFoundException = ExceptionDictionary.USER_NOT_FOUND;
 const userCreationException = ExceptionDictionary.USER_CREATION_ERROR;
 const userUpdateException = ExceptionDictionary.USER_UPDATE_ERROR;
 
 let adminService: AdminService;
+let userService: UserService;
 
 describe('AdminService', () => {
   beforeEach(() => {
-    adminService = new AdminService(repositoryMock, appMailer);
+    userService = new UserService(repositoryMock, appMailer);
+    adminService = new AdminService(repositoryMock, appMailer, userService);
   });
 
   describe('private getUser', () => {
@@ -159,10 +175,21 @@ describe('AdminService', () => {
 
   describe('deleteUser', () => {
     it('returns the deleted user', async () => {
+      jest.spyOn(userService, 'getProfile').mockImplementationOnce(() => otherUser);
       jest.spyOn(repositoryMock, 'findOne').mockImplementationOnce(() => singleUser);
       jest.spyOn(repositoryMock, 'remove').mockImplementationOnce(() => singleUser);
 
-      expect(await adminService.deleteUser(1)).toEqual(await singleUser);
+      expect(await adminService.deleteUser(request.headers.authorization, 1)).toEqual(
+        await singleUser,
+      );
+    });
+
+    it('throws USER_DELETION_ERROR_SELF_DELETION Exception', () => {
+      jest.spyOn(userService, 'getProfile').mockImplementationOnce(() => singleUser);
+
+      expect(adminService.deleteUser(request.headers.authorization, 1)).rejects.toEqual(
+        ExceptionDictionary.USER_DELETION_ERROR_SELF_DELETION,
+      );
     });
   });
 });

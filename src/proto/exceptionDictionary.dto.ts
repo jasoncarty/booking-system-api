@@ -61,4 +61,9 @@ export const ExceptionDictionary = {
     'Validation Error',
     HttpStatus.BAD_REQUEST,
   ),
+  USER_DELETION_ERROR_SELF_DELETION: getError(
+    ErrorCode.USER_DELETION_ERROR_SELF_DELETION,
+    'Cannot delete your own account',
+    HttpStatus.BAD_REQUEST,
+  ),
 };

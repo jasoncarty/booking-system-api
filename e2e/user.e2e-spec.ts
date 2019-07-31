@@ -5,7 +5,6 @@ import { makeRequest, createUserToken, createAdminToken } from './utils';
 describe('User', () => {
   let userToken: string;
   let adminToken: string;
-  let userToConfirm: User;
 
   beforeAll(async () => {
     userToken = await createUserToken();
@@ -61,6 +60,95 @@ describe('User', () => {
       expect(result.token).toBeDefined();
     });
 
+    it('throws ExceptionDictionary.VALIDAION_ERROR', async () => {
+      const res = await makeRequest({
+        method: 'PUT',
+        url: '/users',
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+        data: {
+          name: 1,
+        },
+      });
+
+      const { data: result } = res;
+      expect(result).toBeDefined();
+      expect(result.errorCode).toEqual(ErrorCode.VALIDATION_ERROR);
+    });
+
+    it('throws ExceptionDictionary.VALIDATION_ERROR_INVALID_EMAIL', async () => {
+      const res = await makeRequest({
+        method: 'PUT',
+        url: '/users',
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+        data: {
+          name: 'Julio Iglesias',
+          email: 'julio.iglesias',
+        },
+      });
+
+      const { data: result } = res;
+      expect(result).toBeDefined();
+      expect(result.errorCode).toEqual(ErrorCode.VALIDATION_ERROR_INVALID_EMAIL);
+    });
+
+    it('throws ExceptionDictionary.VALIDATION_ERROR_PASSWORD_STRENGTH 1', async () => {
+      const res = await makeRequest({
+        method: 'PUT',
+        url: '/users',
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+        data: {
+          name: 'Julio Iglesias',
+          password: 'password',
+        },
+      });
+
+      const { data: result } = res;
+      expect(result).toBeDefined();
+      expect(result.errorCode).toEqual(ErrorCode.VALIDATION_ERROR_PASSWORD_STRENGTH);
+    });
+
+    it('throws ExceptionDictionary.VALIDATION_ERROR_PASSWORD_STRENGTH 2', async () => {
+      const res = await makeRequest({
+        method: 'PUT',
+        url: '/users',
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+        data: {
+          name: 'Julio Iglesias',
+          password: 'password123',
+        },
+      });
+
+      const { data: result } = res;
+      expect(result).toBeDefined();
+      expect(result.errorCode).toEqual(ErrorCode.VALIDATION_ERROR_PASSWORD_STRENGTH);
+    });
+
+    it('throws ExceptionDictionary.VALIDATION_ERROR_PASSWORD_STRENGTH 3', async () => {
+      const res = await makeRequest({
+        method: 'PUT',
+        url: '/users',
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+        data: {
+          name: 'Julio Iglesias',
+          password: 'Password123',
+        },
+      });
+
+      const { data: result } = res;
+      expect(result).toBeDefined();
+      expect(result.errorCode).toEqual(ErrorCode.VALIDATION_ERROR_PASSWORD_STRENGTH);
+    });
+
     it('returns ExceptionDictionary.AUTHENTICATION_FAILED error code', async () => {
       const res = await makeRequest({
         method: 'PUT',
@@ -75,7 +163,6 @@ describe('User', () => {
 
       const { data: result } = res;
       expect(result).toBeDefined();
-      console.log(result);
       expect(result.errorCode).toEqual(ErrorCode.AUTHENTICATION_FAILED);
     });
   });
@@ -96,7 +183,9 @@ describe('User', () => {
   });
 
   describe('/POST /users/confirmation/confirm/:verificationToken', () => {
-    it('sets user.confirmed to true', async () => {
+    let userToConfirm: User;
+
+    beforeAll(async () => {
       const userResponse = await makeRequest({
         method: 'GET',
         url: '/admin/users/1',
@@ -106,7 +195,9 @@ describe('User', () => {
       });
 
       userToConfirm = userResponse.data.data;
+    });
 
+    it('sets user.confirmed to true', async () => {
       const res = await makeRequest({
         method: 'POST',
         url: `/users/confirmation/confirm/${userToConfirm.verification_token}`,
@@ -119,6 +210,81 @@ describe('User', () => {
       expect(res.data).toBeDefined();
       expect(res.data.data.confirmed).toBeTruthy();
       expect(res.data.status).toBe(200);
+    });
+
+    it('throws ExceptionDictionary.VALIDAION_ERROR', async () => {
+      const res = await makeRequest({
+        method: 'POST',
+        url: `/users/confirmation/confirm/${userToConfirm.verification_token}`,
+        data: {
+          email: 'some1@email.com',
+          password: 1,
+        },
+      });
+
+      const { data: result } = res;
+      expect(result).toBeDefined();
+      expect(result.errorCode).toEqual(ErrorCode.VALIDATION_ERROR);
+    });
+
+    it('throws ExceptionDictionary.VALIDATION_ERROR_INVALID_EMAIL', async () => {
+      const res = await makeRequest({
+        method: 'POST',
+        url: `/users/confirmation/confirm/${userToConfirm.verification_token}`,
+        data: {
+          email: 'some1@email',
+          password: 'Qwerty123!',
+        },
+      });
+
+      const { data: result } = res;
+      expect(result).toBeDefined();
+      expect(result.errorCode).toEqual(ErrorCode.VALIDATION_ERROR_INVALID_EMAIL);
+    });
+
+    it('throws ExceptionDictionary.VALIDATION_ERROR_PASSWORD_STRENGTH 1', async () => {
+      const res = await makeRequest({
+        method: 'POST',
+        url: `/users/confirmation/confirm/${userToConfirm.verification_token}`,
+        data: {
+          email: 'some1@email.com',
+          password: 'password',
+        },
+      });
+
+      const { data: result } = res;
+      expect(result).toBeDefined();
+      expect(result.errorCode).toEqual(ErrorCode.VALIDATION_ERROR_PASSWORD_STRENGTH);
+    });
+
+    it('throws ExceptionDictionary.VALIDATION_ERROR_PASSWORD_STRENGTH 2', async () => {
+      const res = await makeRequest({
+        method: 'POST',
+        url: `/users/confirmation/confirm/${userToConfirm.verification_token}`,
+        data: {
+          email: 'some1@email.com',
+          password: 'password123',
+        },
+      });
+
+      const { data: result } = res;
+      expect(result).toBeDefined();
+      expect(result.errorCode).toEqual(ErrorCode.VALIDATION_ERROR_PASSWORD_STRENGTH);
+    });
+
+    it('throws ExceptionDictionary.VALIDATION_ERROR_PASSWORD_STRENGTH 3', async () => {
+      const res = await makeRequest({
+        method: 'POST',
+        url: `/users/confirmation/confirm/${userToConfirm.verification_token}`,
+        data: {
+          email: 'some1@email.com',
+          password: 'password123!',
+        },
+      });
+
+      const { data: result } = res;
+      expect(result).toBeDefined();
+      expect(result.errorCode).toEqual(ErrorCode.VALIDATION_ERROR_PASSWORD_STRENGTH);
     });
   });
 });

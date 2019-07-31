@@ -186,5 +186,20 @@ describe('Admin', () => {
       console.log(result);
       expect(result.errorCode).toEqual(ErrorCode.AUTHENTICATION_FAILED);
     });
+
+    it('returns ExceptionDictionary.USER_DELETION_ERROR_SELF_DELETION error code', async () => {
+      const res = await makeRequest({
+        method: 'DELETE',
+        url: '/admin/users/delete/1',
+        headers: {
+          Authorization: `Bearer ${adminToken}`,
+        },
+      });
+
+      const { data: result } = res;
+      expect(result).toBeDefined();
+      console.log(result);
+      expect(result.errorCode).toEqual(ErrorCode.USER_DELETION_ERROR_SELF_DELETION);
+    });
   });
 });

@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Param, Body, Put, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, Put, Delete, Req } from '@nestjs/common';
+import { Request } from 'express';
 
 import { AdminService } from './admin.service';
 import { User } from '../../Repositories/user.entity';
@@ -29,7 +30,7 @@ export class AdminController {
   }
 
   @Delete('users/delete/:id')
-  deleteUser(@Param() params): Promise<User> {
-    return this.adminService.deleteUser(params.id);
+  deleteUser(@Param() params, @Req() request: Request): Promise<User> {
+    return this.adminService.deleteUser(request.headers.authorization, params.id);
   }
 }
