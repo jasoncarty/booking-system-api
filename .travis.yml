@@ -13,6 +13,5 @@ jobs:
       install: docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
       script: docker build -t jason.carty/booking-system-api . && docker-compose up --abort-on-container-exit --exit-code-from app2
     - stage: "Coveralls"
-      if: branch = master
       install: npm install
       script: COVERALLS_REPO_TOKEN=$COVERALLS_REPO_TOKEN npm run test:coveralls
