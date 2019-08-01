@@ -1,8 +1,13 @@
 import { PipeTransform, Injectable, ArgumentMetadata } from '@nestjs/common';
-import { validate } from 'class-validator';
+import { validate, ValidationError } from 'class-validator';
 import { plainToClass } from 'class-transformer';
 import { isArray } from 'util';
-import { ExceptionDictionary } from './../proto';
+import { ExceptionDictionary, ExceptionDictionaryObject } from './../proto';
+
+interface ValidationExceptionMapObject {
+  isEmail: ExceptionDictionaryObject;
+  isStrongPassword: ExceptionDictionaryObject;
+}
 
 @Injectable()
 export class ValidationPipe implements PipeTransform<any> {
@@ -15,22 +20,24 @@ export class ValidationPipe implements PipeTransform<any> {
     const errors = await validate(object);
     if (errors.length > 0) {
       if (isArray(errors)) {
-        this.mapException(errors[0].constraints);
+        this.mapException(errors[0]);
       }
-      throw ExceptionDictionary.VALIDATION_ERROR;
+
+      throw ExceptionDictionary().VALIDATION_ERROR;
     }
     return value;
   }
 
-  private validationExceptionMap = {
-    isEmail: ExceptionDictionary.VALIDATION_ERROR_INVALID_EMAIL,
-    isStrongPassword: ExceptionDictionary.VALIDATION_ERROR_PASSWORD_STRENGTH,
-  };
+  private validationExceptionMap = (stack?: string): ValidationExceptionMapObject => ({
+    isEmail: ExceptionDictionary(stack).VALIDATION_ERROR_INVALID_EMAIL,
+    isStrongPassword: ExceptionDictionary(stack).VALIDATION_ERROR_PASSWORD_STRENGTH,
+  });
 
-  private mapException(e: object): void {
-    const errorKey = Object.keys(e)[0];
+  private mapException(e: ValidationError): void {
+    const errorKey = Object.keys(e.constraints)[0];
     const error =
-      this.validationExceptionMap[errorKey] || ExceptionDictionary.VALIDATION_ERROR;
+      this.validationExceptionMap(JSON.stringify(e.constraints))[errorKey] ||
+      ExceptionDictionary(JSON.stringify(e.constraints)).VALIDATION_ERROR;
     throw error;
   }
 

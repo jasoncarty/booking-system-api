@@ -2,7 +2,7 @@ import { Request } from 'express';
 
 import { AdminService } from './../admin.service';
 import { UserService } from './../../User/user.service';
-import { ExceptionDictionary } from './../../../proto';
+import { ErrorCode } from './../../../proto';
 import {
   appMailer,
   singleUser,
@@ -35,10 +35,6 @@ const otherUser = {
   id: 2,
 };
 
-const userNotFoundException = ExceptionDictionary.USER_NOT_FOUND;
-const userCreationException = ExceptionDictionary.USER_CREATION_ERROR;
-const userUpdateException = ExceptionDictionary.USER_UPDATE_ERROR;
-
 let adminService: AdminService;
 let userService: UserService;
 
@@ -56,11 +52,17 @@ describe('AdminService', () => {
       expect(repositoryMock.findOne).toHaveBeenCalledWith(res.id);
     });
 
-    it('throws a CustomException', () => {
+    it('throws a USER_NOT_FOUND exception', async () => {
       jest
         .spyOn(repositoryMock, 'findOne')
         .mockImplementationOnce(() => Promise.reject(new Error()));
-      expect(adminService['getUser'](1)).rejects.toEqual(userNotFoundException);
+
+      try {
+        await adminService['getUser'](1);
+        throw new Error('test failed');
+      } catch (e) {
+        expect(e.errorCode).toEqual(ErrorCode.USER_NOT_FOUND);
+      }
     });
   });
 
@@ -93,18 +95,21 @@ describe('AdminService', () => {
       ).toBe(await singleUser);
     });
 
-    it('returns an error', () => {
+    it('returns an error', async () => {
       const error = new Error('an error');
       jest
         .spyOn(repositoryMock, 'save')
         .mockImplementationOnce(() => Promise.reject(error));
 
-      expect(
-        adminService.createUser({
+      try {
+        await adminService.createUser({
           name: 'some name',
           email: 'some@email.com',
-        }),
-      ).rejects.toEqual(userCreationException);
+        });
+        throw new Error('test failed');
+      } catch (e) {
+        expect(e.errorCode).toEqual(ErrorCode.USER_CREATION_ERROR);
+      }
     });
   });
 
@@ -145,31 +150,37 @@ describe('AdminService', () => {
       ).toEqual(await updatedUser);
     });
 
-    it('throws HttpStatus.NOT_FOUND', () => {
+    it('throws HttpStatus.NOT_FOUND', async () => {
       jest
         .spyOn(repositoryMock, 'findOne')
         .mockImplementationOnce(() => Promise.resolve(null));
 
-      expect(
-        adminService.updateUser(1, {
+      try {
+        await adminService.updateUser(1, {
           email: 'some@email.com',
           name: 'some name',
-        }),
-      ).rejects.toEqual(userNotFoundException);
+        });
+        throw new Error('test failed');
+      } catch (e) {
+        expect(e.errorCode).toEqual(ErrorCode.USER_NOT_FOUND);
+      }
     });
 
-    it('throws HttpStatus.INTERNAL_SERVER_ERROR', async () => {
+    it('throws HttpStatus.USER_UPDATE_ERROR', async () => {
       jest.spyOn(repositoryMock, 'findOne').mockImplementationOnce(() => singleUser);
       jest
         .spyOn(repositoryMock, 'update')
         .mockImplementationOnce(() => Promise.reject(new Error('an error')));
 
-      expect(
-        adminService.updateUser(1, {
+      try {
+        await adminService.updateUser(1, {
           email: 'some@email.com',
           name: 'some name',
-        }),
-      ).rejects.toEqual(userUpdateException);
+        });
+        throw new Error('test failed');
+      } catch (e) {
+        expect(e.errorCode).toEqual(ErrorCode.USER_UPDATE_ERROR);
+      }
     });
   });
 
@@ -184,12 +195,15 @@ describe('AdminService', () => {
       );
     });
 
-    it('throws USER_DELETION_ERROR_SELF_DELETION Exception', () => {
+    it('throws USER_DELETION_ERROR_SELF_DELETION Exception', async () => {
       jest.spyOn(userService, 'getProfile').mockImplementationOnce(() => singleUser);
 
-      expect(adminService.deleteUser(request.headers.authorization, 1)).rejects.toEqual(
-        ExceptionDictionary.USER_DELETION_ERROR_SELF_DELETION,
-      );
+      try {
+        await adminService.deleteUser(request.headers.authorization, 1);
+        throw new Error('test failed');
+      } catch (e) {
+        expect(e.errorCode).toEqual(ErrorCode.USER_DELETION_ERROR_SELF_DELETION);
+      }
     });
   });
 });
