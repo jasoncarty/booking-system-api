@@ -9,6 +9,7 @@ describe('CustomException', () => {
         'User not found',
         HttpStatus.NOT_FOUND,
         ErrorCode.USER_NOT_FOUND,
+        'User was not found',
       );
 
       expect(customException.message).toEqual('User not found');
