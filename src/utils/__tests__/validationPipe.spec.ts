@@ -4,7 +4,7 @@ import * as assert from 'assert';
 
 import { ValidationPipe } from './../validationPipe';
 import { ValidationError } from 'class-validator';
-import { ExceptionDictionary } from './../../proto/exceptionDictionary.dto';
+import { ErrorCode } from './../../proto';
 
 let validationPipe: ValidationPipe;
 describe('validationPipe', () => {
@@ -88,15 +88,25 @@ describe('validationPipe', () => {
 
     describe('mapException', () => {
       it('throws VALIDATION_ERROR_INVALID_EMAIL', () => {
-        expect(() =>
-          validationPipe['mapException']({ isEmail: 'Invalid email address' }),
-        ).toThrow(ExceptionDictionary.VALIDATION_ERROR_INVALID_EMAIL);
+        try {
+          validationPipe['mapException'](({
+            constraints: { isEmail: 'Invalid email address' },
+          } as unknown) as ValidationError);
+          throw new Error('Test failed');
+        } catch (e) {
+          expect(e.errorCode).toEqual(ErrorCode.VALIDATION_ERROR_INVALID_EMAIL);
+        }
       });
 
       it('throws VALIDATION_ERROR 1', () => {
-        expect(() =>
-          validationPipe['mapException']({ someKey: 'Invalid email address' }),
-        ).toThrow(ExceptionDictionary.VALIDATION_ERROR);
+        try {
+          validationPipe['mapException'](({
+            constraints: { someKey: 'Invalid email address' },
+          } as unknown) as ValidationError);
+          throw new Error('Test failed');
+        } catch (e) {
+          expect(e.errorCode).toEqual(ErrorCode.VALIDATION_ERROR);
+        }
       });
     });
   });

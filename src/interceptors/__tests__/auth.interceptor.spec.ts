@@ -4,7 +4,7 @@ import * as operators from 'rxjs/operators';
 import { UserService } from './../../components/User/user.service';
 import { AuthService } from './../../components/Auth/auth.service';
 import { AuthInterceptor, NON_PROTECTED_PATHS } from './../auth.interceptor';
-import { ExceptionDictionary } from './../../proto/exceptionDictionary.dto';
+import { ErrorCode } from './../../proto';
 import { singleUser, repositoryMock, appMailer } from './../../mocks/index';
 
 describe('AuthInterceptor', () => {
@@ -76,7 +76,7 @@ describe('AuthInterceptor', () => {
       expect(pipeSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('throws Forbidden error', () => {
+    it('throws NOT_AUTHORIZED error', async () => {
       const context = ({
         switchToHttp: () => ({
           getRequest: () => ({
@@ -93,9 +93,12 @@ describe('AuthInterceptor', () => {
         }),
       } as unknown) as CallHandler;
 
-      expect(authInterceptor.intercept(context, next)).rejects.toEqual(
-        ExceptionDictionary.NOT_AUTHORIZED,
-      );
+      try {
+        await authInterceptor.intercept(context, next);
+        throw new Error('test failed');
+      } catch (e) {
+        expect(e.errorCode).toEqual(ErrorCode.NOT_AUTHORIZED);
+      }
     });
 
     it('authenticates a user', async () => {

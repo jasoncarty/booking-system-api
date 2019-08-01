@@ -44,6 +44,7 @@ describe('HttpExceptionFilter', () => {
         'User not found',
         HttpStatus.NOT_FOUND,
         ErrorCode.USER_NOT_FOUND,
+        'User was not found',
       );
 
       const mockJsonFn = jest.fn();

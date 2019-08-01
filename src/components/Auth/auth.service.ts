@@ -16,7 +16,7 @@ export class AuthService {
   async authenticateAdmin(token: string): Promise<UserDto> {
     const user = await this.verifyAndFindUser(token);
     if (!user || user.role !== UserRole.ADMIN) {
-      throw ExceptionDictionary.AUTHENTICATION_FAILED;
+      throw ExceptionDictionary().AUTHENTICATION_FAILED;
     }
     return user;
   }
@@ -29,8 +29,8 @@ export class AuthService {
     let email: string;
     try {
       email = verifyToken(token).email;
-    } catch (e) {
-      throw ExceptionDictionary.AUTHENTICATION_FAILED;
+    } catch (err) {
+      throw ExceptionDictionary(err.stack).AUTHENTICATION_FAILED;
     }
     return await this.findUser(email);
   }

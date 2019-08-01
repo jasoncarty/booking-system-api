@@ -1,7 +1,7 @@
 import * as bcryptjs from 'bcryptjs';
 
 import { UserService } from '../user.service';
-import { ExceptionDictionary } from './../../../proto';
+import { ErrorCode } from './../../../proto';
 import * as utils from './../../../utils';
 import {
   appMailer,
@@ -22,11 +22,6 @@ jest.mock('../../../utils', () => ({
 }));
 
 const authHeader = 'Bearer fasdf7tasbdfasdfsfd';
-const userNotFoundException = ExceptionDictionary.USER_NOT_FOUND;
-const updateUserException = ExceptionDictionary.USER_UPDATE_ERROR;
-const emailSendingException = ExceptionDictionary.EMAIL_SENDING_ERROR;
-const notAuthorizedException = ExceptionDictionary.NOT_AUTHORIZED;
-const authFailedException = ExceptionDictionary.AUTHENTICATION_FAILED;
 
 let userService: UserService;
 
@@ -42,20 +37,30 @@ describe('UserService', () => {
       expect(await userService['getUser'](1)).toEqual(await singleUser);
     });
 
-    it('throws a USER_NOT_FOUND exception', () => {
+    it('throws a USER_NOT_FOUND exception', async () => {
       jest
         .spyOn(repositoryMock, 'findOne')
         .mockImplementationOnce(() => Promise.reject(new Error('an error')));
 
-      expect(userService['getUser'](1)).rejects.toEqual(userNotFoundException);
+      try {
+        await userService['getUser'](1);
+        throw new Error('test failed');
+      } catch (error) {
+        expect(error.errorCode).toEqual(ErrorCode.USER_NOT_FOUND);
+      }
     });
 
-    it('throws a USER_NOT_FOUND exception if findOne returns null', () => {
+    it('throws a USER_NOT_FOUND exception if findOne returns null', async () => {
       jest
         .spyOn(repositoryMock, 'findOne')
         .mockImplementationOnce(() => Promise.resolve(null));
 
-      expect(userService['getUser'](1)).rejects.toEqual(userNotFoundException);
+      try {
+        await userService['getUser'](1);
+        throw new Error('test failed');
+      } catch (error) {
+        expect(error.errorCode).toEqual(ErrorCode.USER_NOT_FOUND);
+      }
     });
   });
 
@@ -73,13 +78,23 @@ describe('UserService', () => {
         .spyOn(repositoryMock, 'findOne')
         .mockImplementationOnce(() => Promise.resolve(null));
 
-      expect(userService.getProfile(authHeader)).rejects.toEqual(userNotFoundException);
+      try {
+        await userService.getProfile(authHeader);
+        throw new Error('test failed');
+      } catch (error) {
+        expect(error.errorCode).toEqual(ErrorCode.USER_NOT_FOUND);
+      }
     });
 
     it('throws a AUTHENTICATION_FAILED exception', async () => {
       jest.spyOn(utils, 'verifyToken').mockImplementationOnce(() => null);
 
-      expect(userService.getProfile(authHeader)).rejects.toEqual(authFailedException);
+      try {
+        await userService.getProfile(authHeader);
+        throw new Error('test failed');
+      } catch (error) {
+        expect(error.errorCode).toEqual(ErrorCode.AUTHENTICATION_FAILED);
+      }
     });
   });
 
@@ -94,14 +109,17 @@ describe('UserService', () => {
       });
     });
 
-    it('throws a USER_NOT_FOUND exception', () => {
+    it('throws a USER_NOT_FOUND exception', async () => {
       jest
         .spyOn(repositoryMock, 'findOne')
         .mockImplementationOnce(() => Promise.resolve(null));
 
-      expect(userService.getUserByEmail('some@email.com')).rejects.toEqual(
-        userNotFoundException,
-      );
+      try {
+        await userService.getUserByEmail('some@email.com');
+        throw new Error('test failed');
+      } catch (error) {
+        expect(error.errorCode).toEqual(ErrorCode.USER_NOT_FOUND);
+      }
     });
   });
 
@@ -125,12 +143,15 @@ describe('UserService', () => {
         .spyOn(repositoryMock, 'findOne')
         .mockImplementationOnce(() => Promise.resolve(null));
 
-      expect(
-        userService.updateUser(authHeader, {
+      try {
+        await userService.updateUser(authHeader, {
           name: 'Roger',
           email: 'some@email.com',
-        }),
-      ).rejects.toEqual(userNotFoundException);
+        });
+        throw new Error('test failed');
+      } catch (error) {
+        expect(error.errorCode).toEqual(ErrorCode.USER_NOT_FOUND);
+      }
     });
 
     it('throws a USER_UPDATE_ERROR exception', async () => {
@@ -139,12 +160,15 @@ describe('UserService', () => {
         .spyOn(repositoryMock, 'update')
         .mockImplementationOnce(() => Promise.reject(new Error()));
 
-      expect(
-        userService.updateUser(authHeader, {
+      try {
+        await userService.updateUser(authHeader, {
           name: 'Roger',
           email: 'some@email.com',
-        }),
-      ).rejects.toEqual(updateUserException);
+        });
+        throw new Error('test failed');
+      } catch (error) {
+        expect(error.errorCode).toEqual(ErrorCode.USER_UPDATE_ERROR);
+      }
     });
   });
 
@@ -167,9 +191,12 @@ describe('UserService', () => {
       jest.spyOn(userService, 'getUserByEmail').mockImplementationOnce(() => singleUser);
       jest.spyOn(repositoryMock, 'update').mockImplementationOnce(() => updatedUser);
 
-      expect(
-        userService.requestConfirmation({ email: 'some@email.com' }),
-      ).rejects.toEqual(emailSendingException);
+      try {
+        await userService.requestConfirmation({ email: 'some@email.com' });
+        throw new Error('test failed');
+      } catch (error) {
+        expect(error.errorCode).toEqual(ErrorCode.EMAIL_SENDING_ERROR);
+      }
     });
   });
 
@@ -190,20 +217,23 @@ describe('UserService', () => {
       ).toEqual(await singleUser);
     });
 
-    it('throws a USER_NOT_FOUND exception', () => {
+    it('throws a USER_NOT_FOUND exception', async () => {
       jest
         .spyOn(repositoryMock, 'findOne')
         .mockImplementationOnce(() => Promise.resolve(null));
 
-      expect(
-        userService.confirmAccount(
+      try {
+        await userService.confirmAccount(
           {
             email: 'some@email.com',
             password: 'Qwerty123!',
           },
           'kjlaskjdlfkjasdf',
-        ),
-      ).rejects.toEqual(userNotFoundException);
+        );
+        throw new Error('test failed');
+      } catch (error) {
+        expect(error.errorCode).toEqual(ErrorCode.USER_NOT_FOUND);
+      }
     });
 
     it('throws a USER_UPDATE_ERROR exception', async () => {
@@ -215,15 +245,18 @@ describe('UserService', () => {
         .spyOn(repositoryMock, 'update')
         .mockImplementationOnce(() => Promise.reject(new Error()));
 
-      expect(
-        userService.confirmAccount(
+      try {
+        await userService.confirmAccount(
           {
             email: 'some@email.com',
             password: 'Qwerty123!',
           },
           'kjlaskjdlfkjasdf',
-        ),
-      ).rejects.toEqual(updateUserException);
+        );
+        throw new Error('test failed');
+      } catch (error) {
+        expect(error.errorCode).toEqual(ErrorCode.USER_UPDATE_ERROR);
+      }
     });
   });
 
@@ -245,31 +278,37 @@ describe('UserService', () => {
       expect(bcryptjs.compare).toHaveBeenCalledTimes(1);
     });
 
-    it('throws a NOT FOUND exception', () => {
+    it('throws a NOT FOUND exception', async () => {
       jest
         .spyOn(repositoryMock, 'findOne')
         .mockImplementationOnce(() => Promise.resolve(null));
 
-      expect(
-        userService.loginUser({
+      try {
+        await userService.loginUser({
           email: 'some@email.com',
           password: 'Qwerty123!',
-        }),
-      ).rejects.toEqual(userNotFoundException);
+        });
+        throw new Error('test failed');
+      } catch (error) {
+        expect(error.errorCode).toEqual(ErrorCode.USER_NOT_FOUND);
+      }
     });
 
-    it('throws a NOT AUTHORIZED exception', () => {
+    it('throws a AUTHENTICATION_FAILED exception', async () => {
       jest.spyOn(userService, 'getUserByEmail').mockImplementationOnce(() => singleUser);
       jest
         .spyOn(bcryptjs, 'compare')
         .mockImplementationOnce(() => Promise.resolve(false));
 
-      expect(
-        userService.loginUser({
+      try {
+        await userService.loginUser({
           email: 'some@email.com',
           password: 'Qwerty123!',
-        }),
-      ).rejects.toEqual(notAuthorizedException);
+        });
+        throw new Error('test failed');
+      } catch (error) {
+        expect(error.errorCode).toEqual(ErrorCode.AUTHENTICATION_FAILED);
+      }
     });
   });
 });

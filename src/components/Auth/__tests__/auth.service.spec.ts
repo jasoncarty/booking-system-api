@@ -1,5 +1,5 @@
 import { UserService } from './../../User/user.service';
-import { ExceptionDictionary } from '../../../proto';
+import { ErrorCode } from '../../../proto';
 import * as utils from '../../../utils';
 import { AuthService } from '../auth.service';
 import { appMailer, singleUser, repositoryMock, adminUser } from './../../../mocks/index';
@@ -38,9 +38,12 @@ describe('AuthService', () => {
     it('rejects', async () => {
       jest.spyOn(authService, 'verifyAndFindUser').mockImplementation(() => singleUser);
 
-      expect(authService.authenticateAdmin('a98sfds')).rejects.toEqual(
-        ExceptionDictionary.AUTHENTICATION_FAILED,
-      );
+      try {
+        await authService.authenticateAdmin('a98sfds');
+        throw new Error('test failed');
+      } catch (e) {
+        expect(e.errorCode).toEqual(ErrorCode.AUTHENTICATION_FAILED);
+      }
     });
 
     it('rejects if verifyAndFindUser returns null', async () => {
@@ -48,9 +51,12 @@ describe('AuthService', () => {
         .spyOn(authService, 'verifyAndFindUser')
         .mockImplementation(() => Promise.resolve(null));
 
-      expect(authService.authenticateAdmin('a98sfds')).rejects.toEqual(
-        ExceptionDictionary.AUTHENTICATION_FAILED,
-      );
+      try {
+        await authService.authenticateAdmin('a98sfds');
+        throw new Error('test failed');
+      } catch (e) {
+        expect(e.errorCode).toEqual(ErrorCode.AUTHENTICATION_FAILED);
+      }
     });
   });
 
@@ -79,9 +85,12 @@ describe('AuthService', () => {
     it('it rejects', async () => {
       jest.spyOn(utils, 'verifyToken').mockImplementation(() => null);
 
-      expect(authService.verifyAndFindUser('some@email.com')).rejects.toEqual(
-        ExceptionDictionary.AUTHENTICATION_FAILED,
-      );
+      try {
+        await authService.verifyAndFindUser('some@email.com');
+        throw new Error('test failed');
+      } catch (e) {
+        expect(e.errorCode).toEqual(ErrorCode.AUTHENTICATION_FAILED);
+      }
     });
   });
 });

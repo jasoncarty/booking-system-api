@@ -6,6 +6,7 @@ export class CustomException extends Error {
     public readonly message: string,
     public readonly status: HttpStatus,
     public readonly errorCode: ErrorCode,
+    public readonly stack: string,
   ) {
     super();
   }

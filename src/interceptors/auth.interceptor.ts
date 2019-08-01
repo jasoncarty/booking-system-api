@@ -38,7 +38,7 @@ export class AuthInterceptor implements NestInterceptor {
         authToken = extractToken(req.headers.authorization);
       }
       if (!authToken) {
-        throw ExceptionDictionary.NOT_AUTHORIZED;
+        throw ExceptionDictionary().NOT_AUTHORIZED;
       }
 
       const user = req.path.includes('admin')

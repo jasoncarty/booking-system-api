@@ -29,7 +29,7 @@ export class UserService {
       }
       throw new Error();
     } catch (err) {
-      throw ExceptionDictionary.USER_NOT_FOUND;
+      throw ExceptionDictionary(err.stack).USER_NOT_FOUND;
     }
   }
 
@@ -39,8 +39,8 @@ export class UserService {
 
     try {
       email = verifyToken(token).email;
-    } catch (e) {
-      throw ExceptionDictionary.AUTHENTICATION_FAILED;
+    } catch (err) {
+      throw ExceptionDictionary(err.stack).AUTHENTICATION_FAILED;
     }
 
     return await this.getUserByEmail(email);
@@ -54,7 +54,7 @@ export class UserService {
     });
 
     if (!user) {
-      throw ExceptionDictionary.USER_NOT_FOUND;
+      throw ExceptionDictionary().USER_NOT_FOUND;
     }
     return user;
   }
@@ -66,8 +66,8 @@ export class UserService {
     try {
       await this.userRepository.update(user.id, userEntity);
       return await this.getUser(user.id);
-    } catch (e) {
-      throw ExceptionDictionary.USER_UPDATE_ERROR;
+    } catch (err) {
+      throw ExceptionDictionary(err.stack).USER_UPDATE_ERROR;
     }
   }
 
@@ -87,8 +87,8 @@ export class UserService {
         mailSent: true,
         details: sentMail,
       };
-    } catch (e) {
-      throw ExceptionDictionary.EMAIL_SENDING_ERROR;
+    } catch (err) {
+      throw ExceptionDictionary(err.stack).EMAIL_SENDING_ERROR;
     }
   }
 
@@ -109,7 +109,7 @@ export class UserService {
       },
     });
     if (!user) {
-      throw ExceptionDictionary.USER_NOT_FOUND;
+      throw ExceptionDictionary().USER_NOT_FOUND;
     }
 
     const newValues = {
@@ -123,8 +123,8 @@ export class UserService {
     try {
       await this.userRepository.update(user.id, userEntity);
       return await this.getUser(user.id);
-    } catch (e) {
-      throw ExceptionDictionary.USER_UPDATE_ERROR;
+    } catch (err) {
+      throw ExceptionDictionary(err.stack).USER_UPDATE_ERROR;
     }
   }
 
@@ -135,15 +135,18 @@ export class UserService {
 
   async loginUser(data: AuthenticationCreateDto): Promise<AuthenticatedUserDto> {
     const user = await this.getUserByEmail(data.email);
-    if (await compare(data.password, user.password)) {
-      const { email } = user;
-      const token = await createAuthToken(email);
-      return {
-        user: { ...user },
-        token,
-      };
+    try {
+      if (await compare(data.password, user.password)) {
+        const { email } = user;
+        const token = await createAuthToken(email);
+        return {
+          user: { ...user },
+          token,
+        };
+      }
+      throw new Error('Incorrect password');
+    } catch (err) {
+      throw ExceptionDictionary(err.stack).AUTHENTICATION_FAILED;
     }
-
-    throw ExceptionDictionary.NOT_AUTHORIZED;
   }
 }
