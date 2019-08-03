@@ -1,7 +1,7 @@
 import { ErrorCode } from './../src/proto';
 import { makeRequest, createAdminToken, createUserToken } from './utils';
 
-describe('Admin', () => {
+describe('AdminUser', () => {
   let adminToken: string;
   let userToken: string;
 
