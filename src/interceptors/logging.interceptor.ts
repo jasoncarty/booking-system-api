@@ -11,6 +11,17 @@ import { tap } from 'rxjs/operators';
 
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
+  private blackList: string[] = ['password'];
+
+  private sanitize(values: object): string {
+    return JSON.stringify(values, (key, value): string => {
+      if (key && this.blackList.includes(key)) {
+        return '[sanitized]';
+      }
+      return value;
+    });
+  }
+
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const ctx = context.switchToHttp();
     const req = ctx.getRequest<Request>();
@@ -18,9 +29,9 @@ export class LoggingInterceptor implements NestInterceptor {
     console.log(
       `[${startTime.toISOString()}] IP address: ${req.ip} - Receiving ${
         req.method
-      } request to url: ${req.url}, with body: ${JSON.stringify(
+      } request to url: ${req.url}, with body: ${this.sanitize(
         req.body,
-      )}, with params: ${JSON.stringify(req.params)}`,
+      )}, with params: ${this.sanitize(req.params)}`,
     );
 
     return next.handle().pipe(

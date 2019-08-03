@@ -42,4 +42,48 @@ describe('LoggingInterceptor', () => {
       tapSpy(tapArgs());
     });
   });
+
+  describe('sanitize', () => {
+    it('removes blacklisted items from logs', () => {
+      const loggingInterceptor = new LoggingInterceptor();
+      expect(
+        loggingInterceptor['sanitize']({
+          email: 'jason@email.com',
+          password: 'qwerty123!',
+        }),
+      ).toEqual(
+        JSON.stringify({
+          email: 'jason@email.com',
+          password: '[sanitized]',
+        }),
+      );
+    });
+
+    it('removes blacklisted items from logs DEEP', () => {
+      const loggingInterceptor = new LoggingInterceptor();
+      expect(
+        loggingInterceptor['sanitize']({
+          email: 'jason@email.com',
+          password: 'qwerty123!',
+          user: {
+            something: {
+              email: 'jason@email.com',
+              password: 'qwerty123!',
+            },
+          },
+        }),
+      ).toEqual(
+        JSON.stringify({
+          email: 'jason@email.com',
+          password: '[sanitized]',
+          user: {
+            something: {
+              email: 'jason@email.com',
+              password: '[sanitized]',
+            },
+          },
+        }),
+      );
+    });
+  });
 });
