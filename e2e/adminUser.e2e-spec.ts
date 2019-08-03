@@ -133,6 +133,24 @@ describe('AdminUser', () => {
       expect(result.token).toBeDefined();
     });
 
+    it('returns ExceptionDictionary.VALIDATION_ERROR error code', async () => {
+      const res = await makeRequest({
+        method: 'PUT',
+        url: '/admin/users/update/1',
+        headers: {
+          Authorization: `Bearer ${adminToken}`,
+        },
+        data: {
+          name: 'Roger Dodger',
+          password: 'Qwerty123!',
+        },
+      });
+
+      const { data: result } = res;
+      expect(result).toBeDefined();
+      expect(result.errorCode).toEqual(ErrorCode.VALIDATION_ERROR);
+    });
+
     it('returns ExceptionDictionary.AUTHENTICATION_FAILED error code', async () => {
       const res = await makeRequest({
         method: 'PUT',

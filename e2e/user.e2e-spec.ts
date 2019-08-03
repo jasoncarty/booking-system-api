@@ -51,12 +51,14 @@ describe('User', () => {
         },
         data: {
           name: 'Julio Iglesias',
+          password: 'Qwerty123!',
         },
       });
 
       const { data: result } = res;
       expect(result).toBeDefined();
       expect(result.data).toBeDefined();
+      expect(result.data.password).not.toEqual('Qwerty123!');
       expect(result.token).toBeDefined();
     });
 
