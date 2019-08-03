@@ -2,14 +2,19 @@ import { UserService } from './../../User/user.service';
 import { ErrorCode } from '../../../proto';
 import * as utils from '../../../utils';
 import { AuthService } from '../auth.service';
-import { appMailer, singleUser, repositoryMock, adminUser } from './../../../mocks/index';
+import {
+  appMailer,
+  singleUser,
+  UserRepositoryMock,
+  adminUser,
+} from './../../../mocks/index';
 
 describe('AuthService', () => {
   let authService: AuthService;
   let userService: UserService;
 
   beforeEach(() => {
-    userService = new UserService(repositoryMock, appMailer);
+    userService = new UserService(UserRepositoryMock, appMailer);
     authService = new AuthService(userService);
   });
 

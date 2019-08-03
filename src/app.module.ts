@@ -11,7 +11,8 @@ import { UserModule } from './components/User/user.module';
 import { HttpExceptionFilter } from './utils/httpExceptionFilter';
 import { ValidationPipe } from './utils/validationPipe';
 import { AuthModule } from './components/Auth/auth.module';
-import { AdminModule } from './components/Admin/admin.module';
+import { AdminModule } from './components/AdminUser/adminUser.module';
+import { AdminSiteSettingsModule } from './components/AdminSiteSettings/adminSiteSettings.module';
 import { TimeoutInterceptor, AuthInterceptor, LoggingInterceptor } from './interceptors';
 
 export const getMailTransport = (configService: ConfigService): object | string => {
@@ -35,6 +36,7 @@ export const getMailTransport = (configService: ConfigService): object | string 
         database: configService.envConfig.DATABASE,
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: true,
+        logging: 'all',
       }),
       inject: [ConfigService],
     }),
@@ -58,6 +60,7 @@ export const getMailTransport = (configService: ConfigService): object | string 
     UserModule,
     AuthModule,
     AdminModule,
+    AdminSiteSettingsModule,
   ],
   providers: [
     {

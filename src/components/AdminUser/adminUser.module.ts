@@ -1,10 +1,10 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Module } from '@nestjs/common';
 
-import { AdminService } from './admin.service';
-import { AdminController } from './admin.controller';
+import { AdminService } from './adminUser.service';
+import { AdminController } from './adminUser.controller';
 import { AppMailerModule } from '../AppMailer/appMailer.module';
-import { UserModule } from './../User/user.module';
+import { UserModule } from '../User/user.module';
 import { User } from '../../Repositories/user.entity';
 
 @Module({

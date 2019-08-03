@@ -1,9 +1,9 @@
 import { Request } from 'express';
 
-import { UserService } from './../../User/user.service';
-import { AdminController } from './../admin.controller';
-import { AdminService } from './../admin.service';
-import { appMailer, repositoryMock, allUsers, singleUser } from './../../../mocks';
+import { UserService } from '../../User/user.service';
+import { AdminController } from '../adminUser.controller';
+import { AdminService } from '../adminUser.service';
+import { appMailer, UserRepositoryMock, allUsers, singleUser } from '../../../mocks';
 
 describe('AdminController', () => {
   let adminService: AdminService;
@@ -17,8 +17,8 @@ describe('AdminController', () => {
   } as unknown) as Request;
 
   beforeEach(() => {
-    userService = new UserService(repositoryMock, appMailer);
-    adminService = new AdminService(repositoryMock, appMailer, userService);
+    userService = new UserService(UserRepositoryMock, appMailer);
+    adminService = new AdminService(UserRepositoryMock, appMailer, userService);
     adminController = new AdminController(adminService);
   });
 

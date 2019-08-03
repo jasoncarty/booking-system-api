@@ -80,4 +80,10 @@ export const ExceptionDictionary = (stack?: string): ExceptionDictionaryObject =
     HttpStatus.BAD_REQUEST,
     stack,
   ),
+  SETTINGS_NOT_FOUND: getError(
+    ErrorCode.SETTINGS_NOT_FOUND,
+    'User not found',
+    HttpStatus.NOT_FOUND,
+    stack,
+  ),
 });

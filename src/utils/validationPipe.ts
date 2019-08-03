@@ -17,7 +17,11 @@ export class ValidationPipe implements PipeTransform<any> {
     }
 
     const object = plainToClass(metatype, value);
-    const errors = await validate(object);
+    const errors = await validate(object, {
+      forbidUnknownValues: true,
+      forbidNonWhitelisted: true,
+      whitelist: true,
+    });
     if (errors.length > 0) {
       if (isArray(errors)) {
         this.mapException(errors[0]);

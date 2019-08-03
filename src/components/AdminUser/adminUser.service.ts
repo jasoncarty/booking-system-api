@@ -8,7 +8,7 @@ import { generate } from 'rand-token';
 import { User } from '../../Repositories/user.entity';
 import { ExceptionDictionary } from '../../proto';
 import { AppMailerService } from '../AppMailer/appMailer.service';
-import { UserService } from './../User/user.service';
+import { UserService } from '../User/user.service';
 import { UserUpdateDto, UserCreateDto } from './dto';
 
 @Injectable()

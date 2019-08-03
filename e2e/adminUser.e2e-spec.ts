@@ -1,7 +1,7 @@
 import { ErrorCode } from './../src/proto';
 import { makeRequest, createAdminToken, createUserToken } from './utils';
 
-describe('Admin', () => {
+describe('AdminUser', () => {
   let adminToken: string;
   let userToken: string;
 
@@ -131,6 +131,24 @@ describe('Admin', () => {
       expect(result.data).toBeDefined();
       expect(result.data.name).toEqual('Roger Dodger');
       expect(result.token).toBeDefined();
+    });
+
+    it('returns ExceptionDictionary.VALIDATION_ERROR error code', async () => {
+      const res = await makeRequest({
+        method: 'PUT',
+        url: '/admin/users/update/1',
+        headers: {
+          Authorization: `Bearer ${adminToken}`,
+        },
+        data: {
+          name: 'Roger Dodger',
+          password: 'Qwerty123!',
+        },
+      });
+
+      const { data: result } = res;
+      expect(result).toBeDefined();
+      expect(result.errorCode).toEqual(ErrorCode.VALIDATION_ERROR);
     });
 
     it('returns ExceptionDictionary.AUTHENTICATION_FAILED error code', async () => {
