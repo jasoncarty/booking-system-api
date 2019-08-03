@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Param, Body, Put, Delete, Req } from '@nestjs/common';
 import { Request } from 'express';
 
-import { AdminService } from './admin.service';
+import { AdminService } from './adminUser.service';
 import { User } from '../../Repositories/user.entity';
 import { UserUpdateDto, UserCreateDto } from './dto';
 

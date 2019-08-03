@@ -62,7 +62,16 @@ export class UserService {
   async updateUser(authHeader: string, values: UserUpdateDto): Promise<UserDto> {
     const user = await this.getProfile(authHeader);
     const userEntity = new User();
-    Object.assign(userEntity, values);
+    let newValues: object;
+    if (values.password) {
+      newValues = {
+        ...values,
+        password: await this.hashPassword(values.password),
+      };
+    } else {
+      newValues = { ...values };
+    }
+    Object.assign(userEntity, newValues);
     try {
       await this.userRepository.update(user.id, userEntity);
       return await this.getUser(user.id);

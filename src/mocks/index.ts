@@ -2,6 +2,7 @@
 import { AuthenticatedUserDto } from './../components/Auth/dto/authenticated.user.dto';
 import { UserRole } from './../proto';
 import { User } from '../Repositories/user.entity';
+import { SiteSettings } from './../Repositories/siteSettings.entity';
 import { AppMailerService } from './../components/AppMailer/appMailer.service';
 import { Repository, UpdateResult } from 'typeorm';
 import { Client } from 'pg';
@@ -56,11 +57,22 @@ export const updatedUser = (Promise.resolve({
   ...mockUser,
 }) as unknown) as Promise<UpdateResult>;
 
-export const repositoryMock = ({
+export const mockSiteSettings = Promise.resolve({
+  id: 1,
+  site_name: 'The stupid site',
+  maximum_event_attendees: 8,
+});
+
+const mockRepository = {
   create: jest.fn(),
   findOne: jest.fn(),
   update: jest.fn(),
   find: jest.fn(),
   save: jest.fn(),
   remove: jest.fn(),
-} as unknown) as Repository<User>;
+};
+
+export const UserRepositoryMock = (mockRepository as unknown) as Repository<User>;
+export const SiteSettingsRepositoryMock = (mockRepository as unknown) as Repository<
+  SiteSettings
+>;

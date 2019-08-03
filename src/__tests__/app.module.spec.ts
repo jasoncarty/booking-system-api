@@ -7,7 +7,7 @@ jest
   .mock('./../components/User/user.service', () => ({
     UserService: jest.fn(),
   }))
-  .mock('./../components/Admin/admin.service', () => ({
+  .mock('./../components/AdminUser/adminUser.service', () => ({
     AdminService: jest.fn(),
   }))
   .mock('@nestjs/typeorm', () => ({

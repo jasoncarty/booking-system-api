@@ -1,4 +1,4 @@
-import { UserRole } from './../../../proto';
+import { UserRole } from '../../../proto';
 import { IsEmail, IsString, IsOptional } from 'class-validator';
 
 export class UserUpdateDto {

@@ -5,7 +5,7 @@ import { UserService } from './../../components/User/user.service';
 import { AuthService } from './../../components/Auth/auth.service';
 import { AuthInterceptor, NON_PROTECTED_PATHS } from './../auth.interceptor';
 import { ErrorCode } from './../../proto';
-import { singleUser, repositoryMock, appMailer } from './../../mocks/index';
+import { singleUser, UserRepositoryMock, appMailer } from './../../mocks/index';
 
 describe('AuthInterceptor', () => {
   let authService: AuthService;
@@ -13,7 +13,7 @@ describe('AuthInterceptor', () => {
   let authInterceptor: AuthInterceptor;
 
   beforeEach(() => {
-    userService = new UserService(repositoryMock, appMailer);
+    userService = new UserService(UserRepositoryMock, appMailer);
     authService = new AuthService(userService);
     authInterceptor = new AuthInterceptor(authService);
   });

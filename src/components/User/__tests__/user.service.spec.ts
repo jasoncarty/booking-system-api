@@ -7,7 +7,7 @@ import {
   appMailer,
   singleUser,
   updatedUser,
-  repositoryMock,
+  UserRepositoryMock,
   mailSentSuccess,
 } from './../../../mocks';
 
@@ -27,19 +27,19 @@ let userService: UserService;
 
 describe('UserService', () => {
   beforeEach(() => {
-    userService = new UserService(repositoryMock, appMailer);
+    userService = new UserService(UserRepositoryMock, appMailer);
   });
 
   describe('private getUser', () => {
     it('returns a user', async () => {
-      jest.spyOn(repositoryMock, 'findOne').mockImplementationOnce(() => singleUser);
+      jest.spyOn(UserRepositoryMock, 'findOne').mockImplementationOnce(() => singleUser);
 
       expect(await userService['getUser'](1)).toEqual(await singleUser);
     });
 
     it('throws a USER_NOT_FOUND exception', async () => {
       jest
-        .spyOn(repositoryMock, 'findOne')
+        .spyOn(UserRepositoryMock, 'findOne')
         .mockImplementationOnce(() => Promise.reject(new Error('an error')));
 
       try {
@@ -52,7 +52,7 @@ describe('UserService', () => {
 
     it('throws a USER_NOT_FOUND exception if findOne returns null', async () => {
       jest
-        .spyOn(repositoryMock, 'findOne')
+        .spyOn(UserRepositoryMock, 'findOne')
         .mockImplementationOnce(() => Promise.resolve(null));
 
       try {
@@ -75,7 +75,7 @@ describe('UserService', () => {
 
     it('throws a USER_NOT_FOUND exception', async () => {
       jest
-        .spyOn(repositoryMock, 'findOne')
+        .spyOn(UserRepositoryMock, 'findOne')
         .mockImplementationOnce(() => Promise.resolve(null));
 
       try {
@@ -100,18 +100,18 @@ describe('UserService', () => {
 
   describe('getUserByEmail', () => {
     it('Finds a user', async () => {
-      jest.spyOn(repositoryMock, 'findOne').mockImplementationOnce(() => singleUser);
+      jest.spyOn(UserRepositoryMock, 'findOne').mockImplementationOnce(() => singleUser);
       const res = await singleUser;
 
       expect(await userService.getUserByEmail('some@email.com')).toBe(res);
-      expect(repositoryMock.findOne).toHaveBeenCalledWith({
+      expect(UserRepositoryMock.findOne).toHaveBeenCalledWith({
         where: { email: 'some@email.com' },
       });
     });
 
     it('throws a USER_NOT_FOUND exception', async () => {
       jest
-        .spyOn(repositoryMock, 'findOne')
+        .spyOn(UserRepositoryMock, 'findOne')
         .mockImplementationOnce(() => Promise.resolve(null));
 
       try {
@@ -126,21 +126,22 @@ describe('UserService', () => {
   describe('updateUser', () => {
     it('Updates a user', async () => {
       jest.spyOn(userService, 'getProfile').mockImplementationOnce(() => singleUser);
-      jest.spyOn(repositoryMock, 'update').mockImplementationOnce(() => updatedUser);
-      jest.spyOn(repositoryMock, 'findOne').mockImplementationOnce(() => singleUser);
+      jest.spyOn(UserRepositoryMock, 'update').mockImplementationOnce(() => updatedUser);
+      jest.spyOn(UserRepositoryMock, 'findOne').mockImplementationOnce(() => singleUser);
 
       const res = await updatedUser;
       expect(
         await userService.updateUser(authHeader, {
           name: 'Roger',
           email: 'some@email.com',
+          password: 'Qwerty123!',
         }),
       ).toEqual(res);
     });
 
     it('throws a USER_NOT_FOUND exception', async () => {
       jest
-        .spyOn(repositoryMock, 'findOne')
+        .spyOn(UserRepositoryMock, 'findOne')
         .mockImplementationOnce(() => Promise.resolve(null));
 
       try {
@@ -157,7 +158,7 @@ describe('UserService', () => {
     it('throws a USER_UPDATE_ERROR exception', async () => {
       jest.spyOn(userService, 'getProfile').mockImplementationOnce(() => singleUser);
       jest
-        .spyOn(repositoryMock, 'update')
+        .spyOn(UserRepositoryMock, 'update')
         .mockImplementationOnce(() => Promise.reject(new Error()));
 
       try {
@@ -175,7 +176,7 @@ describe('UserService', () => {
   describe('requestConfirmation', () => {
     it('Adds/updates a verificationCode', async () => {
       jest.spyOn(userService, 'getUserByEmail').mockImplementationOnce(() => singleUser);
-      jest.spyOn(repositoryMock, 'update').mockImplementationOnce(() => updatedUser);
+      jest.spyOn(UserRepositoryMock, 'update').mockImplementationOnce(() => updatedUser);
 
       expect(await userService.requestConfirmation({ email: 'some@email.com' })).toEqual({
         mailSent: true,
@@ -189,7 +190,7 @@ describe('UserService', () => {
         throw error;
       });
       jest.spyOn(userService, 'getUserByEmail').mockImplementationOnce(() => singleUser);
-      jest.spyOn(repositoryMock, 'update').mockImplementationOnce(() => updatedUser);
+      jest.spyOn(UserRepositoryMock, 'update').mockImplementationOnce(() => updatedUser);
 
       try {
         await userService.requestConfirmation({ email: 'some@email.com' });
@@ -202,9 +203,9 @@ describe('UserService', () => {
 
   describe('confirmAccount', () => {
     it('confirms an account', async () => {
-      jest.spyOn(repositoryMock, 'findOne').mockImplementationOnce(() => singleUser);
-      jest.spyOn(repositoryMock, 'update').mockImplementationOnce(() => updatedUser);
-      jest.spyOn(repositoryMock, 'findOne').mockImplementationOnce(() => singleUser);
+      jest.spyOn(UserRepositoryMock, 'findOne').mockImplementationOnce(() => singleUser);
+      jest.spyOn(UserRepositoryMock, 'update').mockImplementationOnce(() => updatedUser);
+      jest.spyOn(UserRepositoryMock, 'findOne').mockImplementationOnce(() => singleUser);
 
       expect(
         await userService.confirmAccount(
@@ -219,7 +220,7 @@ describe('UserService', () => {
 
     it('throws a USER_NOT_FOUND exception', async () => {
       jest
-        .spyOn(repositoryMock, 'findOne')
+        .spyOn(UserRepositoryMock, 'findOne')
         .mockImplementationOnce(() => Promise.resolve(null));
 
       try {
@@ -237,12 +238,12 @@ describe('UserService', () => {
     });
 
     it('throws a USER_UPDATE_ERROR exception', async () => {
-      jest.spyOn(repositoryMock, 'findOne').mockImplementationOnce(() => singleUser);
+      jest.spyOn(UserRepositoryMock, 'findOne').mockImplementationOnce(() => singleUser);
       jest
         .spyOn(userService, 'hashPassword')
         .mockImplementationOnce(() => Promise.resolve('lkjadslfkjsadfjk'));
       jest
-        .spyOn(repositoryMock, 'update')
+        .spyOn(UserRepositoryMock, 'update')
         .mockImplementationOnce(() => Promise.reject(new Error()));
 
       try {
@@ -280,7 +281,7 @@ describe('UserService', () => {
 
     it('throws a NOT FOUND exception', async () => {
       jest
-        .spyOn(repositoryMock, 'findOne')
+        .spyOn(UserRepositoryMock, 'findOne')
         .mockImplementationOnce(() => Promise.resolve(null));
 
       try {

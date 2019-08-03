@@ -1,6 +1,6 @@
 import { Request } from 'express';
 
-import { AdminService } from './../admin.service';
+import { AdminService } from '../adminUser.service';
 import { UserService } from './../../User/user.service';
 import { ErrorCode } from './../../../proto';
 import {
@@ -8,7 +8,7 @@ import {
   singleUser,
   allUsers,
   updatedUser,
-  repositoryMock,
+  UserRepositoryMock,
 } from './../../../mocks';
 
 jest.mock('../../../utils', () => ({
@@ -40,21 +40,21 @@ let userService: UserService;
 
 describe('AdminService', () => {
   beforeEach(() => {
-    userService = new UserService(repositoryMock, appMailer);
-    adminService = new AdminService(repositoryMock, appMailer, userService);
+    userService = new UserService(UserRepositoryMock, appMailer);
+    adminService = new AdminService(UserRepositoryMock, appMailer, userService);
   });
 
   describe('private getUser', () => {
     it('Finds a user', async () => {
-      jest.spyOn(repositoryMock, 'findOne').mockImplementationOnce(() => singleUser);
+      jest.spyOn(UserRepositoryMock, 'findOne').mockImplementationOnce(() => singleUser);
       const res = await singleUser;
       expect(await adminService['getUser'](1)).toBe(res);
-      expect(repositoryMock.findOne).toHaveBeenCalledWith(res.id);
+      expect(UserRepositoryMock.findOne).toHaveBeenCalledWith(res.id);
     });
 
     it('throws a USER_NOT_FOUND exception', async () => {
       jest
-        .spyOn(repositoryMock, 'findOne')
+        .spyOn(UserRepositoryMock, 'findOne')
         .mockImplementationOnce(() => Promise.reject(new Error()));
 
       try {
@@ -68,7 +68,7 @@ describe('AdminService', () => {
 
   describe('getUsers', () => {
     it('returns all users', async () => {
-      jest.spyOn(repositoryMock, 'find').mockImplementationOnce(() => allUsers);
+      jest.spyOn(UserRepositoryMock, 'find').mockImplementationOnce(() => allUsers);
 
       expect(await adminService.getUsers()).toBe(await allUsers);
     });
@@ -76,7 +76,7 @@ describe('AdminService', () => {
     it('throws an error', () => {
       const error = new Error('an error');
       jest
-        .spyOn(repositoryMock, 'find')
+        .spyOn(UserRepositoryMock, 'find')
         .mockImplementationOnce(() => Promise.reject(error));
 
       expect(adminService.getUsers()).rejects.toEqual(error);
@@ -85,7 +85,7 @@ describe('AdminService', () => {
 
   describe('createUser', () => {
     it('returns a created user', async () => {
-      jest.spyOn(repositoryMock, 'save').mockImplementationOnce(() => singleUser);
+      jest.spyOn(UserRepositoryMock, 'save').mockImplementationOnce(() => singleUser);
 
       expect(
         await adminService.createUser({
@@ -98,7 +98,7 @@ describe('AdminService', () => {
     it('returns an error', async () => {
       const error = new Error('an error');
       jest
-        .spyOn(repositoryMock, 'save')
+        .spyOn(UserRepositoryMock, 'save')
         .mockImplementationOnce(() => Promise.reject(error));
 
       try {
@@ -139,8 +139,8 @@ describe('AdminService', () => {
 
   describe('updateUser', () => {
     it('updates a user', async () => {
-      jest.spyOn(repositoryMock, 'findOne').mockImplementation(() => singleUser);
-      jest.spyOn(repositoryMock, 'update').mockImplementationOnce(() => updatedUser);
+      jest.spyOn(UserRepositoryMock, 'findOne').mockImplementation(() => singleUser);
+      jest.spyOn(UserRepositoryMock, 'update').mockImplementationOnce(() => updatedUser);
 
       expect(
         await adminService.updateUser(1, {
@@ -152,7 +152,7 @@ describe('AdminService', () => {
 
     it('throws HttpStatus.NOT_FOUND', async () => {
       jest
-        .spyOn(repositoryMock, 'findOne')
+        .spyOn(UserRepositoryMock, 'findOne')
         .mockImplementationOnce(() => Promise.resolve(null));
 
       try {
@@ -167,9 +167,9 @@ describe('AdminService', () => {
     });
 
     it('throws HttpStatus.USER_UPDATE_ERROR', async () => {
-      jest.spyOn(repositoryMock, 'findOne').mockImplementationOnce(() => singleUser);
+      jest.spyOn(UserRepositoryMock, 'findOne').mockImplementationOnce(() => singleUser);
       jest
-        .spyOn(repositoryMock, 'update')
+        .spyOn(UserRepositoryMock, 'update')
         .mockImplementationOnce(() => Promise.reject(new Error('an error')));
 
       try {
@@ -187,8 +187,8 @@ describe('AdminService', () => {
   describe('deleteUser', () => {
     it('returns the deleted user', async () => {
       jest.spyOn(userService, 'getProfile').mockImplementationOnce(() => otherUser);
-      jest.spyOn(repositoryMock, 'findOne').mockImplementationOnce(() => singleUser);
-      jest.spyOn(repositoryMock, 'remove').mockImplementationOnce(() => singleUser);
+      jest.spyOn(UserRepositoryMock, 'findOne').mockImplementationOnce(() => singleUser);
+      jest.spyOn(UserRepositoryMock, 'remove').mockImplementationOnce(() => singleUser);
 
       expect(await adminService.deleteUser(request.headers.authorization, 1)).toEqual(
         await singleUser,
