@@ -3,13 +3,19 @@
 import { SiteSettingsRepositoryMock, mockSiteSettings } from '../../../mocks/index';
 import { AdminSiteSettingsController } from '../adminSiteSettings.controller';
 import { AdminSiteSettingsService } from '../adminSiteSettings.service';
+import { SiteSettingsService } from './../../SiteSettings/siteSettings.service';
 
 describe('AdminSiteSettingsController', () => {
   let adminSiteSettingsService: AdminSiteSettingsService;
   let adminSiteSettingsController: AdminSiteSettingsController;
+  let siteSettingsService: SiteSettingsService;
 
   beforeEach(() => {
-    adminSiteSettingsService = new AdminSiteSettingsService(SiteSettingsRepositoryMock);
+    siteSettingsService = new SiteSettingsService(SiteSettingsRepositoryMock);
+    adminSiteSettingsService = new AdminSiteSettingsService(
+      SiteSettingsRepositoryMock,
+      siteSettingsService,
+    );
     adminSiteSettingsController = new AdminSiteSettingsController(
       adminSiteSettingsService,
     );
