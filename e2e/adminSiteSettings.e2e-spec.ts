@@ -12,8 +12,8 @@ describe('AdminSiteSettings', () => {
     jest.spyOn(console, 'log').mockImplementation(jest.fn());
   });
 
-  describe('/GET /admin/users', () => {
-    it('returns the siteSettings', async () => {
+  describe('/GET /admin/site-settings', () => {
+    it('updates the siteSettings', async () => {
       const res = await makeRequest({
         method: 'PUT',
         url: '/admin/site-settings',

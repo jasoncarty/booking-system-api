@@ -13,6 +13,7 @@ import { ValidationPipe } from './utils/validationPipe';
 import { AuthModule } from './components/Auth/auth.module';
 import { AdminModule } from './components/AdminUser/adminUser.module';
 import { AdminSiteSettingsModule } from './components/AdminSiteSettings/adminSiteSettings.module';
+import { SiteSettingsModule } from './components/SiteSettings/siteSettings.module';
 import { TimeoutInterceptor, AuthInterceptor, LoggingInterceptor } from './interceptors';
 
 export const getMailTransport = (configService: ConfigService): object | string => {
@@ -61,6 +62,7 @@ export const getMailTransport = (configService: ConfigService): object | string 
     AuthModule,
     AdminModule,
     AdminSiteSettingsModule,
+    SiteSettingsModule,
   ],
   providers: [
     {
