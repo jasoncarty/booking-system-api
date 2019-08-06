@@ -29,7 +29,7 @@ export class UserService {
       }
       throw new Error();
     } catch (err) {
-      throw ExceptionDictionary(err.stack).USER_NOT_FOUND;
+      throw new ExceptionDictionary(err.stack).USER_NOT_FOUND;
     }
   }
 
@@ -40,7 +40,7 @@ export class UserService {
     try {
       email = verifyToken(token).email;
     } catch (err) {
-      throw ExceptionDictionary(err.stack).AUTHENTICATION_FAILED;
+      throw new ExceptionDictionary(err.stack).AUTHENTICATION_FAILED;
     }
 
     return await this.getUserByEmail(email);
@@ -54,7 +54,7 @@ export class UserService {
     });
 
     if (!user) {
-      throw ExceptionDictionary().USER_NOT_FOUND;
+      throw new ExceptionDictionary().USER_NOT_FOUND;
     }
     return user;
   }
@@ -76,7 +76,7 @@ export class UserService {
       await this.userRepository.update(user.id, userEntity);
       return await this.getUser(user.id);
     } catch (err) {
-      throw ExceptionDictionary(err.stack).USER_UPDATE_ERROR;
+      throw new ExceptionDictionary(err.stack).USER_UPDATE_ERROR;
     }
   }
 
@@ -97,7 +97,7 @@ export class UserService {
         details: sentMail,
       };
     } catch (err) {
-      throw ExceptionDictionary(err.stack).EMAIL_SENDING_ERROR;
+      throw new ExceptionDictionary(err.stack).EMAIL_SENDING_ERROR;
     }
   }
 
@@ -118,7 +118,7 @@ export class UserService {
       },
     });
     if (!user) {
-      throw ExceptionDictionary().USER_NOT_FOUND;
+      throw new ExceptionDictionary().USER_NOT_FOUND;
     }
 
     const newValues = {
@@ -133,7 +133,7 @@ export class UserService {
       await this.userRepository.update(user.id, userEntity);
       return await this.getUser(user.id);
     } catch (err) {
-      throw ExceptionDictionary(err.stack).USER_UPDATE_ERROR;
+      throw new ExceptionDictionary(err.stack).USER_UPDATE_ERROR;
     }
   }
 
@@ -155,7 +155,7 @@ export class UserService {
       }
       throw new Error('Incorrect password');
     } catch (err) {
-      throw ExceptionDictionary(err.stack).AUTHENTICATION_FAILED;
+      throw new ExceptionDictionary(err.stack).AUTHENTICATION_FAILED;
     }
   }
 }

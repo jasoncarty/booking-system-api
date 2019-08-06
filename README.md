@@ -70,3 +70,7 @@ $ npm run e2e:test:execute
 $ docker build -t jason.carty/booking-system-api .
 $ docker-compose up --abort-on-container-exit --exit-code-from app2
 ```
+
+## API documentation
+
+<a href="https://documenter.getpostman.com/view/8026651/SVYqPJoH">Find the docs here</a>
