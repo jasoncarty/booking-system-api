@@ -30,19 +30,6 @@ export class AuthInterceptor implements NestInterceptor {
     return parts.every((part: string): boolean => !NON_PROTECTED_PATHS.includes(part));
   }
 
-  private sanitizeData(data: object): object {
-    if (!data) {
-      return null;
-    }
-    const stringified = JSON.stringify(data, (key, value): string => {
-      if (key && this.blackList.includes(key)) {
-        return '[sanitized]';
-      }
-      return value;
-    });
-    return JSON.parse(stringified);
-  }
-
   async intercept(
     context: ExecutionContext,
     next: CallHandler,
@@ -70,7 +57,7 @@ export class AuthInterceptor implements NestInterceptor {
     return next.handle().pipe(
       map((data): {} => {
         return {
-          data: this.sanitizeData(data),
+          data,
           status: HttpStatus.OK,
           token,
         };
