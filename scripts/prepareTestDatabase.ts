@@ -2,7 +2,7 @@ import { Client } from 'pg';
 import { createConnection, Connection } from 'typeorm';
 import 'reflect-metadata';
 
-import { Colours } from './colours.enum';
+import { Colours } from './coloursred.enum';
 import { getDBConfig } from './getDBConfig';
 import { echoMessage } from './echoMessage';
 import { connectToDBasPG } from './connectToDBasPG';
@@ -50,23 +50,36 @@ export const seedDatabase = async (client: Client): Promise<void> => {
 
 export const synchronizeDatabase = async (): Promise<Connection> => {
   const { host, password, port, user, database } = getDBConfig();
-  return await createConnection({
-    type: 'postgres' as 'postgres',
-    host,
-    port,
-    username: user,
-    password,
-    database,
-    entities: [__dirname + './../src/Repositories/*.entity{.ts,.js}'],
-    synchronize: true,
-  });
+  let synchronizedDb;
+
+  try {
+    synchronizedDb = await createConnection({
+      type: 'postgres' as 'postgres',
+      host,
+      port,
+      username: user,
+      password,
+      database,
+      entities: [__dirname + './../src/Repositories/*.entity{.ts,.js}'],
+      synchronize: true,
+    });
+  } catch (e) {
+    echoMessage(Colours.red, `Error occured while synchronizing database: ${e}`);
+  }
+  return synchronizedDb;
 };
 
 export const prepareTestDatabase = async (): Promise<void> => {
   echoMessage(Colours.blue, 'Preparing test database...');
   const disconnectedClient = getClient();
   const { database } = getDBConfig();
-  const connectedClient = await getConnection(disconnectedClient, database);
+  let connectedClient;
+  try {
+    connectedClient = await getConnection(disconnectedClient, database);
+  } catch (e) {
+    echoMessage(Colours.red, `Error occured while getting connection: ${e}`);
+  }
+
   await synchronizeDatabase();
   echoMessage(Colours.green, 'Synchronised test database with typeOrm');
   await seedDatabase(connectedClient);
