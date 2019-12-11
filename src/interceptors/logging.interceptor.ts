@@ -11,7 +11,11 @@ import { tap } from 'rxjs/operators';
 
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
-  private blackList: string[] = ['password'];
+  private blackList: string[] = [
+    'password',
+    'verification_token',
+    'password_reset_token',
+  ];
 
   private sanitize(values: object): string {
     return JSON.stringify(values, (key, value): string => {
