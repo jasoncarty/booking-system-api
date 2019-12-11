@@ -73,13 +73,7 @@ export const prepareTestDatabase = async (): Promise<void> => {
   echoMessage(Colours.blue, 'Preparing test database...');
   const disconnectedClient = getClient();
   const { database } = getDBConfig();
-  let connectedClient;
-  try {
-    connectedClient = await getConnection(disconnectedClient, database);
-  } catch (e) {
-    echoMessage(Colours.red, `Error occured while getting connection: ${e}`);
-  }
-
+  const connectedClient = await getConnection(disconnectedClient, database);
   await synchronizeDatabase();
   echoMessage(Colours.green, 'Synchronised test database with typeOrm');
   await seedDatabase(connectedClient);

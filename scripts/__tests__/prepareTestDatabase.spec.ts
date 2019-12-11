@@ -1,9 +1,12 @@
 import { Client } from 'pg';
+import * as typeorm from 'typeorm';
+
 import {
   seedDatabase,
   getConnection,
   createNewDatabase,
   getClient,
+  synchronizeDatabase,
 } from '../prepareTestDatabase';
 import * as prepareTestDatabaseModule from '../prepareTestDatabase';
 import * as connectToDBasPGModule from './../connectToDBasPG';
@@ -39,6 +42,13 @@ jest.mock('pg', () => ({
     }
   },
 }));
+
+const MockConnection = ({
+  name: 'sdfasd',
+  options: {},
+  isConnected: true,
+  driver: 'kjhasdjf',
+} as unknown) as typeorm.Connection;
 
 describe('prepareTestDatabase', () => {
   const connect = jest.fn();
@@ -138,6 +148,24 @@ describe('prepareTestDatabase', () => {
 
       await seedDatabase(_mockClient);
       expect(querySpy).toHaveBeenCalledTimes(seedScripts.length);
+    });
+  });
+
+  describe('synchronizeDatabase', () => {
+    it('returns a synchronized database', async () => {
+      jest.spyOn(typeorm, 'createConnection').mockImplementationOnce(() => {
+        return Promise.resolve(MockConnection);
+      });
+      expect(await synchronizeDatabase()).toEqual(MockConnection);
+    });
+
+    it('echos a message', async () => {
+      jest.spyOn(typeorm, 'createConnection').mockImplementationOnce(() => {
+        throw Error('jhksdhf');
+      });
+
+      const synchronizedDb = await synchronizeDatabase();
+      expect(synchronizedDb).toEqual(undefined);
     });
   });
 });
