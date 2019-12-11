@@ -38,18 +38,15 @@ describe('validationPipe', () => {
         metatype: Function,
       } as unknown) as ArgumentMetadata;
 
-      let expectedError: BadRequestException;
-
       jest
         .spyOn(classValidator, 'validate')
         .mockImplementation(() => Promise.resolve(errors));
       try {
         await validationPipe.transform(value, argMetaData);
+        throw new Error('Test failed');
       } catch (e) {
-        expectedError = e;
+        expect(e.errorCode).toEqual(ErrorCode.VALIDATION_ERROR);
       }
-
-      assert.rejects(validationPipe.transform(value, argMetaData), expectedError);
     });
 
     it('throws a BadRequestException 2', async () => {
@@ -59,18 +56,15 @@ describe('validationPipe', () => {
         metatype: Function,
       } as unknown) as ArgumentMetadata;
 
-      let expectedError: BadRequestException;
-
       jest
         .spyOn(classValidator, 'validate')
         .mockImplementation(() => Promise.resolve(errors));
       try {
         await validationPipe.transform(value, argMetaData);
+        throw new Error('Test failed');
       } catch (e) {
-        expectedError = e;
+        expect(e.errorCode).toEqual(ErrorCode.VALIDATION_ERROR);
       }
-
-      assert.rejects(validationPipe.transform(value, argMetaData), expectedError);
     });
 
     it('returns value if errors is empty array', async () => {

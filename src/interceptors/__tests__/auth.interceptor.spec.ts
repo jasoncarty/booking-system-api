@@ -134,7 +134,79 @@ describe('AuthInterceptor', () => {
 
       await authInterceptor.intercept(context, next);
       expect(pipeSpy).toHaveBeenCalledTimes(1);
+      mapSpy(mapArgs({ key: 'value' }));
+    });
+
+    it('authenticates a user 2', async () => {
+      const context = ({
+        switchToHttp: () => ({
+          getRequest: () => ({
+            url: 'mock/url',
+            headers: {
+              authorization: 'Bearer uyasdifuyaosdf',
+            },
+            path: 'mock/url',
+          }),
+        }),
+      } as unknown) as ExecutionContext;
+
+      const pipeSpy = jest.fn();
+      const next = ({
+        handle: () => ({
+          pipe: pipeSpy,
+        }),
+      } as unknown) as CallHandler;
+
+      const mapSpy = jest.fn();
+      let mapArgs: any;
+      jest.spyOn(operators, 'map').mockImplementationOnce(args => {
+        mapArgs = args;
+        return mapSpy;
+      });
+
+      jest
+        .spyOn(authService, 'authenticateUser')
+        .mockImplementationOnce(() => singleUser);
+
+      await authInterceptor.intercept(context, next);
+      expect(pipeSpy).toHaveBeenCalledTimes(1);
       mapSpy(mapArgs());
+    });
+
+    it('authenticates a user 3', async () => {
+      const context = ({
+        switchToHttp: () => ({
+          getRequest: () => ({
+            url: 'mock/url',
+            headers: {
+              authorization: 'Bearer uyasdifuyaosdf',
+            },
+            path: 'mock/url',
+          }),
+        }),
+      } as unknown) as ExecutionContext;
+
+      const pipeSpy = jest.fn();
+      const next = ({
+        handle: () => ({
+          pipe: pipeSpy,
+        }),
+      } as unknown) as CallHandler;
+
+      const mapSpy = jest.fn();
+      let mapArgs: any;
+      jest.spyOn(operators, 'map').mockImplementationOnce(args => {
+        mapArgs = args;
+        return mapSpy;
+      });
+
+      jest
+        .spyOn(authService, 'authenticateUser')
+        .mockImplementationOnce(() => singleUser);
+
+      await authInterceptor.intercept(context, next);
+      expect(pipeSpy).toHaveBeenCalledTimes(1);
+      mapSpy(mapArgs({ password: 'lkjasdlfkjsdf' }));
     });
 
     it('authenticates an admin', async () => {

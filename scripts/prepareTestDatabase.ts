@@ -50,16 +50,23 @@ export const seedDatabase = async (client: Client): Promise<void> => {
 
 export const synchronizeDatabase = async (): Promise<Connection> => {
   const { host, password, port, user, database } = getDBConfig();
-  return await createConnection({
-    type: 'postgres' as 'postgres',
-    host,
-    port,
-    username: user,
-    password,
-    database,
-    entities: [__dirname + './../src/Repositories/*.entity{.ts,.js}'],
-    synchronize: true,
-  });
+  let synchronizedDb;
+
+  try {
+    synchronizedDb = await createConnection({
+      type: 'postgres' as 'postgres',
+      host,
+      port,
+      username: user,
+      password,
+      database,
+      entities: [__dirname + './../src/Repositories/*.entity{.ts,.js}'],
+      synchronize: true,
+    });
+  } catch (e) {
+    echoMessage(Colours.red, `Error occured while synchronizing database: ${e}`);
+  }
+  return synchronizedDb;
 };
 
 export const prepareTestDatabase = async (): Promise<void> => {

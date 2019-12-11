@@ -19,6 +19,12 @@ export const NON_PROTECTED_PATHS = ['authentication', 'verification', 'confirmat
 export class AuthInterceptor implements NestInterceptor {
   constructor(private readonly authService: AuthService) {}
 
+  private blackList: string[] = [
+    'password',
+    'verification_token',
+    'password_reset_token',
+  ];
+
   private shouldAuthenticate(path: string): boolean {
     const parts = path.split('?')[0].split('/');
     return parts.every((part: string): boolean => !NON_PROTECTED_PATHS.includes(part));
@@ -38,7 +44,7 @@ export class AuthInterceptor implements NestInterceptor {
         authToken = extractToken(req.headers.authorization);
       }
       if (!authToken) {
-        throw ExceptionDictionary().NOT_AUTHORIZED;
+        throw new ExceptionDictionary().NOT_AUTHORIZED;
       }
 
       const user = req.path.includes('admin')
