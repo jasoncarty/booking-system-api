@@ -2,7 +2,7 @@ import { Client } from 'pg';
 import { createConnection, Connection } from 'typeorm';
 import 'reflect-metadata';
 
-import { Colours } from './coloursred.enum';
+import { Colours } from './colours.enum';
 import { getDBConfig } from './getDBConfig';
 import { echoMessage } from './echoMessage';
 import { connectToDBasPG } from './connectToDBasPG';
