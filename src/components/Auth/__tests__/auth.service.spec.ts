@@ -1,4 +1,4 @@
-import { UserService } from './../../User/user.service';
+import { UserService } from '../../Public/User/user.service';
 import { ErrorCode } from '../../../proto';
 import * as utils from '../../../utils';
 import { AuthService } from '../auth.service';

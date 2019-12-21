@@ -7,13 +7,13 @@ import { join } from 'path';
 
 import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
-import { UserModule } from './components/User/user.module';
+import { UserModule } from './components/Public/User/user.module';
 import { HttpExceptionFilter } from './utils/httpExceptionFilter';
 import { ValidationPipe } from './utils/validationPipe';
 import { AuthModule } from './components/Auth/auth.module';
-import { AdminModule } from './components/AdminUser/adminUser.module';
-import { AdminSiteSettingsModule } from './components/AdminSiteSettings/adminSiteSettings.module';
-import { SiteSettingsModule } from './components/SiteSettings/siteSettings.module';
+import { AdminModule } from './components/Admin/AdminUser/adminUser.module';
+import { AdminSiteSettingsModule } from './components/Admin/AdminSiteSettings/adminSiteSettings.module';
+import { SiteSettingsModule } from './components/Public/SiteSettings/siteSettings.module';
 import { TimeoutInterceptor, AuthInterceptor, LoggingInterceptor } from './interceptors';
 
 export const getMailTransport = (configService: ConfigService): object | string => {

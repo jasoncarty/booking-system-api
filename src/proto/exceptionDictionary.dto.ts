@@ -19,6 +19,13 @@ export class ExceptionDictionary {
     this.stack = stack;
   }
 
+  EVENT_NOT_FOUND = getError(
+    ErrorCode.EVENT_NOT_FOUND,
+    'User not found',
+    HttpStatus.NOT_FOUND,
+    this.stack,
+  );
+
   USER_NOT_FOUND = getError(
     ErrorCode.USER_NOT_FOUND,
     'User not found',

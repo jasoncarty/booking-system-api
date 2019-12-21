@@ -1,6 +1,6 @@
 import { Injectable, Scope } from '@nestjs/common';
 
-import { UserService } from './../User/user.service';
+import { UserService } from '../Public/User/user.service';
 import { UserRole, UserDto } from '../../proto';
 import { verifyToken } from '../../utils';
 import { ExceptionDictionary } from './../../proto';

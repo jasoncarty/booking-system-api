@@ -1,5 +1,5 @@
 import { AuthController } from '../auth.controller';
-import { UserService } from './../../User/user.service';
+import { UserService } from '../../Public/User/user.service';
 import { appMailer, authenticatedUser, UserRepositoryMock } from './../../../mocks';
 
 describe('AuthController', () => {
