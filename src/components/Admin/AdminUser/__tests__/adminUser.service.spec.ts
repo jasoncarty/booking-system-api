@@ -11,7 +11,7 @@ import {
   UserRepositoryMock,
 } from '../../../../mocks';
 
-jest.mock('../../../utils', () => ({
+jest.mock('../../../../utils', () => ({
   CustomException: jest.fn(),
   ErrorCode: {
     USER_NOT_FOUND: 'USER_NOT_FOUND',

@@ -11,7 +11,7 @@ import {
   mailSentSuccess,
 } from '../../../../mocks';
 
-jest.mock('../../../utils', () => ({
+jest.mock('../../../../utils', () => ({
   CustomException: jest.fn(),
   extractToken: jest.fn(),
   verifyToken: () => ({

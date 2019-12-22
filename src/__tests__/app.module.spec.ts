@@ -4,10 +4,10 @@ import { AppModule, getMailTransport } from './../app.module';
 import { ConfigService } from 'src/config/config.service';
 
 jest
-  .mock('./../components/User/user.service', () => ({
+  .mock('./../components/Public/User/user.service', () => ({
     UserService: jest.fn(),
   }))
-  .mock('./../components/AdminUser/adminUser.service', () => ({
+  .mock('./../components/Admin/AdminUser/adminUser.service', () => ({
     AdminService: jest.fn(),
   }))
   .mock('@nestjs/typeorm', () => ({
