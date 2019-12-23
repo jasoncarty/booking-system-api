@@ -8,6 +8,7 @@ import { join } from 'path';
 import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
 import { UserModule } from './components/Public/User/user.module';
+import { EventModule } from './components/Public/Event/event.module';
 import { HttpExceptionFilter } from './utils/httpExceptionFilter';
 import { ValidationPipe } from './utils/validationPipe';
 import { AuthModule } from './components/Auth/auth.module';
@@ -59,6 +60,7 @@ export const getMailTransport = (configService: ConfigService): object | string 
       inject: [ConfigService],
     }),
     UserModule,
+    EventModule,
     AuthModule,
     AdminModule,
     AdminSiteSettingsModule,

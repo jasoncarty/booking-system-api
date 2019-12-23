@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import { makeRequest, createUserToken } from './utils';
+import { makeRequest, createUserToken } from '../utils';
 
 describe('SiteSettings', () => {
   let userToken: string;

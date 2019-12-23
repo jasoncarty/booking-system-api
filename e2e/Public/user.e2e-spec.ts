@@ -1,6 +1,6 @@
-import { User } from './../src/Repositories/user.entity';
-import { ErrorCode } from './../src/proto';
-import { makeRequest, createUserToken, createAdminToken } from './utils';
+import { User } from '../../src/Repositories/user.entity';
+import { ErrorCode } from '../../src/proto';
+import { makeRequest, createUserToken, createAdminToken } from '../utils';
 
 describe('User', () => {
   let userToken: string;
@@ -36,7 +36,6 @@ describe('User', () => {
 
       const { data: result } = res;
       expect(result).toBeDefined();
-      console.log(result);
       expect(result.errorCode).toEqual(ErrorCode.NOT_AUTHORIZED);
     });
   });

@@ -14,7 +14,7 @@ export class EventService {
 
   async getEvent(id: number): Promise<EventDto> {
     try {
-      const event = this.eventRepository.findOne(id);
+      const event = await this.eventRepository.findOne(id);
       if (event) {
         return event;
       }
@@ -27,15 +27,15 @@ export class EventService {
   async getCurrentEvents(): Promise<EventDto[]> {
     try {
       const events = await this.eventRepository
-        .createQueryBuilder('event')
-        .where('starts_at > :time', { time: Date.now() })
+        .createQueryBuilder('events')
+        .where('starts_at >= :time', { time: new Date().toISOString() })
         .getMany();
       if (events) {
         return events;
       }
-      throw new Error();
+      return [];
     } catch (err) {
-      throw new ExceptionDictionary(err.stack).EVENT_NOT_FOUND;
+      throw new ExceptionDictionary(err.stack).EVENT_FETCHING_ERROR;
     }
   }
 }

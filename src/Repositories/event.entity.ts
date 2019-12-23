@@ -23,14 +23,12 @@ export class Event extends BaseEntity {
   description: string;
 
   @Column({
-    type: 'timestamptz',
-    nullable: true
+    nullable: true,
   })
   starts_at: Date;
 
   @Column({
-    type: 'timestamptz',
-    nullable: true
+    nullable: true,
   })
   ends_at: Date;
 
