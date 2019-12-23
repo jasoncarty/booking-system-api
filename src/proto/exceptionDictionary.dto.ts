@@ -19,6 +19,20 @@ export class ExceptionDictionary {
     this.stack = stack;
   }
 
+  EVENT_FETCHING_ERROR = getError(
+    ErrorCode.EVENT_FETCHING_ERROR,
+    'An error occured when fetching the events',
+    HttpStatus.INTERNAL_SERVER_ERROR,
+    this.stack,
+  )
+
+  EVENT_NOT_FOUND = getError(
+    ErrorCode.EVENT_NOT_FOUND,
+    'Event not found',
+    HttpStatus.NOT_FOUND,
+    this.stack,
+  );
+
   USER_NOT_FOUND = getError(
     ErrorCode.USER_NOT_FOUND,
     'User not found',

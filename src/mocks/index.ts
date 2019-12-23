@@ -1,7 +1,8 @@
 /* eslint @typescript-eslint/camelcase: 0 */
 import { AuthenticatedUserDto } from './../components/Auth/dto/authenticated.user.dto';
-import { UserRole } from './../proto';
+import { UserRole, EventDto } from './../proto';
 import { User } from '../Repositories/user.entity';
+import { Event } from '../Repositories/event.entity';
 import { SiteSettings } from './../Repositories/siteSettings.entity';
 import { AppMailerService } from './../components/AppMailer/appMailer.service';
 import { Repository, UpdateResult } from 'typeorm';
@@ -25,6 +26,19 @@ export const mockUser = {
   role: UserRole.USER,
   created_at: null,
   updated_at: null,
+};
+
+export const mockEvent = {
+  id: 1,
+  name: 'Test event',
+  description: 'test description',
+  starts_at: new Date(),
+  ends_at: new Date(),
+  title: 'Test title',
+  maximum_event_attendees: 8,
+  created_at: null,
+  updated_at: null,
+  preview: null,
 };
 
 export const adminUser = Promise.resolve({
@@ -51,6 +65,10 @@ export const singleUser = Promise.resolve({
   ...mockUser,
 }) as Promise<User>;
 
+export const singleEvent = Promise.resolve({
+  ...mockEvent,
+}) as Promise<EventDto>;
+
 export const allUsers = Promise.resolve([mockUser]) as Promise<User[]>;
 
 export const updatedUser = (Promise.resolve({
@@ -70,8 +88,10 @@ const mockRepository = {
   find: jest.fn(),
   save: jest.fn(),
   remove: jest.fn(),
+  createQueryBuilder: jest.fn(),
 };
 
+export const EventRepositoryMock = (mockRepository as unknown) as Repository<Event>;
 export const UserRepositoryMock = (mockRepository as unknown) as Repository<User>;
 export const SiteSettingsRepositoryMock = (mockRepository as unknown) as Repository<
   SiteSettings

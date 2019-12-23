@@ -1,7 +1,7 @@
 import { ExecutionContext, CallHandler } from '@nestjs/common';
 import * as operators from 'rxjs/operators';
 
-import { UserService } from './../../components/User/user.service';
+import { UserService } from '../../components/Public/User/user.service';
 import { AuthService } from './../../components/Auth/auth.service';
 import { AuthInterceptor, NON_PROTECTED_PATHS } from './../auth.interceptor';
 import { ErrorCode } from './../../proto';
