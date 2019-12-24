@@ -33,7 +33,7 @@ export class UserService {
     }
   }
 
-  async getProfile(authHeader: string): Promise<UserDto> {
+  async getProfile(authHeader: string, loadRelations = false): Promise<UserDto> {
     const token = extractToken(authHeader);
     let email: string;
 
@@ -43,11 +43,12 @@ export class UserService {
       throw new ExceptionDictionary(err.stack).AUTHENTICATION_FAILED;
     }
 
-    return await this.getUserByEmail(email);
+    return await this.getUserByEmail(email, loadRelations);
   }
 
-  async getUserByEmail(email: string): Promise<UserDto> {
+  async getUserByEmail(email: string, loadRelations = false): Promise<UserDto> {
     const user = await this.userRepository.findOne({
+      relations: loadRelations ? ['eventAttendees'] : null,
       where: {
         email,
       },
@@ -142,12 +143,18 @@ export class UserService {
     return await hash(password, salt);
   }
 
+  async save(user: UserDto): Promise<UserDto> {
+    return await this.userRepository.save(user);
+  }
+
   async loginUser(data: AuthenticationCreateDto): Promise<AuthenticatedUserDto> {
     const user = await this.getUserByEmail(data.email);
     try {
       if (await compare(data.password, user.password)) {
         const { email } = user;
         const token = await createAuthToken(email);
+        // todo:
+        // check if user if confirmed
         return {
           user: { ...user },
           token,

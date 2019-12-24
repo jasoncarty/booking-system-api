@@ -1,4 +1,5 @@
 import { UserRole } from './userRole.enum';
+import { EventAttendee } from './../Repositories/eventAttendee.entity';
 
 export interface UserDto {
   id: number;
@@ -14,4 +15,5 @@ export interface UserDto {
   role: UserRole;
   created_at: Date;
   updated_at: Date;
+  eventAttendees?: EventAttendee[];
 }

@@ -9,6 +9,7 @@ import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
 import { UserModule } from './components/Public/User/user.module';
 import { EventModule } from './components/Public/Event/event.module';
+import { EventAttendeeModule } from './components/Public/EventAttendee/eventAttendee.module';
 import { HttpExceptionFilter } from './utils/httpExceptionFilter';
 import { ValidationPipe } from './utils/validationPipe';
 import { AuthModule } from './components/Auth/auth.module';
@@ -61,6 +62,7 @@ export const getMailTransport = (configService: ConfigService): object | string 
     }),
     UserModule,
     EventModule,
+    EventAttendeeModule,
     AuthModule,
     AdminModule,
     AdminSiteSettingsModule,

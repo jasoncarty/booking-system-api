@@ -1,3 +1,5 @@
+import { EventAttendee } from './../Repositories/eventAttendee.entity';
+
 export interface EventDto {
   id: number;
   name?: string;
@@ -9,4 +11,5 @@ export interface EventDto {
   maximum_event_attendees?: number;
   created_at: Date;
   updated_at: Date;
+  eventAttendees?: EventAttendee[];
 }
