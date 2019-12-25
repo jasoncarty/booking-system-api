@@ -1,13 +1,32 @@
+import { Request } from 'express';
+
 import { EventController } from '../event.controller';
 import { EventService } from '../event.service';
-import { mockEvent, EventRepositoryMock, singleEvent } from '../../../../mocks/index';
+import { UserService } from './../../User/user.service';
+import { EventAttendeeService } from './../../EventAttendee/eventAttendee.service';
+import {
+  mockEvent,
+  EventRepositoryMock,
+  singleEvent,
+  EventAttendeeRepositoryMock,
+  appMailer,
+  UserRepositoryMock,
+} from '../../../../mocks/index';
 
 describe('EventController', () => {
   let eventService: EventService;
   let eventController: EventController;
+  let userService: UserService;
+  let eventAttendeeService: EventAttendeeService;
 
   beforeEach(() => {
-    eventService = new EventService(EventRepositoryMock);
+    userService = new UserService(UserRepositoryMock, appMailer);
+    eventAttendeeService = new EventAttendeeService(EventAttendeeRepositoryMock);
+    eventService = new EventService(
+      EventRepositoryMock,
+      eventAttendeeService,
+      userService,
+    );
     eventController = new EventController(eventService);
   });
 
@@ -24,9 +43,23 @@ describe('EventController', () => {
   });
 
   describe(':GET /:id', () => {
-    it('Returns all current events', async () => {
+    it('Returns a single event', async () => {
       jest.spyOn(eventService, 'getEvent').mockImplementationOnce(() => singleEvent);
       expect(await eventController.getEvent(1)).toStrictEqual(await singleEvent);
+    });
+  });
+
+  describe(':POST /book/:id', () => {
+    it('Returns a single event', async () => {
+      const request = ({
+        headers: {
+          authorization: 'Bearer lkajsdfölkjasdf',
+        },
+      } as unknown) as Request;
+      jest.spyOn(eventService, 'bookEvent').mockImplementationOnce(() => singleEvent);
+      expect(await eventController.bookEvent(1, request)).toStrictEqual(
+        await singleEvent,
+      );
     });
   });
 });

@@ -19,12 +19,33 @@ export class ExceptionDictionary {
     this.stack = stack;
   }
 
+  DUPLICATE_EVENT_ATTENDEE_ERROR = getError(
+    ErrorCode.DUPLICATE_EVENT_ATTENDEE_ERROR,
+    'Cannot create eventAttendee with the same user or event',
+    HttpStatus.INTERNAL_SERVER_ERROR,
+    this.stack,
+  );
+
+  EVENT_ATTENDEE_CREATION_ERROR = getError(
+    ErrorCode.EVENT_ATTENDEE_CREATION_ERROR,
+    'An error occured when creating an eventAttendee',
+    HttpStatus.INTERNAL_SERVER_ERROR,
+    this.stack,
+  );
+
+  EVENT_BOOKING_ERROR = getError(
+    ErrorCode.EVENT_BOOKING_ERROR,
+    'An error occured when booking an event',
+    HttpStatus.INTERNAL_SERVER_ERROR,
+    this.stack,
+  );
+
   EVENT_FETCHING_ERROR = getError(
     ErrorCode.EVENT_FETCHING_ERROR,
     'An error occured when fetching the events',
     HttpStatus.INTERNAL_SERVER_ERROR,
     this.stack,
-  )
+  );
 
   EVENT_NOT_FOUND = getError(
     ErrorCode.EVENT_NOT_FOUND,

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -5,10 +6,12 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   BaseEntity,
+  OneToMany,
 } from 'typeorm';
 import { IsEmail } from 'class-validator';
 
 import { UserRole } from '../proto';
+import { EventAttendee } from './eventAttendee.entity';
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity {
@@ -82,4 +85,10 @@ export class User extends BaseEntity {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+  @OneToMany(type => EventAttendee, eventAttendee => eventAttendee.user, {
+    onDelete: 'CASCADE',
+  })
+  eventAttendees: EventAttendee[];
 }

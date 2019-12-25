@@ -3,6 +3,7 @@ import { AuthenticatedUserDto } from './../components/Auth/dto/authenticated.use
 import { UserRole, EventDto } from './../proto';
 import { User } from '../Repositories/user.entity';
 import { Event } from '../Repositories/event.entity';
+import { EventAttendee } from '../Repositories/eventAttendee.entity';
 import { SiteSettings } from './../Repositories/siteSettings.entity';
 import { AppMailerService } from './../components/AppMailer/appMailer.service';
 import { Repository, UpdateResult } from 'typeorm';
@@ -39,6 +40,15 @@ export const mockEvent = {
   created_at: null,
   updated_at: null,
   preview: null,
+};
+
+export const mockEventAttendee = {
+  id: 1,
+  userId: 1,
+  eventId: 1,
+  reserve: false,
+  created_at: null,
+  updated_at: null,
 };
 
 export const adminUser = Promise.resolve({
@@ -92,6 +102,9 @@ const mockRepository = {
 };
 
 export const EventRepositoryMock = (mockRepository as unknown) as Repository<Event>;
+export const EventAttendeeRepositoryMock = (mockRepository as unknown) as Repository<
+  EventAttendee
+>;
 export const UserRepositoryMock = (mockRepository as unknown) as Repository<User>;
 export const SiteSettingsRepositoryMock = (mockRepository as unknown) as Repository<
   SiteSettings

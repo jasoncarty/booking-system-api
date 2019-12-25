@@ -6,3 +6,4 @@ export { UserDto } from './user.dto';
 export { UserRole } from './userRole.enum';
 export { UserResponse } from './user.response.dto';
 export { EventDto } from './event.dto';
+export { EventAttendeeDto } from './eventAttendee.dto';

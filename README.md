@@ -56,7 +56,7 @@ $ npm run e2e:prepare
 In another terminal
 ```bash
 $ npm run build
-$ npm NODE_ENV=test run start
+$ NODE_ENV=test npm run start
 ```
 
 In first terminal

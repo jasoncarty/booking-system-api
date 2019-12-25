@@ -1,11 +1,13 @@
-import { makeRequest, createUserToken } from '../utils';
+import { makeRequest, createUserToken, createAdminToken } from '../utils';
 import { ErrorCode } from '../../src/proto';
 
 describe('Events', () => {
   let userToken: string;
+  let adminToken: string;
 
   beforeAll(async () => {
     userToken = await createUserToken();
+    adminToken = await createAdminToken();
     jest.spyOn(console, 'log').mockImplementation(jest.fn());
   });
 
@@ -61,6 +63,64 @@ describe('Events', () => {
       const { data: result } = res;
       expect(result).toBeDefined();
       expect(result.errorCode).toEqual(ErrorCode.NOT_AUTHORIZED);
+    });
+  });
+
+  describe('/POST /events/book/:id', () => {
+    it('adds an eventAttendee to the event', async () => {
+      const res = await makeRequest({
+        method: 'POST',
+        url: '/events/book/1',
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+
+      const { data: result } = res;
+      expect(result).toBeDefined();
+      expect(Array.isArray(result.data.eventAttendees)).toBeTruthy();
+      expect(result.data.eventAttendees).toHaveLength(1);
+    });
+
+    it('returns ExceptionDictionary.NOT_AUTHORIZED error code', async () => {
+      const res = await makeRequest({
+        method: 'POST',
+        url: '/events/book/1',
+      });
+
+      const { data: result } = res;
+      expect(result).toBeDefined();
+      expect(result.errorCode).toEqual(ErrorCode.NOT_AUTHORIZED);
+    });
+
+    it('returns ExceptionDictionary.DUPLICATE_EVENT_ATTENDEE_ERROR error code', async () => {
+      const res = await makeRequest({
+        method: 'POST',
+        url: '/events/book/1',
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+
+      const { data: result } = res;
+      expect(result).toBeDefined();
+      expect(result.errorCode).toEqual(ErrorCode.DUPLICATE_EVENT_ATTENDEE_ERROR);
+    });
+
+    it('adds an eventAttendee to the event 2', async () => {
+      const res = await makeRequest({
+        method: 'POST',
+        url: '/events/book/1',
+        headers: {
+          Authorization: `Bearer ${adminToken}`,
+        },
+      });
+
+      const { data: result } = res;
+      expect(result).toBeDefined();
+      expect(Array.isArray(result.data.eventAttendees)).toBeTruthy();
+      expect(result.data.eventAttendees).toHaveLength(2);
+      expect(result.data.eventAttendees[0].user).toBeDefined();
     });
   });
 });

@@ -70,7 +70,7 @@ describe('UserService', () => {
       const res = await singleUser;
 
       expect(await userService.getProfile(authHeader)).toBe(res);
-      expect(userService.getUserByEmail).toHaveBeenCalledWith('some@email.com');
+      expect(userService.getUserByEmail).toHaveBeenCalledWith('some@email.com', false);
     });
 
     it('throws a USER_NOT_FOUND exception', async () => {
@@ -105,6 +105,7 @@ describe('UserService', () => {
 
       expect(await userService.getUserByEmail('some@email.com')).toBe(res);
       expect(UserRepositoryMock.findOne).toHaveBeenCalledWith({
+        relations: null,
         where: { email: 'some@email.com' },
       });
     });
@@ -120,6 +121,17 @@ describe('UserService', () => {
       } catch (error) {
         expect(error.errorCode).toEqual(ErrorCode.USER_NOT_FOUND);
       }
+    });
+
+    it('loads relations', async () => {
+      jest.spyOn(UserRepositoryMock, 'findOne').mockImplementationOnce(() => singleUser);
+      const res = await singleUser;
+
+      expect(await userService.getUserByEmail('some@email.com', true)).toBe(res);
+      expect(UserRepositoryMock.findOne).toHaveBeenCalledWith({
+        relations: ['eventAttendees'],
+        where: { email: 'some@email.com' },
+      });
     });
   });
 
@@ -258,6 +270,16 @@ describe('UserService', () => {
       } catch (error) {
         expect(error.errorCode).toEqual(ErrorCode.USER_UPDATE_ERROR);
       }
+    });
+  });
+
+  describe('save', () => {
+    it('saves a user', async () => {
+      jest
+        .spyOn(UserRepositoryMock, 'save')
+        .mockImplementationOnce(() => Promise.resolve(singleUser));
+
+      expect(await userService.save(await singleUser)).toEqual(await singleUser);
     });
   });
 

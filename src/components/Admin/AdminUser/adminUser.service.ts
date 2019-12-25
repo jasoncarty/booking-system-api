@@ -34,7 +34,7 @@ export class AdminService {
   }
 
   async getUsers(): Promise<UserResponse[]> {
-    return this.userRepository.find({
+    return await this.userRepository.find({
       order: {
         name: 'ASC',
       },
