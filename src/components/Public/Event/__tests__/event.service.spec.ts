@@ -1,16 +1,37 @@
 import { SelectQueryBuilder } from 'typeorm';
 
 import { EventService } from './../event.service';
+import { UserService } from './../../User/user.service';
+import { EventAttendeeService } from './../../EventAttendee/eventAttendee.service';
 import { Event } from './../../../../Repositories/event.entity';
+import { EventAttendee } from './../../../../Repositories/eventAttendee.entity';
 import { ErrorCode } from '../../../../proto';
-import { mockEvent, EventRepositoryMock, singleEvent } from '../../../../mocks/index';
+import {
+  mockEvent,
+  EventRepositoryMock,
+  singleEvent,
+  EventAttendeeRepositoryMock,
+  appMailer,
+  UserRepositoryMock,
+  mockUser,
+  mockEventAttendee,
+} from '../../../../mocks/index';
 
 describe('EventService', () => {
   let eventService: EventService;
+  let userService: UserService;
+  let eventAttendeeService: EventAttendeeService;
 
   beforeEach(() => {
-    eventService = new EventService(EventRepositoryMock);
+    userService = new UserService(UserRepositoryMock, appMailer);
+    eventAttendeeService = new EventAttendeeService(EventAttendeeRepositoryMock);
+    eventService = new EventService(
+      EventRepositoryMock,
+      eventAttendeeService,
+      userService,
+    );
   });
+
   describe('getEvent', () => {
     it('returns an event', async () => {
       jest
@@ -88,6 +109,69 @@ describe('EventService', () => {
         throw new Error('The test failed');
       } catch (e) {
         expect(e.errorCode).toBe(ErrorCode.EVENT_FETCHING_ERROR);
+      }
+    });
+  });
+
+  describe('fetchEventWithAttendees', () => {
+    it('loads events with eventAttendees', async () => {
+      jest
+        .spyOn(EventRepositoryMock, 'findOne')
+        .mockImplementationOnce(() => (singleEvent as unknown) as Promise<Event>);
+      expect(await eventService.fetchEventWithAttendees(1)).toEqual(await singleEvent);
+    });
+  });
+
+  describe('bookEvent', () => {
+    it('adds eventAttendees to the event', async () => {
+      jest.spyOn(userService, 'getProfile').mockImplementationOnce(() =>
+        Promise.resolve({
+          ...mockUser,
+          eventAttendees: [],
+        }),
+      );
+      jest.spyOn(eventService, 'fetchEventWithAttendees').mockImplementation(() =>
+        Promise.resolve(({
+          ...mockEvent,
+          eventAttendees: [],
+        } as unknown) as Promise<Event>),
+      );
+      jest
+        .spyOn(eventAttendeeService, 'createNewEventAttendee')
+        .mockImplementationOnce(
+          () => (Promise.resolve(mockEventAttendee) as unknown) as Promise<EventAttendee>,
+        );
+      jest
+        .spyOn(userService, 'save')
+        .mockImplementationOnce(() => Promise.resolve(mockUser));
+      jest
+        .spyOn(EventRepositoryMock, 'save')
+        .mockImplementationOnce(
+          () => (Promise.resolve(mockEvent) as unknown) as Promise<Event>,
+        );
+
+      expect(await eventService.bookEvent(1, 'lkasjdf')).toEqual({
+        ...mockEvent,
+        eventAttendees: [],
+      });
+    });
+
+    it('throws an EVENT_BOOKING_ERROR', async () => {
+      jest
+        .spyOn(userService, 'getProfile')
+        .mockImplementationOnce(() => Promise.resolve(undefined));
+      jest.spyOn(eventService, 'fetchEventWithAttendees').mockImplementation(() =>
+        Promise.resolve(({
+          ...mockEvent,
+          eventAttendees: [],
+        } as unknown) as Promise<Event>),
+      );
+
+      try {
+        await eventService.bookEvent(1, 'lkasjdf');
+        throw new Error('Test failed');
+      } catch (err) {
+        expect(err.errorCode).toEqual(ErrorCode.EVENT_BOOKING_ERROR);
       }
     });
   });

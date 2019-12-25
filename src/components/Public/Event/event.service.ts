@@ -6,7 +6,6 @@ import { Event } from './../../../Repositories/event.entity';
 import { EventDto, ExceptionDictionary } from '../../../proto';
 import { UserService } from '../User/user.service';
 import { EventAttendeeService } from '../EventAttendee/eventAttendee.service';
-import { EventAttendee } from './../../../Repositories/eventAttendee.entity';
 
 @Injectable()
 export class EventService {
