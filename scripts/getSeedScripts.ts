@@ -11,8 +11,8 @@ export const getSeedScripts = async (): Promise<SeedScriptObject[]> => {
   const today = new Date();
   const tomorrow = new Date();
   const dayAfterTomorrow = new Date();
-  tomorrow.setDate(today.getDate()+1);
-  dayAfterTomorrow.setDate(tomorrow.getDate()+1);
+  tomorrow.setDate(today.getDate() + 1);
+  dayAfterTomorrow.setDate(tomorrow.getDate() + 1);
 
   return [
     {
@@ -39,17 +39,17 @@ export const getSeedScripts = async (): Promise<SeedScriptObject[]> => {
     {
       preScript: "SELECT id FROM events WHERE id='1'",
       preScriptResult: undefined,
-      script: `INSERT INTO events (name, description, starts_at, ends_at, title, maximum_event_attendees) VALUES ('The first event', 'the description of the first event', '${tomorrow.toISOString()}', '${dayAfterTomorrow.toISOString()}', 'The first events title', 8)`
+      script: `INSERT INTO events (name, description, starts_at, ends_at, title, maximum_event_attendees) VALUES ('The first event', 'the description of the first event', '${tomorrow.toISOString()}', '${dayAfterTomorrow.toISOString()}', 'The first events title', 8)`,
     },
     {
       preScript: "SELECT id FROM events WHERE id='2'",
       preScriptResult: undefined,
-      script: `INSERT INTO events (name, description, starts_at, ends_at, title, maximum_event_attendees) VALUES ('The second event', 'the description of the second event', '${tomorrow.toISOString()}', '${dayAfterTomorrow.toISOString()}', 'The second events title', 10)`
+      script: `INSERT INTO events (name, description, starts_at, ends_at, title, maximum_event_attendees) VALUES ('The second event', 'the description of the second event', '${tomorrow.toISOString()}', '${dayAfterTomorrow.toISOString()}', 'The second events title', 10)`,
     },
     {
       preScript: "SELECT id FROM events WHERE id='3'",
       preScriptResult: undefined,
-      script: `INSERT INTO events (name, description, starts_at, ends_at, title, maximum_event_attendees) VALUES ('The third event', 'the description of the third event', '${tomorrow.toISOString()}', '${dayAfterTomorrow.toISOString()}', 'The third events title', 5)`
-    }
+      script: `INSERT INTO events (name, description, starts_at, ends_at, title, maximum_event_attendees) VALUES ('The third event', 'the description of the third event', '${tomorrow.toISOString()}', '${dayAfterTomorrow.toISOString()}', 'The third events title', 5)`,
+    },
   ];
 };
