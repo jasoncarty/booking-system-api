@@ -44,14 +44,18 @@ export class EventService {
     }
   }
 
-  async bookEvent(id: number, authHeader: string): Promise<EventDto> {
-    const user = await this.userService.getProfile(authHeader, true);
-    const event = await this.eventRepository.findOne({
+  async fetchEventWithAttendees(id: number): Promise<Event> {
+    return await this.eventRepository.findOne({
       where: {
         id,
       },
       relations: ['eventAttendees'],
     });
+  }
+
+  async bookEvent(id: number, authHeader: string): Promise<EventDto> {
+    const user = await this.userService.getProfile(authHeader, true);
+    const event = await this.fetchEventWithAttendees(id);
 
     if (event && user) {
       const newEventAttendee = await this.eventAttendeeService.createNewEventAttendee(
@@ -61,7 +65,10 @@ export class EventService {
       event.eventAttendees = [...event.eventAttendees, newEventAttendee];
       user.eventAttendees = [...user.eventAttendees, newEventAttendee];
       await this.userService.save(user);
-      return await this.eventRepository.save(event);
+      await this.eventRepository.save(event);
+
+      // refetch event in order to load relations.
+      return await this.fetchEventWithAttendees(id);
     }
     throw new ExceptionDictionary().EVENT_BOOKING_ERROR;
   }
