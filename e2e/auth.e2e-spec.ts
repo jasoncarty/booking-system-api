@@ -14,7 +14,6 @@ describe('auth', () => {
     const { data: result } = res;
     expect(result).toBeDefined();
     expect(result.data.user).toBeDefined();
-    expect(result.data.user.password).toEqual('[sanitized]');
     expect(result.data.token).toBeDefined();
     expect(result.status).toBe(200);
   });
