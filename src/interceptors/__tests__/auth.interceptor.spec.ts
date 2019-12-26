@@ -3,7 +3,7 @@ import * as operators from 'rxjs/operators';
 
 import { UserService } from '../../components/Public/User/user.service';
 import { AuthService } from './../../components/Auth/auth.service';
-import { AuthInterceptor, NON_PROTECTED_PATHS } from './../auth.interceptor';
+import { AuthInterceptor, NON_PROTECTED_PATHS, TEST_ENVS } from './../auth.interceptor';
 import { ErrorCode } from './../../proto';
 import { singleUser, UserRepositoryMock, appMailer } from './../../mocks/index';
 
@@ -239,6 +239,24 @@ describe('AuthInterceptor', () => {
       await authInterceptor.intercept(context, next);
       expect(pipeSpy).toHaveBeenCalledTimes(1);
       expect(mapSpy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('private sanitize', () => {
+    it('sanitizes sentive data', () => {
+      const OLD_ENV = process.env;
+      delete process.env.NODE_ENV;
+
+      const data = {
+        password: 'asdf8asdf98ahsdf8',
+        user: {
+          name: 'kaskdfjhasf',
+        },
+      };
+
+      const response = authInterceptor['sanitize'](data);
+      expect(response).toStrictEqual({ ...data, password: '[sanitized]' });
+      process.env = OLD_ENV;
     });
   });
 });

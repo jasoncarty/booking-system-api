@@ -14,6 +14,7 @@ import { AuthService } from './../components/Auth/auth.service';
 import { ExceptionDictionary } from './../proto/exceptionDictionary.dto';
 
 export const NON_PROTECTED_PATHS = ['authentication', 'verification', 'confirmation'];
+export const TEST_ENVS = ['test', 'test-ci'];
 
 @Injectable()
 export class AuthInterceptor implements NestInterceptor {
@@ -28,6 +29,20 @@ export class AuthInterceptor implements NestInterceptor {
   private shouldAuthenticate(path: string): boolean {
     const parts = path.split('?')[0].split('/');
     return parts.every((part: string): boolean => !NON_PROTECTED_PATHS.includes(part));
+  }
+
+  private sanitize(values: object): string | object {
+    if (TEST_ENVS.includes(process.env.NODE_ENV)) {
+      return values;
+    }
+
+    const sanitized = JSON.stringify(values, (key, value): string => {
+      if (key && this.blackList.includes(key)) {
+        return '[sanitized]';
+      }
+      return value;
+    });
+    return JSON.parse(sanitized);
   }
 
   async intercept(
@@ -57,7 +72,7 @@ export class AuthInterceptor implements NestInterceptor {
     return next.handle().pipe(
       map((data): {} => {
         return {
-          data,
+          data: this.sanitize(data),
           status: HttpStatus.OK,
           token,
         };
