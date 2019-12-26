@@ -14,7 +14,7 @@ import { AuthService } from './../components/Auth/auth.service';
 import { ExceptionDictionary } from './../proto/exceptionDictionary.dto';
 
 export const NON_PROTECTED_PATHS = ['authentication', 'verification', 'confirmation'];
-const TEST_ENVS = ['test', 'test-ci'];
+export const TEST_ENVS = ['test', 'test-ci'];
 
 @Injectable()
 export class AuthInterceptor implements NestInterceptor {
