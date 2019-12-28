@@ -22,4 +22,9 @@ export class EventController {
   bookEvent(@Param() params, @Req() request: Request): Promise<EventDto> {
     return this.service.bookEvent(params.id, request.headers.authorization);
   }
+
+  @Post('/cancel/:id')
+  cancelEventBooking(@Param() params, @Req() request: Request): Promise<EventDto> {
+    return this.service.cancelEventBooking(params.id, request.headers.authorization);
+  }
 }
