@@ -33,9 +33,23 @@ export class ExceptionDictionary {
     this.stack,
   );
 
+  EVENT_ATTENDEE_DELETION_ERROR = getError(
+    ErrorCode.EVENT_ATTENDEE_DELETION_ERROR,
+    'An error occured when deleting an eventAttendee',
+    HttpStatus.INTERNAL_SERVER_ERROR,
+    this.stack,
+  );
+
   EVENT_BOOKING_ERROR = getError(
     ErrorCode.EVENT_BOOKING_ERROR,
     'An error occured when booking an event',
+    HttpStatus.INTERNAL_SERVER_ERROR,
+    this.stack,
+  );
+
+  EVENT_CANCEL_ERROR = getError(
+    ErrorCode.EVENT_CANCEL_ERROR,
+    'An error occured when cancelling an event',
     HttpStatus.INTERNAL_SERVER_ERROR,
     this.stack,
   );

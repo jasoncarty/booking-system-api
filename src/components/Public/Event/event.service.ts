@@ -16,6 +16,15 @@ export class EventService {
     private readonly userService: UserService,
   ) {}
 
+  private findAndRemoveItem(array: any[], id: number): any[] {
+    const index = array.findIndex((item): boolean => item.id === id);
+    const newArray = [...array];
+    if (index !== -1) {
+      newArray.splice(index, 1);
+    }
+    return newArray;
+  }
+
   async getEvent(id: number): Promise<EventDto> {
     try {
       const event = await this.eventRepository.findOne(id);
@@ -70,5 +79,31 @@ export class EventService {
       return await this.fetchEventWithAttendees(id);
     }
     throw new ExceptionDictionary().EVENT_BOOKING_ERROR;
+  }
+
+  async cancelEventBooking(id: number, authHeader: string): Promise<EventDto> {
+    const user = await this.userService.getProfile(authHeader, true);
+    const event = await this.fetchEventWithAttendees(id);
+
+    if (event && user) {
+      const eventAttendee = await this.eventAttendeeService.findEventAttendee(
+        user,
+        event,
+      );
+
+      this.eventAttendeeService.deleteEventAttendee(eventAttendee);
+      user.eventAttendees = this.findAndRemoveItem(user.eventAttendees, eventAttendee.id);
+      event.eventAttendees = this.findAndRemoveItem(
+        event.eventAttendees,
+        eventAttendee.id,
+      );
+
+      await this.userService.save(user);
+      await this.eventRepository.save(event);
+
+      // refetch event in order to load relations.
+      return await this.fetchEventWithAttendees(id);
+    }
+    throw new ExceptionDictionary().EVENT_CANCEL_ERROR;
   }
 }

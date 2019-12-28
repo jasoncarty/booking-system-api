@@ -24,7 +24,7 @@ describe('EventAttendeeService', () => {
         eventAttendees: [],
       } as unknown) as Event;
 
-      expect(eventAttendeeService.getReserve(event)).toEqual(false);
+      expect(eventAttendeeService['getReserve'](event)).toEqual(false);
     });
 
     it('returns falsey', () => {
@@ -34,7 +34,7 @@ describe('EventAttendeeService', () => {
         eventAttendees: [],
       } as unknown) as Event;
 
-      expect(eventAttendeeService.getReserve(event)).toEqual(true);
+      expect(eventAttendeeService['getReserve'](event)).toEqual(true);
     });
   });
 
@@ -63,9 +63,9 @@ describe('EventAttendeeService', () => {
 
     it('throws a DUPLICATE_EVENT_ATTENDEE_ERROR error', async () => {
       jest
-        .spyOn(EventAttendeeRepositoryMock, 'find')
+        .spyOn(eventAttendeeService, 'findEventAttendee')
         .mockImplementationOnce(() =>
-          Promise.resolve([(mockEventAttendee as unknown) as EventAttendee]),
+          Promise.resolve((mockEventAttendee as unknown) as EventAttendee),
         );
 
       try {
@@ -90,6 +90,37 @@ describe('EventAttendeeService', () => {
         throw new Error('Test failed');
       } catch (err) {
         expect(err.errorCode).toEqual(ErrorCode.EVENT_ATTENDEE_CREATION_ERROR);
+      }
+    });
+  });
+
+  describe('deleteEventAttendee', () => {
+    it('returns an eventAttendee', async () => {
+      jest
+        .spyOn(EventAttendeeRepositoryMock, 'remove')
+        .mockImplementationOnce(() =>
+          Promise.resolve((mockEventAttendee as unknown) as EventAttendee),
+        );
+
+      expect(
+        await eventAttendeeService.deleteEventAttendee(
+          (mockEventAttendee as unknown) as EventAttendee,
+        ),
+      ).toEqual(mockEventAttendee);
+    });
+
+    it('throws a EVENT_ATTENDEE_DELETION_ERROR error', async () => {
+      jest
+        .spyOn(EventAttendeeRepositoryMock, 'remove')
+        .mockImplementationOnce(() => Promise.reject(new Error('jhaksdhf')));
+
+      try {
+        await eventAttendeeService.deleteEventAttendee(
+          (mockEventAttendee as unknown) as EventAttendee,
+        );
+        throw new Error('Test failed');
+      } catch (err) {
+        expect(err.errorCode).toEqual(ErrorCode.EVENT_ATTENDEE_DELETION_ERROR);
       }
     });
   });

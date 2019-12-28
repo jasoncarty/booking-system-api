@@ -62,4 +62,20 @@ describe('EventController', () => {
       );
     });
   });
+
+  describe(':POST /cancel/:id', () => {
+    it('Returns an event', async () => {
+      const request = ({
+        headers: {
+          authorization: 'Bearer lkajsdfölkjasdf',
+        },
+      } as unknown) as Request;
+      jest
+        .spyOn(eventService, 'cancelEventBooking')
+        .mockImplementationOnce(() => singleEvent);
+      expect(await eventController.cancelEventBooking(1, request)).toStrictEqual(
+        await singleEvent,
+      );
+    });
+  });
 });

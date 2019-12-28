@@ -13,7 +13,16 @@ export class EventAttendeeService {
     private readonly eventAttendeeRepository: Repository<EventAttendee>,
   ) {}
 
-  getReserve(event: Event): boolean {
+  async findEventAttendee(user: UserDto, event: Event): Promise<EventAttendee> {
+    return await this.eventAttendeeRepository.findOne({
+      where: {
+        userId: user.id,
+        eventId: event.id,
+      },
+    });
+  }
+
+  private getReserve(event: Event): boolean {
     const max = event.maximum_event_attendees;
     if (event.eventAttendees.length >= max) {
       return true;
@@ -22,14 +31,9 @@ export class EventAttendeeService {
   }
 
   async createNewEventAttendee(user: UserDto, event: Event): Promise<EventAttendee> {
-    const duplicateEventAttendee = await this.eventAttendeeRepository.find({
-      where: {
-        userId: user.id,
-        eventId: event.id,
-      },
-    });
+    const duplicateEventAttendee = await this.findEventAttendee(user, event);
 
-    if (duplicateEventAttendee && duplicateEventAttendee.length) {
+    if (duplicateEventAttendee) {
       throw new ExceptionDictionary().DUPLICATE_EVENT_ATTENDEE_ERROR;
     }
 
@@ -43,6 +47,14 @@ export class EventAttendeeService {
       return await this.eventAttendeeRepository.save(newEventAttendee);
     } catch (err) {
       throw new ExceptionDictionary(err.stack).EVENT_ATTENDEE_CREATION_ERROR;
+    }
+  }
+
+  async deleteEventAttendee(eventAttendee: EventAttendee): Promise<EventAttendee> {
+    try {
+      return await this.eventAttendeeRepository.remove(eventAttendee);
+    } catch (err) {
+      throw new ExceptionDictionary(err.stack).EVENT_ATTENDEE_DELETION_ERROR;
     }
   }
 }

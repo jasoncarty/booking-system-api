@@ -7,6 +7,7 @@ import {
   UpdateDateColumn,
   BaseEntity,
   OneToMany,
+  Index,
 } from 'typeorm';
 import { IsEmail } from 'class-validator';
 
@@ -15,6 +16,7 @@ import { EventAttendee } from './eventAttendee.entity';
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity {
+  @Index(['email'])
   @PrimaryGeneratedColumn()
   id: number;
 

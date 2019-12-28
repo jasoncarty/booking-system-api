@@ -1,9 +1,10 @@
 import { makeRequest, createUserToken, createAdminToken } from '../utils';
-import { ErrorCode } from '../../src/proto';
+import { ErrorCode, EventDto } from '../../src/proto';
 
 describe('Events', () => {
   let userToken: string;
   let adminToken: string;
+  let bookedEvent: EventDto;
 
   beforeAll(async () => {
     userToken = await createUserToken();
@@ -121,6 +122,24 @@ describe('Events', () => {
       expect(Array.isArray(result.data.eventAttendees)).toBeTruthy();
       expect(result.data.eventAttendees).toHaveLength(2);
       expect(result.data.eventAttendees[0].user).toBeDefined();
+      bookedEvent = result.data;
+    });
+  });
+
+  describe('/POST /events/cance/:id', () => {
+    it('cancels an event booking', async () => {
+      const cancelEventResponse = await makeRequest({
+        method: 'POST',
+        url: '/events/cancel/1',
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+
+      const { data: result } = cancelEventResponse;
+      expect(result.data.eventAttendees).toHaveLength(
+        bookedEvent.eventAttendees.length - 1,
+      );
     });
   });
 });

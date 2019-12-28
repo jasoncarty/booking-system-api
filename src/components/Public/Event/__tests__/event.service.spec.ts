@@ -4,6 +4,7 @@ import { EventService } from './../event.service';
 import { UserService } from './../../User/user.service';
 import { EventAttendeeService } from './../../EventAttendee/eventAttendee.service';
 import { Event } from './../../../../Repositories/event.entity';
+import { User } from './../../../../Repositories/user.entity';
 import { EventAttendee } from './../../../../Repositories/eventAttendee.entity';
 import { ErrorCode } from '../../../../proto';
 import {
@@ -30,6 +31,25 @@ describe('EventService', () => {
       eventAttendeeService,
       userService,
     );
+  });
+
+  describe('findAndRemoveItem', () => {
+    it('removes an item from an array', () => {
+      const array = [{ id: 1 }, { id: 2 }, { id: 3 }];
+      expect(eventService['findAndRemoveItem'](array, 2)).toStrictEqual([
+        { id: 1 },
+        { id: 3 },
+      ]);
+    });
+
+    it('does not remove an item from the array', () => {
+      const array = [{ id: 1 }, { id: 2 }, { id: 3 }];
+      expect(eventService['findAndRemoveItem'](array, 4)).toStrictEqual([
+        { id: 1 },
+        { id: 2 },
+        { id: 3 },
+      ]);
+    });
   });
 
   describe('getEvent', () => {
@@ -172,6 +192,65 @@ describe('EventService', () => {
         throw new Error('Test failed');
       } catch (err) {
         expect(err.errorCode).toEqual(ErrorCode.EVENT_BOOKING_ERROR);
+      }
+    });
+  });
+
+  describe('cancelEventBooking', () => {
+    it('returns an event', async () => {
+      jest.spyOn(userService, 'getProfile').mockImplementationOnce(() =>
+        Promise.resolve(({
+          ...mockUser,
+          eventAttendees: [mockEventAttendee],
+        } as unknown) as User),
+      );
+      jest.spyOn(eventService, 'fetchEventWithAttendees').mockImplementation(() =>
+        Promise.resolve(({
+          ...mockEvent,
+          eventAttendees: [mockEventAttendee],
+        } as unknown) as Promise<Event>),
+      );
+      jest
+        .spyOn(eventAttendeeService, 'findEventAttendee')
+        .mockImplementationOnce(
+          () => (Promise.resolve(mockEventAttendee) as unknown) as Promise<EventAttendee>,
+        );
+      jest
+        .spyOn(eventAttendeeService, 'deleteEventAttendee')
+        .mockImplementationOnce(
+          () => (Promise.resolve(mockEventAttendee) as unknown) as Promise<EventAttendee>,
+        );
+      jest
+        .spyOn(userService, 'save')
+        .mockImplementationOnce(() => Promise.resolve(mockUser));
+      jest
+        .spyOn(EventRepositoryMock, 'save')
+        .mockImplementationOnce(
+          () => (Promise.resolve(mockEvent) as unknown) as Promise<Event>,
+        );
+
+      expect(await eventService.cancelEventBooking(1, 'lkasjdf')).toEqual({
+        ...mockEvent,
+        eventAttendees: [mockEventAttendee],
+      });
+    });
+
+    it('throws an EVENT_CANCEL_ERROR', async () => {
+      jest
+        .spyOn(userService, 'getProfile')
+        .mockImplementationOnce(() => Promise.resolve(undefined));
+      jest.spyOn(eventService, 'fetchEventWithAttendees').mockImplementation(() =>
+        Promise.resolve(({
+          ...mockEvent,
+          eventAttendees: [],
+        } as unknown) as Promise<Event>),
+      );
+
+      try {
+        await eventService.cancelEventBooking(1, 'lkasjdf');
+        throw new Error('Test failed');
+      } catch (err) {
+        expect(err.errorCode).toEqual(ErrorCode.EVENT_CANCEL_ERROR);
       }
     });
   });
