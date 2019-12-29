@@ -22,7 +22,7 @@ export class AuthService {
   }
 
   async findUser(email: string): Promise<UserDto> {
-    return await this.userService.getUserByEmail(email);
+    return await this.userService.getUserByEmail({ email });
   }
 
   async verifyAndFindUser(token: string): Promise<UserDto> {

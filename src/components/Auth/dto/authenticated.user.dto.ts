@@ -1,6 +1,8 @@
-import { UserDto } from '../../../proto/user.dto';
-
 export interface AuthenticatedUserDto {
-  user: UserDto;
+  user: {
+    id: number;
+    name: string;
+    email: string;
+  };
   token: string;
 }

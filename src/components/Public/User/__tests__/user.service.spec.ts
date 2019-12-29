@@ -1,11 +1,14 @@
 import * as bcryptjs from 'bcryptjs';
+import { SelectQueryBuilder } from 'typeorm';
 
 import { UserService } from '../user.service';
 import { ErrorCode } from '../../../../proto';
+import { User } from './../../../../Repositories/user.entity';
 import * as utils from '../../../../utils';
 import {
   appMailer,
   singleUser,
+  mockUser,
   updatedUser,
   UserRepositoryMock,
   mailSentSuccess,
@@ -70,13 +73,23 @@ describe('UserService', () => {
       const res = await singleUser;
 
       expect(await userService.getProfile(authHeader)).toBe(res);
-      expect(userService.getUserByEmail).toHaveBeenCalledWith('some@email.com', false);
+      expect(userService.getUserByEmail).toHaveBeenCalledWith({
+        email: 'some@email.com',
+        loadRelations: false,
+      });
     });
 
     it('throws a USER_NOT_FOUND exception', async () => {
-      jest
-        .spyOn(UserRepositoryMock, 'findOne')
-        .mockImplementationOnce(() => Promise.resolve(null));
+      jest.spyOn(UserRepositoryMock, 'createQueryBuilder').mockImplementationOnce(
+        () =>
+          (({
+            select: () => ({
+              where: () => ({
+                getOne: () => undefined,
+              }),
+            }),
+          } as unknown) as SelectQueryBuilder<User>),
+      );
 
       try {
         await userService.getProfile(authHeader);
@@ -100,23 +113,35 @@ describe('UserService', () => {
 
   describe('getUserByEmail', () => {
     it('Finds a user', async () => {
-      jest.spyOn(UserRepositoryMock, 'findOne').mockImplementationOnce(() => singleUser);
+      jest.spyOn(UserRepositoryMock, 'createQueryBuilder').mockImplementationOnce(
+        () =>
+          (({
+            select: () => ({
+              where: () => ({
+                getOne: () => singleUser,
+              }),
+            }),
+          } as unknown) as SelectQueryBuilder<User>),
+      );
       const res = await singleUser;
 
-      expect(await userService.getUserByEmail('some@email.com')).toBe(res);
-      expect(UserRepositoryMock.findOne).toHaveBeenCalledWith({
-        relations: null,
-        where: { email: 'some@email.com' },
-      });
+      expect(await userService.getUserByEmail({ email: 'some@email.com' })).toBe(res);
     });
 
     it('throws a USER_NOT_FOUND exception', async () => {
-      jest
-        .spyOn(UserRepositoryMock, 'findOne')
-        .mockImplementationOnce(() => Promise.resolve(null));
+      jest.spyOn(UserRepositoryMock, 'createQueryBuilder').mockImplementationOnce(
+        () =>
+          (({
+            select: () => ({
+              where: () => ({
+                getOne: () => undefined,
+              }),
+            }),
+          } as unknown) as SelectQueryBuilder<User>),
+      );
 
       try {
-        await userService.getUserByEmail('some@email.com');
+        await userService.getUserByEmail({ email: 'some@email.com' });
         throw new Error('test failed');
       } catch (error) {
         expect(error.errorCode).toEqual(ErrorCode.USER_NOT_FOUND);
@@ -124,14 +149,26 @@ describe('UserService', () => {
     });
 
     it('loads relations', async () => {
-      jest.spyOn(UserRepositoryMock, 'findOne').mockImplementationOnce(() => singleUser);
+      jest.spyOn(UserRepositoryMock, 'createQueryBuilder').mockImplementationOnce(
+        () =>
+          (({
+            leftJoinAndSelect: () => ({
+              select: () => ({
+                where: () => ({
+                  getOne: () => singleUser,
+                }),
+              }),
+            }),
+          } as unknown) as SelectQueryBuilder<User>),
+      );
       const res = await singleUser;
 
-      expect(await userService.getUserByEmail('some@email.com', true)).toBe(res);
-      expect(UserRepositoryMock.findOne).toHaveBeenCalledWith({
-        relations: ['eventAttendees'],
-        where: { email: 'some@email.com' },
-      });
+      expect(
+        await userService.getUserByEmail({
+          email: 'some@email.com',
+          loadRelations: true,
+        }),
+      ).toBe(res);
     });
   });
 
@@ -152,9 +189,16 @@ describe('UserService', () => {
     });
 
     it('throws a USER_NOT_FOUND exception', async () => {
-      jest
-        .spyOn(UserRepositoryMock, 'findOne')
-        .mockImplementationOnce(() => Promise.resolve(null));
+      jest.spyOn(UserRepositoryMock, 'createQueryBuilder').mockImplementationOnce(
+        () =>
+          (({
+            select: () => ({
+              where: () => ({
+                getOne: () => undefined,
+              }),
+            }),
+          } as unknown) as SelectQueryBuilder<User>),
+      );
 
       try {
         await userService.updateUser(authHeader, {
@@ -288,13 +332,15 @@ describe('UserService', () => {
       jest.spyOn(userService, 'getUserByEmail').mockImplementationOnce(() => singleUser);
       jest.spyOn(bcryptjs, 'compare').mockImplementationOnce(() => Promise.resolve(true));
 
+      const { id, name, email } = mockUser;
+
       expect(
         await userService.loginUser({
           email: 'some@email.com',
           password: 'Qwerty123!',
         }),
       ).toEqual({
-        user: await singleUser,
+        user: { id, name, email },
         token: 'mockToken',
       });
       expect(userService.getUserByEmail).toHaveBeenCalledTimes(1);
@@ -302,9 +348,16 @@ describe('UserService', () => {
     });
 
     it('throws a NOT FOUND exception', async () => {
-      jest
-        .spyOn(UserRepositoryMock, 'findOne')
-        .mockImplementationOnce(() => Promise.resolve(null));
+      jest.spyOn(UserRepositoryMock, 'createQueryBuilder').mockImplementationOnce(
+        () =>
+          (({
+            select: () => ({
+              where: () => ({
+                getOne: () => undefined,
+              }),
+            }),
+          } as unknown) as SelectQueryBuilder<User>),
+      );
 
       try {
         await userService.loginUser({

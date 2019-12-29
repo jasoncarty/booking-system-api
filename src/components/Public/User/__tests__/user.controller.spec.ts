@@ -44,8 +44,7 @@ describe('UserController', () => {
 
   describe(':POST /users/confirmation/request', () => {
     it('requests confirmation', async () => {
-      jest.spyOn(userService, 'getProfile').mockImplementationOnce(() => singleUser);
-      jest.spyOn(UserRepositoryMock, 'findOne').mockImplementation(() => singleUser);
+      jest.spyOn(userService, 'getUserByEmail').mockImplementationOnce(() => singleUser);
       expect(
         await userController.requestConfirmation({
           email: 'ljahsdf@ldhjkafs.com',
@@ -61,8 +60,7 @@ describe('UserController', () => {
 
   describe(':POST /users/confirmation/confirm/:verificationToken', () => {
     it('returns a confirmed user', async () => {
-      jest.spyOn(userService, 'getProfile').mockImplementationOnce(() => singleUser);
-      jest.spyOn(UserRepositoryMock, 'findOne').mockImplementationOnce(() => singleUser);
+      jest.spyOn(UserRepositoryMock, 'findOne').mockImplementation(() => singleUser);
       expect(
         await userController.confirmAccount(
           {

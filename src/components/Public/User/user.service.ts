@@ -43,16 +43,47 @@ export class UserService {
       throw new ExceptionDictionary(err.stack).AUTHENTICATION_FAILED;
     }
 
-    return await this.getUserByEmail(email, loadRelations);
+    return await this.getUserByEmail({ email, loadRelations });
   }
 
-  async getUserByEmail(email: string, loadRelations = false): Promise<UserDto> {
-    const user = await this.userRepository.findOne({
-      relations: loadRelations ? ['eventAttendees'] : null,
-      where: {
-        email,
-      },
-    });
+  private async loadUser({
+    email,
+    loadRelations,
+    loadPassword,
+  }: {
+    email: string;
+    loadRelations: boolean;
+    loadPassword: boolean;
+  }): Promise<UserDto> {
+    let selectParams = ['users.id', 'users.email', 'users.name'];
+    if (loadPassword) {
+      selectParams.push('users.password');
+    }
+
+    return loadRelations
+      ? await this.userRepository
+          .createQueryBuilder()
+          .leftJoinAndSelect('eventAttendees', 'eventAttendees')
+          .select(selectParams)
+          .where('email = :email', { email })
+          .getOne()
+      : await this.userRepository
+          .createQueryBuilder('users')
+          .select(selectParams)
+          .where('email = :email', { email })
+          .getOne();
+  }
+
+  async getUserByEmail({
+    email,
+    loadRelations,
+    loadPassword,
+  }: {
+    email: string;
+    loadRelations?: boolean;
+    loadPassword?: boolean;
+  }): Promise<UserDto> {
+    const user = await this.loadUser({ email, loadRelations, loadPassword });
 
     if (!user) {
       throw new ExceptionDictionary().USER_NOT_FOUND;
@@ -82,7 +113,7 @@ export class UserService {
   }
 
   async requestConfirmation({ email }: UserConfirmRequestDto): Promise<{}> {
-    const user = await this.getUserByEmail(email);
+    const user = await this.getUserByEmail({ email });
     const userEntity = new User();
     userEntity.verification_token = generate(40);
     await this.userRepository.update(user.id, userEntity);
@@ -148,15 +179,19 @@ export class UserService {
   }
 
   async loginUser(data: AuthenticationCreateDto): Promise<AuthenticatedUserDto> {
-    const user = await this.getUserByEmail(data.email);
+    const user = await this.getUserByEmail({ email: data.email, loadPassword: true });
     try {
       if (await compare(data.password, user.password)) {
-        const { email } = user;
+        const { email, id, name } = user;
         const token = await createAuthToken(email);
         // todo:
         // check if user if confirmed
         return {
-          user: { ...user },
+          user: {
+            id,
+            email,
+            name,
+          },
           token,
         };
       }
