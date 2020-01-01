@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { Event } from './../../../Repositories/event.entity';
-import { EventDto, ExceptionDictionary } from '../../../proto';
+import { ExceptionDictionary, EventWithAttendeesDto } from '../../../proto';
 import { UserService } from '../User/user.service';
 import { EventAttendeeService } from '../EventAttendee/eventAttendee.service';
 
@@ -25,11 +25,14 @@ export class EventService {
     return newArray;
   }
 
-  async getEvent(id: number): Promise<EventDto> {
+  async getEvent(id: number): Promise<EventWithAttendeesDto> {
     try {
       const event = await this.eventRepository.findOne(id);
       if (event) {
-        return event;
+        return {
+          ...event,
+          attendees: await this.userService.getAttendees(id),
+        };
       }
       throw new Error();
     } catch (err) {
@@ -37,14 +40,18 @@ export class EventService {
     }
   }
 
-  async getCurrentEvents(): Promise<EventDto[]> {
+  async getCurrentEvents(): Promise<EventWithAttendeesDto[]> {
     try {
       const events = await this.eventRepository
         .createQueryBuilder('events')
         .where('starts_at >= :time', { time: new Date().toISOString() })
+        .orderBy('starts_at', 'DESC')
         .getMany();
       if (events) {
-        return events;
+        const map = events.map(
+          (event): Promise<EventWithAttendeesDto> => this.getEvent(event.id),
+        );
+        return Promise.all([...map]).then((values): EventWithAttendeesDto[] => values);
       }
       return [];
     } catch (err) {
@@ -61,7 +68,7 @@ export class EventService {
     });
   }
 
-  async bookEvent(id: number, authHeader: string): Promise<EventDto> {
+  async bookEvent(id: number, authHeader: string): Promise<EventWithAttendeesDto> {
     const user = await this.userService.getProfile(authHeader, true);
     const event = await this.fetchEventWithAttendees(id);
 
@@ -76,12 +83,18 @@ export class EventService {
       await this.eventRepository.save(event);
 
       // refetch event in order to load relations.
-      return await this.fetchEventWithAttendees(id);
+      return {
+        ...(await this.getEvent(id)),
+        attendees: await this.userService.getAttendees(id),
+      };
     }
     throw new ExceptionDictionary().EVENT_BOOKING_ERROR;
   }
 
-  async cancelEventBooking(id: number, authHeader: string): Promise<EventDto> {
+  async cancelEventBooking(
+    id: number,
+    authHeader: string,
+  ): Promise<EventWithAttendeesDto> {
     const user = await this.userService.getProfile(authHeader, true);
     const event = await this.fetchEventWithAttendees(id);
 
@@ -102,7 +115,10 @@ export class EventService {
       await this.eventRepository.save(event);
 
       // refetch event in order to load relations.
-      return await this.fetchEventWithAttendees(id);
+      return {
+        ...(await this.getEvent(id)),
+        attendees: await this.userService.getAttendees(id),
+      };
     }
     throw new ExceptionDictionary().EVENT_CANCEL_ERROR;
   }

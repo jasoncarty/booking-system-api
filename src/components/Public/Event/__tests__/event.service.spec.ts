@@ -16,7 +16,7 @@ import {
   UserRepositoryMock,
   mockUser,
   mockEventAttendee,
-} from '../../../../mocks/index';
+} from '../../../../mocks';
 
 describe('EventService', () => {
   let eventService: EventService;
@@ -57,7 +57,16 @@ describe('EventService', () => {
       jest
         .spyOn(EventRepositoryMock, 'findOne')
         .mockImplementationOnce(() => (singleEvent as unknown) as Promise<Event>);
-      expect(await eventService.getEvent(1)).toStrictEqual(mockEvent);
+      jest
+        .spyOn(userService, 'getAttendees')
+        .mockImplementationOnce(() =>
+          Promise.resolve({ reserves: [mockUser], nonReserves: [mockUser] }),
+        );
+
+      expect(await eventService.getEvent(1)).toStrictEqual({
+        ...mockEvent,
+        attendees: { reserves: [mockUser], nonReserves: [mockUser] },
+      });
     });
 
     it('throws an EVENT_NOT_FOUND error', async () => {
@@ -93,10 +102,16 @@ describe('EventService', () => {
         () =>
           (({
             where: () => ({
-              getMany: () => Promise.resolve([mockEvent, mockEvent]),
+              orderBy: () => ({
+                getMany: () => Promise.resolve([mockEvent, mockEvent]),
+              }),
             }),
           } as unknown) as SelectQueryBuilder<Event>),
       );
+
+      jest
+        .spyOn(eventService, 'getEvent')
+        .mockImplementation(() => Promise.resolve(mockEvent));
 
       expect(await eventService.getCurrentEvents()).toStrictEqual([mockEvent, mockEvent]);
     });
@@ -106,7 +121,9 @@ describe('EventService', () => {
         () =>
           (({
             where: () => ({
-              getMany: () => Promise.resolve(undefined),
+              orderBy: () => ({
+                getMany: () => Promise.resolve(undefined),
+              }),
             }),
           } as unknown) as SelectQueryBuilder<Event>),
       );
@@ -157,6 +174,9 @@ describe('EventService', () => {
         } as unknown) as Promise<Event>),
       );
       jest
+        .spyOn(eventService, 'getEvent')
+        .mockImplementation(() => Promise.resolve(mockEvent));
+      jest
         .spyOn(eventAttendeeService, 'createNewEventAttendee')
         .mockImplementationOnce(
           () => (Promise.resolve(mockEventAttendee) as unknown) as Promise<EventAttendee>,
@@ -169,10 +189,15 @@ describe('EventService', () => {
         .mockImplementationOnce(
           () => (Promise.resolve(mockEvent) as unknown) as Promise<Event>,
         );
+      jest
+        .spyOn(userService, 'getAttendees')
+        .mockImplementationOnce(() =>
+          Promise.resolve({ reserves: [mockUser], nonReserves: [mockUser] }),
+        );
 
       expect(await eventService.bookEvent(1, 'lkasjdf')).toEqual({
         ...mockEvent,
-        eventAttendees: [],
+        attendees: { reserves: [mockUser], nonReserves: [mockUser] },
       });
     });
 
@@ -228,10 +253,18 @@ describe('EventService', () => {
         .mockImplementationOnce(
           () => (Promise.resolve(mockEvent) as unknown) as Promise<Event>,
         );
+      jest
+        .spyOn(eventService, 'getEvent')
+        .mockImplementation(() => Promise.resolve(mockEvent));
+      jest
+        .spyOn(userService, 'getAttendees')
+        .mockImplementationOnce(() =>
+          Promise.resolve({ reserves: [mockUser], nonReserves: [mockUser] }),
+        );
 
       expect(await eventService.cancelEventBooking(1, 'lkasjdf')).toEqual({
         ...mockEvent,
-        eventAttendees: [mockEventAttendee],
+        attendees: { reserves: [mockUser], nonReserves: [mockUser] },
       });
     });
 

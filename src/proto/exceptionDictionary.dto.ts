@@ -40,6 +40,13 @@ export class ExceptionDictionary {
     this.stack,
   );
 
+  EVENT_ATTENDEE_FETCHING_ERROR = getError(
+    ErrorCode.EVENT_ATTENDEE_FETCHING_ERROR,
+    'An error occured when fetching the eventAttendees',
+    HttpStatus.INTERNAL_SERVER_ERROR,
+    this.stack,
+  );
+
   EVENT_BOOKING_ERROR = getError(
     ErrorCode.EVENT_BOOKING_ERROR,
     'An error occured when booking an event',

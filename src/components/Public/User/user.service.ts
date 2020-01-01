@@ -2,12 +2,14 @@
 
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { SelectQueryBuilder } from 'typeorm';
 import { Repository } from 'typeorm';
 import { compare, hash, genSalt } from 'bcryptjs';
 import { generate } from 'rand-token';
 
 import { User } from '../../../Repositories/user.entity';
-import { UserDto, ExceptionDictionary } from '../../../proto';
+import { EventAttendee } from '../../../Repositories/eventAttendee.entity';
+import { UserDto, ExceptionDictionary, Attendees } from '../../../proto';
 import { extractToken, verifyToken, createAuthToken } from '../../../utils';
 import { UserConfirmAccountDto, UserUpdateDto, UserConfirmRequestDto } from './dto';
 import { AppMailerService } from '../../AppMailer/appMailer.service';
@@ -33,6 +35,45 @@ export class UserService {
     }
   }
 
+  async baseAttendeesQuery(): Promise<SelectQueryBuilder<User>> {
+    return this.userRepository
+      .createQueryBuilder('users')
+      .leftJoinAndSelect(
+        EventAttendee,
+        'eventAttendees',
+        'users.id = eventAttendees.userId',
+      );
+  }
+
+  async getAttendees(eventId: number): Promise<Attendees> {
+    try {
+      return {
+        reserves: await this.getReservesAndNonReserves(eventId, true),
+        nonReserves: await this.getReservesAndNonReserves(eventId, false),
+      };
+    } catch (err) {
+      throw new ExceptionDictionary(err.stack).EVENT_ATTENDEE_FETCHING_ERROR;
+    }
+  }
+
+  async getNonAttendees(eventId: number): Promise<UserDto[]> {
+    const baseQuery = await this.baseAttendeesQuery();
+    const attendeesIdsQuery = baseQuery
+      .select('users.id')
+      .where('eventAttendees.eventId = :eventId', { eventId });
+
+    try {
+      return await this.userRepository
+        .createQueryBuilder('users')
+        .where(`users.id NOT IN (${attendeesIdsQuery.getQuery()})`)
+        .orderBy('users.name', 'ASC')
+        .setParameters(attendeesIdsQuery.getParameters())
+        .getMany();
+    } catch (err) {
+      throw new ExceptionDictionary(err.stack).EVENT_ATTENDEE_FETCHING_ERROR;
+    }
+  }
+
   async getProfile(authHeader: string, loadRelations = false): Promise<UserDto> {
     const token = extractToken(authHeader);
     let email: string;
@@ -44,6 +85,17 @@ export class UserService {
     }
 
     return await this.getUserByEmail(email, loadRelations);
+  }
+
+  async getReservesAndNonReserves(eventId: number, reserve: boolean): Promise<UserDto[]> {
+    const baseQuery = await this.baseAttendeesQuery();
+    return await baseQuery
+      .where('eventAttendees.eventId = :eventId AND eventAttendees.reserve = :reserve', {
+        eventId,
+        reserve,
+      })
+      .orderBy('users.name', 'ASC')
+      .getMany();
   }
 
   async getUserByEmail(email: string, loadRelations = false): Promise<UserDto> {

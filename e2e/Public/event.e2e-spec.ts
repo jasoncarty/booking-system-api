@@ -1,10 +1,10 @@
 import { makeRequest, createUserToken, createAdminToken } from '../utils';
-import { ErrorCode, EventDto } from '../../src/proto';
+import { ErrorCode, EventWithAttendeesDto } from '../../src/proto';
 
 describe('Events', () => {
   let userToken: string;
   let adminToken: string;
-  let bookedEvent: EventDto;
+  let bookedEvent: EventWithAttendeesDto;
 
   beforeAll(async () => {
     userToken = await createUserToken();
@@ -25,6 +25,7 @@ describe('Events', () => {
       const { data: result } = res;
       expect(result).toBeDefined();
       expect(result.data.name).toBeDefined();
+      expect(result.data.attendees).toBeDefined();
     });
 
     it('returns ExceptionDictionary.NOT_AUTHORIZED error code', async () => {
@@ -79,8 +80,9 @@ describe('Events', () => {
 
       const { data: result } = res;
       expect(result).toBeDefined();
-      expect(Array.isArray(result.data.eventAttendees)).toBeTruthy();
-      expect(result.data.eventAttendees).toHaveLength(1);
+      expect(result.data.attendees).toBeDefined();
+      expect(Array.isArray(result.data.attendees.reserves)).toBeTruthy();
+      expect(Array.isArray(result.data.attendees.nonReserves)).toBeTruthy();
     });
 
     it('returns ExceptionDictionary.NOT_AUTHORIZED error code', async () => {
@@ -119,9 +121,9 @@ describe('Events', () => {
 
       const { data: result } = res;
       expect(result).toBeDefined();
-      expect(Array.isArray(result.data.eventAttendees)).toBeTruthy();
-      expect(result.data.eventAttendees).toHaveLength(2);
-      expect(result.data.eventAttendees[0].user).toBeDefined();
+      expect(result.data.attendees).toBeDefined();
+      expect(Array.isArray(result.data.attendees.reserves)).toBeTruthy();
+      expect(Array.isArray(result.data.attendees.nonReserves)).toBeTruthy();
       bookedEvent = result.data;
     });
   });
@@ -137,8 +139,8 @@ describe('Events', () => {
       });
 
       const { data: result } = cancelEventResponse;
-      expect(result.data.eventAttendees).toHaveLength(
-        bookedEvent.eventAttendees.length - 1,
+      expect(result.data.attendees.nonReserves).toHaveLength(
+        bookedEvent.attendees.nonReserves.length - 1,
       );
     });
   });
