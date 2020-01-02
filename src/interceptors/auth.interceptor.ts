@@ -11,7 +11,7 @@ import { map } from 'rxjs/operators';
 
 import { extractToken, createAuthToken } from './../utils';
 import { AuthService } from './../components/Auth/auth.service';
-import { ExceptionDictionary } from './../proto/exceptionDictionary.dto';
+import { ExceptionDictionary, ErrorCode } from './../proto';
 
 export const NON_PROTECTED_PATHS = ['authentication', 'verification', 'confirmation'];
 export const TEST_ENVS = ['test', 'test-ci'];
@@ -59,7 +59,9 @@ export class AuthInterceptor implements NestInterceptor {
         authToken = extractToken(req.headers.authorization);
       }
       if (!authToken) {
-        throw new ExceptionDictionary().NOT_AUTHORIZED;
+        throw ExceptionDictionary({
+          errorCode: ErrorCode.NOT_AUTHORIZED,
+        });
       }
 
       const user = req.path.includes('admin')

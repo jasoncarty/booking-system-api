@@ -3,159 +3,120 @@ import { HttpStatus } from '@nestjs/common';
 import { CustomException } from './../utils/customException';
 import { ErrorCode } from './errorCode.enum';
 
-const getError = (
-  errorCode: ErrorCode,
-  message?: string,
-  status?: HttpStatus,
-  stack?: string,
-): CustomException => {
-  return new CustomException(message, status, errorCode, stack);
+const listOfErrors = {
+  DUPLICATE_EVENT_ATTENDEE_ERROR: {
+    message: 'Cannot create eventAttendee with the same user or event',
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+  },
+
+  EVENT_ATTENDEE_CREATION_ERROR: {
+    message: 'An error occured when creating an eventAttendee',
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+  },
+
+  EVENT_ATTENDEE_DELETION_ERROR: {
+    message: 'An error occured when deleting an eventAttendee',
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+  },
+
+  EVENT_ATTENDEE_FETCHING_ERROR: {
+    message: 'An error occured when fetching the eventAttendees',
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+  },
+
+  EVENT_BOOKING_ERROR: {
+    message: 'An error occured when booking an event',
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+  },
+
+  EVENT_CANCEL_ERROR: {
+    message: 'An error occured when cancelling an event',
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+  },
+
+  EVENT_CREATION_ERROR: {
+    message: 'An error occured when creating an event',
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+  },
+
+  EVENT_FETCHING_ERROR: {
+    message: 'An error occured when fetching the events',
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+  },
+
+  EVENT_NOT_FOUND: {
+    message: 'Event not found',
+    status: HttpStatus.NOT_FOUND,
+  },
+
+  USER_NOT_FOUND: {
+    message: 'User not found',
+    status: HttpStatus.NOT_FOUND,
+  },
+
+  USER_CREATION_ERROR: {
+    message: 'User creation error',
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+  },
+
+  USER_UPDATE_ERROR: {
+    message: 'Update user error',
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+  },
+
+  GENERIC: {
+    message: 'An error occured',
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+  },
+
+  NOT_AUTHORIZED: {
+    message: 'Not authorized',
+    status: HttpStatus.UNAUTHORIZED,
+  },
+
+  EMAIL_SENDING_ERROR: {
+    message: 'Error sending email',
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+  },
+
+  AUTHENTICATION_FAILED: {
+    message: 'Authentication failed',
+    status: HttpStatus.UNAUTHORIZED,
+  },
+
+  VALIDATION_ERROR: {
+    message: 'Validation Error',
+    status: HttpStatus.BAD_REQUEST,
+  },
+
+  VALIDATION_ERROR_INVALID_EMAIL: {
+    message: 'Validation Error: invalid email',
+    status: HttpStatus.BAD_REQUEST,
+  },
+
+  VALIDATION_ERROR_PASSWORD_STRENGTH: {
+    message: 'Validation Error: Password not strong enough',
+    status: HttpStatus.BAD_REQUEST,
+  },
+
+  USER_DELETION_ERROR_SELF_DELETION: {
+    message: 'Cannot delete your own account',
+    status: HttpStatus.BAD_REQUEST,
+  },
+
+  SETTINGS_NOT_FOUND: {
+    message: 'User not found',
+    status: HttpStatus.NOT_FOUND,
+  },
 };
 
-export class ExceptionDictionary {
-  private readonly stack: string;
-
-  constructor(stack?: string) {
-    this.stack = stack;
-  }
-
-  DUPLICATE_EVENT_ATTENDEE_ERROR = getError(
-    ErrorCode.DUPLICATE_EVENT_ATTENDEE_ERROR,
-    'Cannot create eventAttendee with the same user or event',
-    HttpStatus.INTERNAL_SERVER_ERROR,
-    this.stack,
-  );
-
-  EVENT_ATTENDEE_CREATION_ERROR = getError(
-    ErrorCode.EVENT_ATTENDEE_CREATION_ERROR,
-    'An error occured when creating an eventAttendee',
-    HttpStatus.INTERNAL_SERVER_ERROR,
-    this.stack,
-  );
-
-  EVENT_ATTENDEE_DELETION_ERROR = getError(
-    ErrorCode.EVENT_ATTENDEE_DELETION_ERROR,
-    'An error occured when deleting an eventAttendee',
-    HttpStatus.INTERNAL_SERVER_ERROR,
-    this.stack,
-  );
-
-  EVENT_ATTENDEE_FETCHING_ERROR = getError(
-    ErrorCode.EVENT_ATTENDEE_FETCHING_ERROR,
-    'An error occured when fetching the eventAttendees',
-    HttpStatus.INTERNAL_SERVER_ERROR,
-    this.stack,
-  );
-
-  EVENT_BOOKING_ERROR = getError(
-    ErrorCode.EVENT_BOOKING_ERROR,
-    'An error occured when booking an event',
-    HttpStatus.INTERNAL_SERVER_ERROR,
-    this.stack,
-  );
-
-  EVENT_CANCEL_ERROR = getError(
-    ErrorCode.EVENT_CANCEL_ERROR,
-    'An error occured when cancelling an event',
-    HttpStatus.INTERNAL_SERVER_ERROR,
-    this.stack,
-  );
-
-  EVENT_FETCHING_ERROR = getError(
-    ErrorCode.EVENT_FETCHING_ERROR,
-    'An error occured when fetching the events',
-    HttpStatus.INTERNAL_SERVER_ERROR,
-    this.stack,
-  );
-
-  EVENT_NOT_FOUND = getError(
-    ErrorCode.EVENT_NOT_FOUND,
-    'Event not found',
-    HttpStatus.NOT_FOUND,
-    this.stack,
-  );
-
-  USER_NOT_FOUND = getError(
-    ErrorCode.USER_NOT_FOUND,
-    'User not found',
-    HttpStatus.NOT_FOUND,
-    this.stack,
-  );
-
-  USER_CREATION_ERROR = getError(
-    ErrorCode.USER_CREATION_ERROR,
-    'User creation error',
-    HttpStatus.INTERNAL_SERVER_ERROR,
-    this.stack,
-  );
-
-  USER_UPDATE_ERROR = getError(
-    ErrorCode.USER_UPDATE_ERROR,
-    'Update user error',
-    HttpStatus.INTERNAL_SERVER_ERROR,
-    this.stack,
-  );
-
-  GENERIC = getError(
-    ErrorCode.GENERIC,
-    'An error occured',
-    HttpStatus.INTERNAL_SERVER_ERROR,
-    this.stack,
-  );
-
-  NOT_AUTHORIZED = getError(
-    ErrorCode.NOT_AUTHORIZED,
-    'Not authorized',
-    HttpStatus.UNAUTHORIZED,
-    this.stack,
-  );
-
-  EMAIL_SENDING_ERROR = getError(
-    ErrorCode.EMAIL_SENDING_ERROR,
-    'Error sending email',
-    HttpStatus.INTERNAL_SERVER_ERROR,
-    this.stack,
-  );
-
-  AUTHENTICATION_FAILED = getError(
-    ErrorCode.AUTHENTICATION_FAILED,
-    'Authentication failed',
-    HttpStatus.UNAUTHORIZED,
-    this.stack,
-  );
-
-  VALIDATION_ERROR = getError(
-    ErrorCode.VALIDATION_ERROR,
-    'Validation Error',
-    HttpStatus.BAD_REQUEST,
-    this.stack,
-  );
-
-  VALIDATION_ERROR_INVALID_EMAIL = getError(
-    ErrorCode.VALIDATION_ERROR_INVALID_EMAIL,
-    'Validation Error',
-    HttpStatus.BAD_REQUEST,
-    this.stack,
-  );
-
-  VALIDATION_ERROR_PASSWORD_STRENGTH = getError(
-    ErrorCode.VALIDATION_ERROR_PASSWORD_STRENGTH,
-    'Validation Error',
-    HttpStatus.BAD_REQUEST,
-    this.stack,
-  );
-
-  USER_DELETION_ERROR_SELF_DELETION = getError(
-    ErrorCode.USER_DELETION_ERROR_SELF_DELETION,
-    'Cannot delete your own account',
-    HttpStatus.BAD_REQUEST,
-    this.stack,
-  );
-
-  SETTINGS_NOT_FOUND = getError(
-    ErrorCode.SETTINGS_NOT_FOUND,
-    'User not found',
-    HttpStatus.NOT_FOUND,
-    this.stack,
-  );
-}
+export const ExceptionDictionary = ({
+  stack,
+  errorCode,
+}: {
+  stack?: string;
+  errorCode: ErrorCode;
+}): CustomException => {
+  const { message, status } = listOfErrors[errorCode];
+  return new CustomException(message, status, ErrorCode[errorCode], stack);
+};

@@ -1,5 +1,6 @@
 export { ExceptionDictionary } from './exceptionDictionary.dto';
-export { Attendees } from './attendees.dto';
+export { AttendeesDto } from './attendees.dto';
+export { AttendeeIdsDto } from './attendeeIds.dto';
 export { ErrorCode } from './errorCode.enum';
 export { ReturnData } from './returnData.dto';
 export { SessionDto } from './session.dto';

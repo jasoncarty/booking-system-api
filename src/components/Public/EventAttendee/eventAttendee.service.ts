@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 
 import { EventAttendee } from './../../../Repositories/eventAttendee.entity';
 import { Event } from './../../../Repositories/event.entity';
-import { UserDto, ExceptionDictionary } from '../../../proto';
+import { ExceptionDictionary, ErrorCode } from '../../../proto';
 
 @Injectable()
 export class EventAttendeeService {
@@ -13,11 +13,11 @@ export class EventAttendeeService {
     private readonly eventAttendeeRepository: Repository<EventAttendee>,
   ) {}
 
-  async findEventAttendee(user: UserDto, event: Event): Promise<EventAttendee> {
+  async findEventAttendee(userId: number, eventId: number): Promise<EventAttendee> {
     return await this.eventAttendeeRepository.findOne({
       where: {
-        userId: user.id,
-        eventId: event.id,
+        userId,
+        eventId,
       },
     });
   }
@@ -30,23 +30,27 @@ export class EventAttendeeService {
     return false;
   }
 
-  async createNewEventAttendee(user: UserDto, event: Event): Promise<EventAttendee> {
-    const duplicateEventAttendee = await this.findEventAttendee(user, event);
+  async createNewEventAttendee(userId: number, event: Event): Promise<EventAttendee> {
+    const duplicateEventAttendee = await this.findEventAttendee(userId, event.id);
 
     if (duplicateEventAttendee) {
-      throw new ExceptionDictionary().DUPLICATE_EVENT_ATTENDEE_ERROR;
+      throw ExceptionDictionary({
+        errorCode: ErrorCode.DUPLICATE_EVENT_ATTENDEE_ERROR,
+      });
     }
-
     try {
       const newEventAttendee = new EventAttendee();
       Object.assign(newEventAttendee, {
         eventId: event.id,
-        userId: user.id,
+        userId: userId,
         reserve: this.getReserve(event),
       });
       return await this.eventAttendeeRepository.save(newEventAttendee);
     } catch (err) {
-      throw new ExceptionDictionary(err.stack).EVENT_ATTENDEE_CREATION_ERROR;
+      throw ExceptionDictionary({
+        stack: err.stack,
+        errorCode: ErrorCode.EVENT_ATTENDEE_CREATION_ERROR,
+      });
     }
   }
 
@@ -54,7 +58,10 @@ export class EventAttendeeService {
     try {
       return await this.eventAttendeeRepository.remove(eventAttendee);
     } catch (err) {
-      throw new ExceptionDictionary(err.stack).EVENT_ATTENDEE_DELETION_ERROR;
+      throw ExceptionDictionary({
+        stack: err.stack,
+        errorCode: ErrorCode.EVENT_ATTENDEE_DELETION_ERROR,
+      });
     }
   }
 }

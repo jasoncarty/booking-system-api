@@ -9,7 +9,7 @@ import { generate } from 'rand-token';
 
 import { User } from '../../../Repositories/user.entity';
 import { EventAttendee } from '../../../Repositories/eventAttendee.entity';
-import { UserDto, ExceptionDictionary, Attendees } from '../../../proto';
+import { UserDto, ExceptionDictionary, AttendeesDto, ErrorCode } from '../../../proto';
 import { extractToken, verifyToken, createAuthToken } from '../../../utils';
 import { UserConfirmAccountDto, UserUpdateDto, UserConfirmRequestDto } from './dto';
 import { AppMailerService } from '../../AppMailer/appMailer.service';
@@ -23,15 +23,21 @@ export class UserService {
     private readonly appMailer: AppMailerService,
   ) {}
 
-  private async getUser(id: number): Promise<UserDto> {
+  async getUser(id: number, loadRelations = false): Promise<UserDto> {
     try {
-      const user = await this.userRepository.findOne(id);
+      const user = await this.userRepository.findOne({
+        where: { id },
+        relations: loadRelations ? ['eventAttendees'] : null,
+      });
       if (user) {
         return user;
       }
       throw new Error();
     } catch (err) {
-      throw new ExceptionDictionary(err.stack).USER_NOT_FOUND;
+      throw ExceptionDictionary({
+        stack: err.stack,
+        errorCode: ErrorCode.USER_NOT_FOUND,
+      });
     }
   }
 
@@ -45,14 +51,17 @@ export class UserService {
       );
   }
 
-  async getAttendees(eventId: number): Promise<Attendees> {
+  async getAttendees(eventId: number): Promise<AttendeesDto> {
     try {
       return {
         reserves: await this.getReservesAndNonReserves(eventId, true),
         nonReserves: await this.getReservesAndNonReserves(eventId, false),
       };
     } catch (err) {
-      throw new ExceptionDictionary(err.stack).EVENT_ATTENDEE_FETCHING_ERROR;
+      throw ExceptionDictionary({
+        stack: err.stack,
+        errorCode: ErrorCode.EVENT_ATTENDEE_FETCHING_ERROR,
+      });
     }
   }
 
@@ -70,7 +79,10 @@ export class UserService {
         .setParameters(attendeesIdsQuery.getParameters())
         .getMany();
     } catch (err) {
-      throw new ExceptionDictionary(err.stack).EVENT_ATTENDEE_FETCHING_ERROR;
+      throw ExceptionDictionary({
+        stack: err.stack,
+        errorCode: ErrorCode.EVENT_ATTENDEE_FETCHING_ERROR,
+      });
     }
   }
 
@@ -81,7 +93,10 @@ export class UserService {
     try {
       email = verifyToken(token).email;
     } catch (err) {
-      throw new ExceptionDictionary(err.stack).AUTHENTICATION_FAILED;
+      throw ExceptionDictionary({
+        stack: err.stack,
+        errorCode: ErrorCode.AUTHENTICATION_FAILED,
+      });
     }
 
     return await this.getUserByEmail(email, loadRelations);
@@ -107,7 +122,9 @@ export class UserService {
     });
 
     if (!user) {
-      throw new ExceptionDictionary().USER_NOT_FOUND;
+      throw ExceptionDictionary({
+        errorCode: ErrorCode.USER_NOT_FOUND,
+      });
     }
     return user;
   }
@@ -129,7 +146,10 @@ export class UserService {
       await this.userRepository.update(user.id, userEntity);
       return await this.getUser(user.id);
     } catch (err) {
-      throw new ExceptionDictionary(err.stack).USER_UPDATE_ERROR;
+      throw ExceptionDictionary({
+        stack: err.stack,
+        errorCode: ErrorCode.USER_UPDATE_ERROR,
+      });
     }
   }
 
@@ -150,7 +170,10 @@ export class UserService {
         details: sentMail,
       };
     } catch (err) {
-      throw new ExceptionDictionary(err.stack).EMAIL_SENDING_ERROR;
+      throw ExceptionDictionary({
+        stack: err.stack,
+        errorCode: ErrorCode.EMAIL_SENDING_ERROR,
+      });
     }
   }
 
@@ -171,7 +194,9 @@ export class UserService {
       },
     });
     if (!user) {
-      throw new ExceptionDictionary().USER_NOT_FOUND;
+      throw ExceptionDictionary({
+        errorCode: ErrorCode.USER_NOT_FOUND,
+      });
     }
 
     const newValues = {
@@ -186,7 +211,10 @@ export class UserService {
       await this.userRepository.update(user.id, userEntity);
       return await this.getUser(user.id);
     } catch (err) {
-      throw new ExceptionDictionary(err.stack).USER_UPDATE_ERROR;
+      throw ExceptionDictionary({
+        stack: err.stack,
+        errorCode: ErrorCode.USER_UPDATE_ERROR,
+      });
     }
   }
 
@@ -214,7 +242,10 @@ export class UserService {
       }
       throw new Error('Incorrect password');
     } catch (err) {
-      throw new ExceptionDictionary(err.stack).AUTHENTICATION_FAILED;
+      throw ExceptionDictionary({
+        stack: err.stack,
+        errorCode: ErrorCode.AUTHENTICATION_FAILED,
+      });
     }
   }
 }

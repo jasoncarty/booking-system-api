@@ -1,5 +1,5 @@
 import { UserDto } from './index';
-import { Attendees } from './attendees.dto';
+import { AttendeesDto } from './attendees.dto';
 
 export interface EventWithAttendeesDto {
   id: number;
@@ -12,6 +12,6 @@ export interface EventWithAttendeesDto {
   maximum_event_attendees?: number;
   created_at: Date;
   updated_at: Date;
-  attendees?: Attendees;
+  attendees?: AttendeesDto;
   nonAttendees?: UserDto[];
 }

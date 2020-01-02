@@ -2,7 +2,7 @@ import { PipeTransform, Injectable, ArgumentMetadata } from '@nestjs/common';
 import { validate, ValidationError } from 'class-validator';
 import { plainToClass } from 'class-transformer';
 import { isArray } from 'util';
-import { ExceptionDictionary } from './../proto';
+import { ExceptionDictionary, ErrorCode } from './../proto';
 
 interface ValidationExceptionMapObject {
   isEmail: object;
@@ -26,14 +26,22 @@ export class ValidationPipe implements PipeTransform<any> {
       if (isArray(errors)) {
         this.mapException(errors[0]);
       }
-      throw new ExceptionDictionary().VALIDATION_ERROR;
+      throw ExceptionDictionary({
+        errorCode: ErrorCode.VALIDATION_ERROR,
+      });
     }
     return value;
   }
 
   private validationExceptionMap = (stack?: string): ValidationExceptionMapObject => ({
-    isEmail: new ExceptionDictionary(stack).VALIDATION_ERROR_INVALID_EMAIL,
-    isStrongPassword: new ExceptionDictionary(stack).VALIDATION_ERROR_PASSWORD_STRENGTH,
+    isEmail: ExceptionDictionary({
+      stack,
+      errorCode: ErrorCode.VALIDATION_ERROR_INVALID_EMAIL,
+    }),
+    isStrongPassword: ExceptionDictionary({
+      stack,
+      errorCode: ErrorCode.VALIDATION_ERROR_PASSWORD_STRENGTH,
+    }),
   });
 
   private mapException(e: ValidationError): void {
@@ -41,10 +49,15 @@ export class ValidationPipe implements PipeTransform<any> {
       const errorKey = Object.keys(e.constraints)[0];
       const error =
         this.validationExceptionMap(JSON.stringify(e.constraints))[errorKey] ||
-        new ExceptionDictionary(JSON.stringify(e.constraints)).VALIDATION_ERROR;
+        ExceptionDictionary({
+          stack: JSON.stringify(e.constraints),
+          errorCode: ErrorCode.VALIDATION_ERROR,
+        });
       throw error;
     }
-    throw new ExceptionDictionary().VALIDATION_ERROR;
+    throw ExceptionDictionary({
+      errorCode: ErrorCode.VALIDATION_ERROR,
+    });
   }
 
   private toValidate(metatype: Function): boolean {

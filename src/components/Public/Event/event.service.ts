@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { Event } from './../../../Repositories/event.entity';
-import { ExceptionDictionary, EventWithAttendeesDto } from '../../../proto';
+import { ExceptionDictionary, EventWithAttendeesDto, ErrorCode } from '../../../proto';
 import { UserService } from '../User/user.service';
 import { EventAttendeeService } from '../EventAttendee/eventAttendee.service';
 
@@ -36,7 +36,10 @@ export class EventService {
       }
       throw new Error();
     } catch (err) {
-      throw new ExceptionDictionary(err.stack).EVENT_NOT_FOUND;
+      throw ExceptionDictionary({
+        stack: err.stack,
+        errorCode: ErrorCode.EVENT_NOT_FOUND,
+      });
     }
   }
 
@@ -55,7 +58,10 @@ export class EventService {
       }
       return [];
     } catch (err) {
-      throw new ExceptionDictionary(err.stack).EVENT_FETCHING_ERROR;
+      throw ExceptionDictionary({
+        stack: err.stack,
+        errorCode: ErrorCode.EVENT_FETCHING_ERROR,
+      });
     }
   }
 
@@ -74,7 +80,7 @@ export class EventService {
 
     if (event && user) {
       const newEventAttendee = await this.eventAttendeeService.createNewEventAttendee(
-        user,
+        user.id,
         event,
       );
       event.eventAttendees = [...event.eventAttendees, newEventAttendee];
@@ -88,7 +94,7 @@ export class EventService {
         attendees: await this.userService.getAttendees(id),
       };
     }
-    throw new ExceptionDictionary().EVENT_BOOKING_ERROR;
+    throw ExceptionDictionary({ errorCode: ErrorCode.EVENT_BOOKING_ERROR });
   }
 
   async cancelEventBooking(
@@ -100,8 +106,8 @@ export class EventService {
 
     if (event && user) {
       const eventAttendee = await this.eventAttendeeService.findEventAttendee(
-        user,
-        event,
+        user.id,
+        event.id,
       );
 
       this.eventAttendeeService.deleteEventAttendee(eventAttendee);
@@ -120,6 +126,8 @@ export class EventService {
         attendees: await this.userService.getAttendees(id),
       };
     }
-    throw new ExceptionDictionary().EVENT_CANCEL_ERROR;
+    throw ExceptionDictionary({
+      errorCode: ErrorCode.EVENT_CANCEL_ERROR,
+    });
   }
 }
