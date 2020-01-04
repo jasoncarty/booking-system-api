@@ -9,7 +9,6 @@ describe('Events', () => {
   beforeAll(async () => {
     userToken = await createUserToken();
     adminToken = await createAdminToken();
-    jest.spyOn(console, 'log').mockImplementation(jest.fn());
   });
 
   describe('/GET /events/:id', () => {

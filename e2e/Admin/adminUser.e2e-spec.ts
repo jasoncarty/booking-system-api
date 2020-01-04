@@ -8,7 +8,6 @@ describe('AdminUser', () => {
   beforeAll(async () => {
     adminToken = await createAdminToken();
     userToken = await createUserToken();
-    jest.spyOn(console, 'log').mockImplementation(jest.fn());
   });
 
   describe('/GET /admin/users', () => {
