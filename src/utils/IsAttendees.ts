@@ -1,7 +1,7 @@
 import { ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
 import { AttendeeIdsDto } from '../proto';
 
-const VALID_INPUT = {
+export const VALID_INPUT = {
   attendees: {
     reserves: [1, 3],
     nonReserves: [2, 4],
@@ -23,7 +23,7 @@ export class IsAttendees implements ValidatorConstraintInterface {
       }
     }
 
-    const { reserves, nonReserves } = attendees;
+    const { reserves = [], nonReserves = [] } = attendees;
     const mixedAttendees = [...reserves, ...nonReserves];
     let result = true;
     for (let i = 0; i < mixedAttendees.length; i++) {
