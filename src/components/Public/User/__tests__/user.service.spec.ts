@@ -42,11 +42,23 @@ describe('UserService', () => {
     userService = new UserService(UserRepositoryMock, appMailer);
   });
 
-  describe('private getUser', () => {
+  describe('getUser', () => {
     it('returns a user', async () => {
       jest.spyOn(UserRepositoryMock, 'findOne').mockImplementationOnce(() => singleUser);
 
-      expect(await userService['getUser'](1)).toEqual(await singleUser);
+      expect(await userService.getUser(1)).toEqual(await singleUser);
+    });
+
+    it('loads relations', async () => {
+      const findOneSpy = jest
+        .spyOn(UserRepositoryMock, 'findOne')
+        .mockImplementationOnce(() => singleUser);
+
+      await userService.getUser(1, true);
+      expect(findOneSpy).toHaveBeenCalledWith({
+        where: { id: 1 },
+        relations: ['eventAttendees'],
+      });
     });
 
     it('throws a USER_NOT_FOUND exception', async () => {

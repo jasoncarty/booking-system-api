@@ -3,6 +3,7 @@ import { AdminEventService } from './../adminEvent.service';
 import { EventService } from './../../../Public/Event/event.service';
 import { EventAttendeeService } from './../../../Public/EventAttendee/eventAttendee.service';
 import { UserService } from './../../../Public/User/user.service';
+import { EventCreateDto } from './../../../../proto';
 import {
   mockEvent,
   EventRepositoryMock,
@@ -62,6 +63,31 @@ describe('AdminEventController', () => {
         .mockImplementationOnce(() => Promise.resolve(mockEvent));
 
       expect(await adminEventController.getEvent(1)).toStrictEqual(mockEvent);
+    });
+  });
+
+  describe(':POST /admin/events/create', () => {
+    it('creates an event', async () => {
+      jest
+        .spyOn(adminEventService, 'createEvent')
+        .mockImplementationOnce(() => Promise.resolve(mockEvent));
+
+      expect(
+        await adminEventController.createEvent(({
+          ...mockEvent,
+          id: null,
+        } as unknown) as EventCreateDto),
+      ).toStrictEqual(mockEvent);
+    });
+  });
+
+  describe(':DELETE /admin/events/:id', () => {
+    it('returns an event', async () => {
+      jest
+        .spyOn(adminEventService, 'deleteEvent')
+        .mockImplementationOnce(() => Promise.resolve(mockEvent));
+
+      expect(await adminEventController.deleteEvent(1)).toStrictEqual(mockEvent);
     });
   });
 });

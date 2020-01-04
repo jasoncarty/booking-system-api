@@ -71,7 +71,7 @@ export class AdminEventService {
   }
 
   async createEvent(data: EventCreateDto): Promise<EventWithAttendeesDto> {
-    const { attendees } = data || {};
+    const attendees = data.attendees;
     const event = {
       ...data,
       attendees: null,
@@ -82,9 +82,13 @@ export class AdminEventService {
       where: { id: savedEvent.id },
       relations: ['eventAttendees'],
     });
-    const { reserves, nonReserves } = attendees;
-    const mixedAttendees = [...nonReserves, ...reserves];
-    await this.addUsers(mixedAttendees, newEvent);
+
+    if (attendees) {
+      const reserves = attendees.reserves ?? [];
+      const nonReserves = attendees.nonReserves ?? [];
+      const mixedAttendees = [...nonReserves, ...reserves];
+      await this.addUsers(mixedAttendees, newEvent);
+    }
 
     // refetch event in order to load relations.
     return {

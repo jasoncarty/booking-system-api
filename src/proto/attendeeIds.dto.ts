@@ -1,4 +1,4 @@
 export interface AttendeeIdsDto {
-  reserves: number[];
-  nonReserves: number[];
+  reserves?: number[];
+  nonReserves?: number[];
 }
