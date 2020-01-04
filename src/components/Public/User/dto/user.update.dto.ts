@@ -1,5 +1,5 @@
 import { IsEmail, IsString, IsOptional, MinLength, Validate } from 'class-validator';
-import { IsStrongPassword } from '../../../../utils/IsStrongPassword';
+import { IsStrongPassword } from '../../../../utils';
 
 export class UserUpdateDto {
   @IsOptional()
