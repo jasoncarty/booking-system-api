@@ -40,7 +40,7 @@ export const getMailTransport = (configService: ConfigService): object | string 
         database: configService.envConfig.DATABASE,
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: true,
-        logging: 'all',
+        logging: configService.envConfig.NODE_ENV === 'development' ? 'all' : null,
       }),
       inject: [ConfigService],
     }),

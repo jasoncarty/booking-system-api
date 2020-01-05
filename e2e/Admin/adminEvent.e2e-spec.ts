@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import { ErrorCode, EventWithAttendeesDto } from '../../src/proto';
 import { makeRequest, createAdminToken, createUserToken } from '../utils';
 
@@ -5,6 +6,7 @@ describe('AdminEvent', () => {
   let adminToken: string;
   let userToken: string;
   let currentEvents: EventWithAttendeesDto[];
+  let createdEvent: EventWithAttendeesDto;
 
   beforeAll(async () => {
     adminToken = await createAdminToken();
@@ -163,9 +165,11 @@ describe('AdminEvent', () => {
       });
 
       const { data: result } = res;
-      expect(result).toBeDefined();
+      createdEvent = result.data;
       const { reserves, nonReserves } = result.data.attendees;
       const { nonAttendees } = result.data;
+
+      expect(result).toBeDefined();
       expect(Array.isArray(nonAttendees)).toBeTruthy();
       expect(Array.isArray(reserves)).toBeTruthy();
       expect(Array.isArray(nonReserves)).toBeTruthy();
@@ -182,7 +186,7 @@ describe('AdminEvent', () => {
       });
 
       const { data: currentEventsResult } = currentEventsRes;
-      expect(currentEventsResult.data.length).toEqual(currentEvents.length + 1);
+      expect(currentEventsResult.data).toHaveLength(currentEvents.length + 1);
     });
 
     it('returns ExceptionDictionary.AUTHENTICATION_FAILED error code', async () => {
@@ -258,7 +262,7 @@ describe('AdminEvent', () => {
       expect(result.errorCode).toEqual(ErrorCode.VALIDATION_ERROR);
     });
 
-    it('returns ExceptionDictionary.VALIDATION_ERROR error code', async () => {
+    it('returns ExceptionDictionary.VALIDATION_ERROR error code 1', async () => {
       const res = await makeRequest({
         method: 'POST',
         url: '/admin/events/create',
@@ -283,7 +287,7 @@ describe('AdminEvent', () => {
       expect(result.errorCode).toEqual(ErrorCode.VALIDATION_ERROR);
     });
 
-    it('returns ExceptionDictionary.VALIDATION_ERROR error code', async () => {
+    it('returns ExceptionDictionary.VALIDATION_ERROR error code 2', async () => {
       const res = await makeRequest({
         method: 'POST',
         url: '/admin/events/create',
@@ -308,7 +312,7 @@ describe('AdminEvent', () => {
       expect(result.errorCode).toEqual(ErrorCode.VALIDATION_ERROR);
     });
 
-    it('returns ExceptionDictionary.VALIDATION_ERROR error code', async () => {
+    it('returns ExceptionDictionary.VALIDATION_ERROR error code 3', async () => {
       const res = await makeRequest({
         method: 'POST',
         url: '/admin/events/create',
@@ -333,7 +337,7 @@ describe('AdminEvent', () => {
       expect(result.errorCode).toEqual(ErrorCode.VALIDATION_ERROR);
     });
 
-    it('returns ExceptionDictionary.VALIDATION_ERROR error code', async () => {
+    it('returns ExceptionDictionary.VALIDATION_ERROR error code 4', async () => {
       const res = await makeRequest({
         method: 'POST',
         url: '/admin/events/create',
@@ -363,7 +367,7 @@ describe('AdminEvent', () => {
     it('deletes an event', async () => {
       const res = await makeRequest({
         method: 'DELETE',
-        url: '/admin/events/1',
+        url: `/admin/events/${createdEvent.id}`,
         headers: {
           Authorization: `Bearer ${adminToken}`,
         },
@@ -382,7 +386,7 @@ describe('AdminEvent', () => {
       });
 
       const { data: currentEventsResult } = currentEventsRes;
-      expect(currentEventsResult.data.length).toEqual(currentEvents.length);
+      expect(currentEventsResult.data).toHaveLength(currentEvents.length);
     });
 
     it('returns ExceptionDictionary.AUTHENTICATION_FAILED error code', async () => {
