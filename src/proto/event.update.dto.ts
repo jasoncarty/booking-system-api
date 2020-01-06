@@ -1,5 +1,6 @@
 import { AttendeeIdsDto } from './index';
-import { IsString, IsOptional, IsNumber, IsDateString } from 'class-validator';
+import { IsString, IsOptional, IsNumber, IsDateString, Validate } from 'class-validator';
+import { IsAttendees } from './../utils';
 
 export class EventUpdateDto {
   @IsOptional()
@@ -31,5 +32,6 @@ export class EventUpdateDto {
   maximum_event_attendees?: number;
 
   @IsOptional()
+  @Validate(IsAttendees)
   attendees?: AttendeeIdsDto;
 }

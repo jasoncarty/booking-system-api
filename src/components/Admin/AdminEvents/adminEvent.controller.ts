@@ -32,13 +32,13 @@ export class AdminEventController {
     return this.adminEventService.createEvent(eventCreateDto);
   }
 
-  /* @Put('events/:id')
+  @Put('events/:id')
   updateEvent(
     @Param() params,
     @Body() eventUpdateDto: EventUpdateDto,
   ): Promise<EventDto> {
     return this.adminEventService.updateEvent(params.id, eventUpdateDto);
-  } */
+  }
 
   @Delete('events/:id')
   deleteEvent(@Param() params): Promise<EventDto> {

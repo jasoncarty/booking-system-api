@@ -3,12 +3,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { Event } from './../../../Repositories/event.entity';
+import { EventAttendee } from './../../../Repositories/eventAttendee.entity';
 import {
   ExceptionDictionary,
   EventWithAttendeesDto,
   EventCreateDto,
   EventDto,
   ErrorCode,
+  EventUpdateDto,
+  AttendeeIdsDto,
 } from '../../../proto';
 import { EventService } from '../../Public/Event/event.service';
 import { UserService } from '../../Public/User/user.service';
@@ -56,17 +59,35 @@ export class AdminEventService {
     };
   }
 
-  async addUsers(mixedAttendees: number[], newEvent: Event): Promise<void> {
+  async addUsers(mixedAttendees: number[], event: Event): Promise<void> {
     for (let i = 0; i < mixedAttendees.length; i++) {
       const eventAttendee = await this.eventAttendeeService.createNewEventAttendee(
         mixedAttendees[i],
-        newEvent,
+        event,
       );
       const user = await this.userService.getUser(mixedAttendees[i], true);
       user.eventAttendees = [...user.eventAttendees, eventAttendee];
       await this.userService.save(user);
-      newEvent.eventAttendees = [...newEvent.eventAttendees, eventAttendee];
-      await this.eventRepository.save(newEvent);
+      event.eventAttendees = [...event.eventAttendees, eventAttendee];
+      await this.eventRepository.save(event);
+    }
+  }
+
+  async removeEventAttendees(event: Event): Promise<void> {
+    const { eventAttendees } = event;
+    for (let i = 0; i < eventAttendees.length; i++) {
+      await this.eventAttendeeService.deleteEventAttendee(eventAttendees[i]);
+    }
+    event.eventAttendees = [];
+    await this.eventRepository.save(event);
+  }
+
+  async consolidateAttendees(attendees: AttendeeIdsDto, event: Event): Promise<void> {
+    if (attendees) {
+      const reserves = attendees.reserves || [];
+      const nonReserves = attendees.nonReserves || [];
+      const mixedAttendees = [...nonReserves, ...reserves];
+      await this.addUsers(mixedAttendees, event);
     }
   }
 
@@ -83,17 +104,33 @@ export class AdminEventService {
       relations: ['eventAttendees'],
     });
 
-    if (attendees) {
-      const reserves = attendees.reserves ?? [];
-      const nonReserves = attendees.nonReserves ?? [];
-      const mixedAttendees = [...nonReserves, ...reserves];
-      await this.addUsers(mixedAttendees, newEvent);
-    }
+    await this.consolidateAttendees(attendees, newEvent);
 
     // refetch event in order to load relations.
     return {
       ...(await this.getEvent(newEvent.id)),
       attendees: await this.userService.getAttendees(newEvent.id),
+    };
+  }
+
+  async updateEvent(id: number, data: EventUpdateDto): Promise<EventWithAttendeesDto> {
+    const attendees = data.attendees;
+    const event = await this.eventRepository.findOne({
+      where: { id },
+      relations: ['eventAttendees'],
+    });
+
+    delete data.attendees;
+    const eventEntity = new Event();
+    Object.assign(eventEntity, data);
+    await this.eventRepository.update(id, eventEntity);
+    await this.removeEventAttendees(event);
+    await this.consolidateAttendees(attendees, event);
+
+    // refetch event in order to load relations.
+    return {
+      ...(await this.getEvent(id)),
+      attendees: await this.userService.getAttendees(id),
     };
   }
 

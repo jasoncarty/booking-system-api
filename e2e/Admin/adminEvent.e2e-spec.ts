@@ -363,6 +363,217 @@ describe('AdminEvent', () => {
     });
   });
 
+  describe(':PUT /admin/events/:id', () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    it('creates an event', async () => {
+      const res = await makeRequest({
+        method: 'PUT',
+        url: `/admin/events/${createdEvent.id}`,
+        headers: {
+          Authorization: `Bearer ${adminToken}`,
+        },
+        data: {
+          name: 'Eighth event',
+          description: 'Eighth description',
+          starts_at: tomorrow.toISOString(),
+          ends_at: tomorrow.toISOString(),
+          maximum_event_attendees: 2,
+          attendees: {
+            reserves: [1],
+            nonReserves: [2],
+          },
+        },
+      });
+
+      const { data: result } = res;
+      const { reserves, nonReserves } = result.data.attendees;
+      const { nonAttendees } = result.data;
+
+      expect(result).toBeDefined();
+      expect(Array.isArray(nonAttendees)).toBeTruthy();
+      expect(Array.isArray(reserves)).toBeTruthy();
+      expect(Array.isArray(nonReserves)).toBeTruthy();
+      expect(reserves).toHaveLength(0);
+      expect(nonReserves).toHaveLength(2);
+      expect(nonAttendees).toHaveLength(1);
+    });
+
+    it('returns ExceptionDictionary.AUTHENTICATION_FAILED error code', async () => {
+      const res = await makeRequest({
+        method: 'PUT',
+        url: `/admin/events/${createdEvent.id}`,
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+        data: {
+          name: 'Eighth event',
+          description: 'Eighth description',
+          starts_at: tomorrow.toISOString(),
+          ends_at: tomorrow.toISOString(),
+          maximum_event_attendees: 2,
+          attendees: {
+            reserves: [1],
+            nonReserves: [2],
+          },
+        },
+      });
+
+      const { data: result } = res;
+      expect(result).toBeDefined();
+      expect(result.errorCode).toEqual(ErrorCode.AUTHENTICATION_FAILED);
+    });
+
+    it('returns ExceptionDictionary.NOT_AUTHORIZED error code', async () => {
+      const res = await makeRequest({
+        method: 'PUT',
+        url: `/admin/events/${createdEvent.id}`,
+        data: {
+          name: 'Eighth event',
+          description: 'Eighth description',
+          starts_at: tomorrow.toISOString(),
+          ends_at: tomorrow.toISOString(),
+          maximum_event_attendees: 2,
+          attendees: {
+            reserves: [1],
+            nonReserves: [2],
+          },
+        },
+      });
+
+      const { data: result } = res;
+      expect(result).toBeDefined();
+      expect(result.errorCode).toEqual(ErrorCode.NOT_AUTHORIZED);
+    });
+
+    it('returns ExceptionDictionary.VALIDATION_ERROR error code', async () => {
+      const res = await makeRequest({
+        method: 'PUT',
+        url: `/admin/events/${createdEvent.id}`,
+        headers: {
+          Authorization: `Bearer ${adminToken}`,
+        },
+        data: {
+          name: 'Eighth event',
+          description: 'Eighth description',
+          starts_at: tomorrow.toISOString(),
+          ends_at: tomorrow.toISOString(),
+          maximum_event_attendees: 2,
+          disallowedParam: 'foo',
+          attendees: {
+            reserves: [1],
+            nonReserves: [2],
+          },
+        },
+      });
+
+      const { data: result } = res;
+      expect(result).toBeDefined();
+      expect(result.errorCode).toEqual(ErrorCode.VALIDATION_ERROR);
+    });
+
+    it('returns ExceptionDictionary.VALIDATION_ERROR error code 1', async () => {
+      const res = await makeRequest({
+        method: 'PUT',
+        url: `/admin/events/${createdEvent.id}`,
+        headers: {
+          Authorization: `Bearer ${adminToken}`,
+        },
+        data: {
+          name: 'Eighth event',
+          description: 'Eighth description',
+          starts_at: tomorrow.toISOString(),
+          ends_at: tomorrow.toISOString(),
+          maximum_event_attendees: '2',
+          attendees: {
+            reserves: [1],
+            nonReserves: [2],
+          },
+        },
+      });
+
+      const { data: result } = res;
+      expect(result).toBeDefined();
+      expect(result.errorCode).toEqual(ErrorCode.VALIDATION_ERROR);
+    });
+
+    it('returns ExceptionDictionary.VALIDATION_ERROR error code 2', async () => {
+      const res = await makeRequest({
+        method: 'PUT',
+        url: `/admin/events/${createdEvent.id}`,
+        headers: {
+          Authorization: `Bearer ${adminToken}`,
+        },
+        data: {
+          name: 'Eighth event',
+          description: 'Eighth description',
+          starts_at: tomorrow.toISOString(),
+          ends_at: tomorrow.toISOString(),
+          maximum_event_attendees: 2,
+          attendees: {
+            reserves: 1,
+            nonReserves: [2],
+          },
+        },
+      });
+
+      const { data: result } = res;
+      expect(result).toBeDefined();
+      expect(result.errorCode).toEqual(ErrorCode.VALIDATION_ERROR);
+    });
+
+    it('returns ExceptionDictionary.VALIDATION_ERROR error code 3', async () => {
+      const res = await makeRequest({
+        method: 'PUT',
+        url: `/admin/events/${createdEvent.id}`,
+        headers: {
+          Authorization: `Bearer ${adminToken}`,
+        },
+        data: {
+          name: 'Eighth event',
+          description: 'Eighth description',
+          starts_at: tomorrow.toISOString(),
+          ends_at: tomorrow.toISOString(),
+          maximum_event_attendees: 2,
+          attendees: {
+            reserves: ['1'],
+            nonReserves: [2],
+          },
+        },
+      });
+
+      const { data: result } = res;
+      expect(result).toBeDefined();
+      expect(result.errorCode).toEqual(ErrorCode.VALIDATION_ERROR);
+    });
+
+    it('returns ExceptionDictionary.VALIDATION_ERROR error code 4', async () => {
+      const res = await makeRequest({
+        method: 'PUT',
+        url: `/admin/events/${createdEvent.id}`,
+        headers: {
+          Authorization: `Bearer ${adminToken}`,
+        },
+        data: {
+          name: 'Eighth event',
+          description: 'Eighth description',
+          starts_at: tomorrow.toISOString(),
+          ends_at: tomorrow.toISOString(),
+          maximum_event_attendees: 2,
+          attendees: {
+            reserves: [1],
+            nonReserves: [{ foo: 'bar' }],
+          },
+        },
+      });
+
+      const { data: result } = res;
+      expect(result).toBeDefined();
+      expect(result.errorCode).toEqual(ErrorCode.VALIDATION_ERROR);
+    });
+  });
+
   describe(':DELETE /admin/events/:id', () => {
     it('deletes an event', async () => {
       const res = await makeRequest({

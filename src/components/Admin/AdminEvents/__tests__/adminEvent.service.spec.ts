@@ -14,6 +14,7 @@ import {
   UserRepositoryMock,
   mockUser,
   mockEventAttendee,
+  updatedEvent,
 } from '../../../../mocks';
 
 describe('AdminEventService', () => {
@@ -235,6 +236,114 @@ describe('AdminEventService', () => {
 
       expect(
         await adminEventService.createEvent({
+          ...mockEvent,
+          attendees: {},
+        }),
+      ).toStrictEqual({
+        ...mockEvent,
+        attendees: {
+          reserves: [mockUser, mockUser],
+          nonReserves: [mockUser, mockUser],
+        },
+      });
+    });
+  });
+
+  describe('updateEvent', () => {
+    it('returns an event with attendees', async () => {
+      jest.spyOn(EventRepositoryMock, 'findOne').mockImplementationOnce(() =>
+        Promise.resolve(({
+          ...mockEvent,
+          eventAttendees: [mockEventAttendee],
+        } as unknown) as Event),
+      );
+      jest
+        .spyOn(EventRepositoryMock, 'update')
+        .mockImplementationOnce(() => updatedEvent);
+      jest
+        .spyOn(eventAttendeeService, 'deleteEventAttendee')
+        .mockImplementationOnce(
+          () => (Promise.resolve(mockEventAttendee) as unknown) as Promise<EventAttendee>,
+        );
+      jest.spyOn(adminEventService, 'addUsers').mockImplementationOnce(jest.fn());
+      jest
+        .spyOn(adminEventService, 'getEvent')
+        .mockImplementationOnce(() => Promise.resolve((mockEvent as unknown) as Event));
+      jest.spyOn(userService, 'getAttendees').mockImplementationOnce(() =>
+        Promise.resolve({
+          reserves: [mockUser, mockUser],
+          nonReserves: [mockUser, mockUser],
+        }),
+      );
+
+      expect(await adminEventService.updateEvent(1, mockEvent)).toStrictEqual({
+        ...mockEvent,
+        attendees: {
+          reserves: [mockUser, mockUser],
+          nonReserves: [mockUser, mockUser],
+        },
+      });
+    });
+
+    it('returns an event and adds users', async () => {
+      jest
+        .spyOn(EventRepositoryMock, 'findOne')
+        .mockImplementationOnce(() =>
+          Promise.resolve(({ ...mockEvent, eventAttendees: [] } as unknown) as Event),
+        );
+      jest
+        .spyOn(EventRepositoryMock, 'update')
+        .mockImplementationOnce(() => updatedEvent);
+      jest.spyOn(adminEventService, 'addUsers').mockImplementationOnce(jest.fn());
+      jest
+        .spyOn(adminEventService, 'getEvent')
+        .mockImplementationOnce(() => Promise.resolve((mockEvent as unknown) as Event));
+      jest.spyOn(userService, 'getAttendees').mockImplementationOnce(() =>
+        Promise.resolve({
+          reserves: [mockUser, mockUser],
+          nonReserves: [mockUser, mockUser],
+        }),
+      );
+
+      expect(
+        await adminEventService.updateEvent(1, {
+          ...mockEvent,
+          attendees: {
+            reserves: [1],
+            nonReserves: [2],
+          },
+        }),
+      ).toStrictEqual({
+        ...mockEvent,
+        attendees: {
+          reserves: [mockUser, mockUser],
+          nonReserves: [mockUser, mockUser],
+        },
+      });
+    });
+
+    it('returns an event without attendees', async () => {
+      jest
+        .spyOn(EventRepositoryMock, 'findOne')
+        .mockImplementationOnce(() =>
+          Promise.resolve(({ ...mockEvent, eventAttendees: [] } as unknown) as Event),
+        );
+      jest
+        .spyOn(EventRepositoryMock, 'update')
+        .mockImplementationOnce(() => updatedEvent);
+      jest.spyOn(adminEventService, 'addUsers').mockImplementationOnce(jest.fn());
+      jest
+        .spyOn(adminEventService, 'getEvent')
+        .mockImplementationOnce(() => Promise.resolve((mockEvent as unknown) as Event));
+      jest.spyOn(userService, 'getAttendees').mockImplementationOnce(() =>
+        Promise.resolve({
+          reserves: [mockUser, mockUser],
+          nonReserves: [mockUser, mockUser],
+        }),
+      );
+
+      expect(
+        await adminEventService.updateEvent(1, {
           ...mockEvent,
           attendees: {},
         }),
