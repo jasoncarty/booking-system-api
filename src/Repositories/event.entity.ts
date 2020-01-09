@@ -12,6 +12,10 @@ import {
 
 import { EventAttendee } from './eventAttendee.entity';
 
+/* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+export const relationType = type => EventAttendee;
+export const relation = eventAttendee => eventAttendee.event;
+
 @Entity({ name: 'events' })
 export class Event extends BaseEntity {
   @Index(['starts_at'])
@@ -60,8 +64,7 @@ export class Event extends BaseEntity {
   @UpdateDateColumn()
   updated_at: Date;
 
-  /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-  @OneToMany(type => EventAttendee, eventAttendee => eventAttendee.event, {
+  @OneToMany(relationType, relation, {
     onDelete: 'CASCADE',
   })
   eventAttendees: EventAttendee[];

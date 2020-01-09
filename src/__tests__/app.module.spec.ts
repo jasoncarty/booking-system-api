@@ -1,7 +1,13 @@
 import { Connection, ConnectionOptions } from 'typeorm';
+import { PugAdapter } from '@nest-modules/mailer';
 
-import { AppModule, getMailTransport } from './../app.module';
-import { ConfigService } from 'src/config/config.service';
+import {
+  AppModule,
+  getMailTransport,
+  mailerModuleForRootAsyncOptions,
+  typeOrmForRootAsyncOptions,
+} from './../app.module';
+import { ConfigService } from './../config/config.service';
 
 jest
   .mock('./../components/Public/User/user.service', () => ({
@@ -46,6 +52,62 @@ describe('AppModule', () => {
       const appModule = new AppModule(connection);
       expect(appModule).toBeDefined();
       expect(appModule).toBeInstanceOf(AppModule);
+    });
+  });
+
+  describe('typeOrmForRootAsyncOptions', () => {
+    it('returns config for testing environment', async () => {
+      const result = await typeOrmForRootAsyncOptions.useFactory(new ConfigService());
+      expect(result).toStrictEqual({
+        type: 'postgres',
+        host: 'localhost',
+        port: 5432,
+        username: 'postgres',
+        password: '',
+        database: 'booking-system-test',
+        entities: [
+          '/Users/jasoncarty/code/node/booking-system-api/src/**/*.entity{.ts,.js}',
+        ],
+        synchronize: true,
+        logging: null,
+      });
+    });
+
+    it('returns config for dev environment', async () => {
+      const result = await typeOrmForRootAsyncOptions.useFactory(
+        new ConfigService('development'),
+      );
+      expect(result).toStrictEqual({
+        type: 'postgres',
+        host: 'localhost',
+        port: 5432,
+        username: 'postgres',
+        password: '',
+        database: 'dumped_db',
+        entities: [
+          '/Users/jasoncarty/code/node/booking-system-api/src/**/*.entity{.ts,.js}',
+        ],
+        synchronize: true,
+        logging: 'all',
+      });
+    });
+  });
+
+  describe('mailerModuleForRootAsyncOptions', () => {
+    it('returns config for mailer module', async () => {
+      const result = await mailerModuleForRootAsyncOptions.useFactory(
+        new ConfigService(),
+      );
+
+      expect(result).toStrictEqual({
+        transport: { streamTransport: true },
+        defaults: { from: '"nest-modules" <noreply@booking-system.com>' },
+        template: {
+          dir: '/Users/jasoncarty/code/node/booking-system-api/src/mailTemplates',
+          adapter: new PugAdapter(),
+          options: { strict: true },
+        },
+      });
     });
   });
 
