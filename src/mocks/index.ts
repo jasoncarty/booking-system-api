@@ -85,6 +85,10 @@ export const updatedUser = (Promise.resolve({
   ...mockUser,
 }) as unknown) as Promise<UpdateResult>;
 
+export const updatedEvent = (Promise.resolve({
+  ...mockEvent,
+}) as unknown) as Promise<UpdateResult>;
+
 export const mockSiteSettings = Promise.resolve({
   id: 1,
   site_name: 'The stupid site',

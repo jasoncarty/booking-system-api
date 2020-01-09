@@ -9,6 +9,7 @@ import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
 import { UserModule } from './components/Public/User/user.module';
 import { EventModule } from './components/Public/Event/event.module';
+import { AdminEventModule } from './components/Admin/AdminEvents/adminEvent.module';
 import { EventAttendeeModule } from './components/Public/EventAttendee/eventAttendee.module';
 import { HttpExceptionFilter } from './utils/httpExceptionFilter';
 import { ValidationPipe } from './utils/validationPipe';
@@ -26,43 +27,48 @@ export const getMailTransport = (configService: ConfigService): object | string 
       };
 };
 
-@Module({
+export const typeOrmForRootAsyncOptions = {
+  imports: [ConfigModule],
+  useFactory: async (configService: ConfigService): Promise<{}> => ({
+    type: 'postgres' as 'postgres',
+    host: configService.envConfig.DATABASE_HOST,
+    port: Number(configService.envConfig.DATABASE_PORT),
+    username: configService.envConfig.DATABASE_USER,
+    password: configService.envConfig.DATABASE_PASSWORD,
+    database: configService.envConfig.DATABASE,
+    entities: [__dirname + '/**/*.entity{.ts,.js}'],
+    synchronize: true,
+    logging: configService.envConfig.NODE_ENV === 'development' ? 'all' : null,
+  }),
+  inject: [ConfigService],
+};
+
+export const mailerModuleForRootAsyncOptions = {
+  imports: [ConfigModule],
+  useFactory: async (configService: ConfigService): Promise<{}> => ({
+    transport: getMailTransport(configService),
+    defaults: {
+      from: '"nest-modules" <noreply@booking-system.com>',
+    },
+    template: {
+      dir: join(__dirname, 'mailTemplates'),
+      adapter: new PugAdapter(),
+      options: {
+        strict: true,
+      },
+    },
+  }),
+  inject: [ConfigService],
+};
+
+const options = {
   imports: [
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService): Promise<{}> => ({
-        type: 'postgres' as 'postgres',
-        host: configService.envConfig.DATABASE_HOST,
-        port: Number(configService.envConfig.DATABASE_PORT),
-        username: configService.envConfig.DATABASE_USER,
-        password: configService.envConfig.DATABASE_PASSWORD,
-        database: configService.envConfig.DATABASE,
-        entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: true,
-        logging: 'all',
-      }),
-      inject: [ConfigService],
-    }),
-    MailerModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService): Promise<{}> => ({
-        transport: getMailTransport(configService),
-        defaults: {
-          from: '"nest-modules" <noreply@booking-system.com>',
-        },
-        template: {
-          dir: join(__dirname, 'mailTemplates'),
-          adapter: new PugAdapter(),
-          options: {
-            strict: true,
-          },
-        },
-      }),
-      inject: [ConfigService],
-    }),
+    TypeOrmModule.forRootAsync(typeOrmForRootAsyncOptions),
+    MailerModule.forRootAsync(mailerModuleForRootAsyncOptions),
     UserModule,
     EventModule,
     EventAttendeeModule,
+    AdminEventModule,
     AuthModule,
     AdminModule,
     AdminSiteSettingsModule,
@@ -91,7 +97,9 @@ export const getMailTransport = (configService: ConfigService): object | string 
       useClass: ValidationPipe,
     },
   ],
-})
+};
+
+@Module(options)
 export class AppModule {
   constructor(private readonly connection: Connection) {}
 }

@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { Event } from './../../../Repositories/event.entity';
-import { EventDto, ExceptionDictionary } from '../../../proto';
+import { ExceptionDictionary, EventWithAttendeesDto, ErrorCode } from '../../../proto';
 import { UserService } from '../User/user.service';
 import { EventAttendeeService } from '../EventAttendee/eventAttendee.service';
 
@@ -25,30 +25,43 @@ export class EventService {
     return newArray;
   }
 
-  async getEvent(id: number): Promise<EventDto> {
+  async getEvent(id: number): Promise<EventWithAttendeesDto> {
     try {
       const event = await this.eventRepository.findOne(id);
       if (event) {
-        return event;
+        return {
+          ...event,
+          attendees: await this.userService.getAttendees(id),
+        };
       }
       throw new Error();
     } catch (err) {
-      throw new ExceptionDictionary(err.stack).EVENT_NOT_FOUND;
+      throw ExceptionDictionary({
+        stack: err.stack,
+        errorCode: ErrorCode.EVENT_NOT_FOUND,
+      });
     }
   }
 
-  async getCurrentEvents(): Promise<EventDto[]> {
+  async getCurrentEvents(): Promise<EventWithAttendeesDto[]> {
     try {
       const events = await this.eventRepository
         .createQueryBuilder('events')
         .where('starts_at >= :time', { time: new Date().toISOString() })
+        .orderBy('starts_at', 'DESC')
         .getMany();
       if (events) {
-        return events;
+        const map = events.map(
+          (event): Promise<EventWithAttendeesDto> => this.getEvent(event.id),
+        );
+        return Promise.all([...map]).then((values): EventWithAttendeesDto[] => values);
       }
       return [];
     } catch (err) {
-      throw new ExceptionDictionary(err.stack).EVENT_FETCHING_ERROR;
+      throw ExceptionDictionary({
+        stack: err.stack,
+        errorCode: ErrorCode.EVENT_FETCHING_ERROR,
+      });
     }
   }
 
@@ -61,13 +74,13 @@ export class EventService {
     });
   }
 
-  async bookEvent(id: number, authHeader: string): Promise<EventDto> {
+  async bookEvent(id: number, authHeader: string): Promise<EventWithAttendeesDto> {
     const user = await this.userService.getProfile(authHeader, true);
     const event = await this.fetchEventWithAttendees(id);
 
     if (event && user) {
       const newEventAttendee = await this.eventAttendeeService.createNewEventAttendee(
-        user,
+        user.id,
         event,
       );
       event.eventAttendees = [...event.eventAttendees, newEventAttendee];
@@ -76,19 +89,25 @@ export class EventService {
       await this.eventRepository.save(event);
 
       // refetch event in order to load relations.
-      return await this.fetchEventWithAttendees(id);
+      return {
+        ...(await this.getEvent(id)),
+        attendees: await this.userService.getAttendees(id),
+      };
     }
-    throw new ExceptionDictionary().EVENT_BOOKING_ERROR;
+    throw ExceptionDictionary({ errorCode: ErrorCode.EVENT_BOOKING_ERROR });
   }
 
-  async cancelEventBooking(id: number, authHeader: string): Promise<EventDto> {
+  async cancelEventBooking(
+    id: number,
+    authHeader: string,
+  ): Promise<EventWithAttendeesDto> {
     const user = await this.userService.getProfile(authHeader, true);
     const event = await this.fetchEventWithAttendees(id);
 
     if (event && user) {
       const eventAttendee = await this.eventAttendeeService.findEventAttendee(
-        user,
-        event,
+        user.id,
+        event.id,
       );
 
       this.eventAttendeeService.deleteEventAttendee(eventAttendee);
@@ -102,8 +121,13 @@ export class EventService {
       await this.eventRepository.save(event);
 
       // refetch event in order to load relations.
-      return await this.fetchEventWithAttendees(id);
+      return {
+        ...(await this.getEvent(id)),
+        attendees: await this.userService.getAttendees(id),
+      };
     }
-    throw new ExceptionDictionary().EVENT_CANCEL_ERROR;
+    throw ExceptionDictionary({
+      errorCode: ErrorCode.EVENT_CANCEL_ERROR,
+    });
   }
 }

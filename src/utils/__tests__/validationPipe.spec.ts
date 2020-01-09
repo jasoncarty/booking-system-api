@@ -1,6 +1,5 @@
-import { ArgumentMetadata, BadRequestException } from '@nestjs/common';
+import { ArgumentMetadata } from '@nestjs/common';
 import * as classValidator from 'class-validator';
-import * as assert from 'assert';
 
 import { ValidationPipe } from './../validationPipe';
 import { ValidationError } from 'class-validator';

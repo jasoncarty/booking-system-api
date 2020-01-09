@@ -4,3 +4,5 @@ export { HttpExceptionFilter } from './httpExceptionFilter';
 export { ValidationPipe } from './validationPipe';
 export { verifyToken } from './verifyToken';
 export { createAuthToken } from './createAuthToken';
+export { IsStrongPassword } from './IsStrongPassword';
+export { IsAttendees } from './IsAttendees';

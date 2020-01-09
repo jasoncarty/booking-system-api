@@ -6,7 +6,7 @@ import { Repository } from 'typeorm';
 import { generate } from 'rand-token';
 
 import { User } from '../../../Repositories/user.entity';
-import { ExceptionDictionary } from '../../../proto';
+import { ExceptionDictionary, ErrorCode } from '../../../proto';
 import { AppMailerService } from '../../AppMailer/appMailer.service';
 import { UserService } from '../../Public/User/user.service';
 import { UserUpdateDto, UserCreateDto } from './dto';
@@ -29,7 +29,10 @@ export class AdminService {
       }
       throw new Error();
     } catch (err) {
-      throw new ExceptionDictionary(err.stack).USER_NOT_FOUND;
+      throw ExceptionDictionary({
+        stack: err.stack,
+        errorCode: ErrorCode.USER_NOT_FOUND,
+      });
     }
   }
 
@@ -51,7 +54,10 @@ export class AdminService {
     try {
       savedUser = await this.userRepository.save(user);
     } catch (err) {
-      throw new ExceptionDictionary(err.stack).USER_CREATION_ERROR;
+      throw ExceptionDictionary({
+        stack: err.stack,
+        errorCode: ErrorCode.USER_CREATION_ERROR,
+      });
     }
     this.sendConfirmationMail(savedUser);
     return savedUser;
@@ -61,7 +67,10 @@ export class AdminService {
     try {
       this.appMailer.newUserMail(user.email, user.verification_token, user.name);
     } catch (err) {
-      throw new ExceptionDictionary(err.stack).EMAIL_SENDING_ERROR;
+      throw ExceptionDictionary({
+        stack: err.stack,
+        errorCode: ErrorCode.EMAIL_SENDING_ERROR,
+      });
     }
   }
 
@@ -73,14 +82,19 @@ export class AdminService {
       await this.userRepository.update(user.id, userEntity);
       return this.getUser(user.id);
     } catch (err) {
-      throw new ExceptionDictionary(err.stack).USER_UPDATE_ERROR;
+      throw ExceptionDictionary({
+        stack: err.stack,
+        errorCode: ErrorCode.USER_UPDATE_ERROR,
+      });
     }
   }
 
   async deleteUser(authHeader: string, id: number): Promise<UserResponse> {
     const currentUser = await this.userService.getProfile(authHeader);
     if (currentUser.id === Number(id)) {
-      throw new ExceptionDictionary().USER_DELETION_ERROR_SELF_DELETION;
+      throw ExceptionDictionary({
+        errorCode: ErrorCode.USER_DELETION_ERROR_SELF_DELETION,
+      });
     }
     const user = await this.userRepository.findOne(id);
     return this.userRepository.remove(user);

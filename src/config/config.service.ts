@@ -24,8 +24,8 @@ const CONFIG_KEYS = [
 export class ConfigService {
   public envConfig: EnvConfig;
 
-  constructor() {
-    let environment = process.env.NODE_ENV;
+  constructor(env?: string) {
+    let environment = env || process.env.NODE_ENV;
     if (!environment) {
       environment = 'development';
     }

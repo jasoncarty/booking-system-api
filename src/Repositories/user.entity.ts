@@ -14,6 +14,10 @@ import { IsEmail } from 'class-validator';
 import { UserRole } from '../proto';
 import { EventAttendee } from './eventAttendee.entity';
 
+/* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+export const relationType = type => EventAttendee;
+export const relation = eventAttendee => eventAttendee.user;
+
 @Entity({ name: 'users' })
 export class User extends BaseEntity {
   @Index(['email'])
@@ -88,8 +92,7 @@ export class User extends BaseEntity {
   @UpdateDateColumn()
   updated_at: Date;
 
-  /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-  @OneToMany(type => EventAttendee, eventAttendee => eventAttendee.user, {
+  @OneToMany(relationType, relation, {
     onDelete: 'CASCADE',
   })
   eventAttendees: EventAttendee[];

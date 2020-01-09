@@ -3,7 +3,7 @@ import { Injectable, Scope } from '@nestjs/common';
 import { UserService } from '../Public/User/user.service';
 import { UserRole, UserDto } from '../../proto';
 import { verifyToken } from '../../utils';
-import { ExceptionDictionary } from './../../proto';
+import { ExceptionDictionary, ErrorCode } from './../../proto';
 
 @Injectable({ scope: Scope.REQUEST })
 export class AuthService {
@@ -16,7 +16,9 @@ export class AuthService {
   async authenticateAdmin(token: string): Promise<UserDto> {
     const user = await this.verifyAndFindUser(token);
     if (!user || user.role !== UserRole.ADMIN) {
-      throw new ExceptionDictionary().AUTHENTICATION_FAILED;
+      throw ExceptionDictionary({
+        errorCode: ErrorCode.AUTHENTICATION_FAILED,
+      });
     }
     return user;
   }
@@ -30,7 +32,10 @@ export class AuthService {
     try {
       email = verifyToken(token).email;
     } catch (err) {
-      throw new ExceptionDictionary(err.stack).AUTHENTICATION_FAILED;
+      throw ExceptionDictionary({
+        stack: err.stack,
+        errorCode: ErrorCode.AUTHENTICATION_FAILED,
+      });
     }
     return await this.findUser(email);
   }

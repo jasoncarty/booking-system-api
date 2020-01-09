@@ -11,8 +11,10 @@ export const getSeedScripts = async (): Promise<SeedScriptObject[]> => {
   const today = new Date();
   const tomorrow = new Date();
   const dayAfterTomorrow = new Date();
+  const yesterday = new Date();
   tomorrow.setDate(today.getDate() + 1);
   dayAfterTomorrow.setDate(tomorrow.getDate() + 1);
+  yesterday.setDate(yesterday.getDate() - 1);
 
   return [
     {
@@ -50,6 +52,11 @@ export const getSeedScripts = async (): Promise<SeedScriptObject[]> => {
       preScript: "SELECT id FROM events WHERE id='3'",
       preScriptResult: undefined,
       script: `INSERT INTO events (name, description, starts_at, ends_at, title, maximum_event_attendees) VALUES ('The third event', 'the description of the third event', '${tomorrow.toISOString()}', '${dayAfterTomorrow.toISOString()}', 'The third events title', 5)`,
+    },
+    {
+      preScript: "SELECT id FROM events WHERE id='4'",
+      preScriptResult: undefined,
+      script: `INSERT INTO events (name, description, starts_at, ends_at, title, maximum_event_attendees) VALUES ('The fourth event', 'the description of the fourth event', '${yesterday.toISOString()}', '${yesterday.toISOString()}', 'The third events title', 5)`,
     },
   ];
 };

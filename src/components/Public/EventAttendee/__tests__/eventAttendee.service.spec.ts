@@ -56,9 +56,9 @@ describe('EventAttendeeService', () => {
           Promise.resolve((mockEventAttendee as unknown) as EventAttendee),
         );
 
-      expect(await eventAttendeeService.createNewEventAttendee(mockUser, event)).toEqual(
-        mockEventAttendee,
-      );
+      expect(
+        await eventAttendeeService.createNewEventAttendee(mockUser.id, event),
+      ).toEqual(mockEventAttendee);
     });
 
     it('throws a DUPLICATE_EVENT_ATTENDEE_ERROR error', async () => {
@@ -69,7 +69,7 @@ describe('EventAttendeeService', () => {
         );
 
       try {
-        await eventAttendeeService.createNewEventAttendee(mockUser, event);
+        await eventAttendeeService.createNewEventAttendee(mockUser.id, event);
         throw new Error('Test failed');
       } catch (err) {
         expect(err.errorCode).toEqual(ErrorCode.DUPLICATE_EVENT_ATTENDEE_ERROR);
@@ -86,7 +86,7 @@ describe('EventAttendeeService', () => {
         .mockImplementationOnce(() => Promise.reject(new Error('sdfsf')));
 
       try {
-        await eventAttendeeService.createNewEventAttendee(mockUser, event);
+        await eventAttendeeService.createNewEventAttendee(mockUser.id, event);
         throw new Error('Test failed');
       } catch (err) {
         expect(err.errorCode).toEqual(ErrorCode.EVENT_ATTENDEE_CREATION_ERROR);

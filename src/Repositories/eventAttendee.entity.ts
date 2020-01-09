@@ -13,6 +13,14 @@ import {
 import { User } from './user.entity';
 import { Event } from './event.entity';
 
+/* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+export const userRelationType = type => User;
+export const userRelation = user => user.eventAttendees;
+
+/* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+export const eventRelationType = type => Event;
+export const eventRelation = event => event.eventAttendees;
+
 @Entity({ name: 'eventAttendees' })
 export class EventAttendee extends BaseEntity {
   @Index(['event', 'user'], { unique: true })
@@ -41,15 +49,13 @@ export class EventAttendee extends BaseEntity {
   @UpdateDateColumn()
   updated_at: Date;
 
-  /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-  @ManyToOne(type => User, user => user.eventAttendees, {
+  @ManyToOne(userRelationType, userRelation, {
     onDelete: 'CASCADE',
     eager: true,
   })
   user: User;
 
-  /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-  @ManyToOne(type => Event, event => event.eventAttendees, {
+  @ManyToOne(eventRelationType, eventRelation, {
     onDelete: 'CASCADE',
   })
   event: Event;

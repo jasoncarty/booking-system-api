@@ -1,6 +1,8 @@
 import * as bcryptjs from 'bcryptjs';
+import { SelectQueryBuilder } from 'typeorm';
 
 import { UserService } from '../user.service';
+import { User } from './../../../../Repositories/user.entity';
 import { ErrorCode } from '../../../../proto';
 import * as utils from '../../../../utils';
 import {
@@ -9,6 +11,7 @@ import {
   updatedUser,
   UserRepositoryMock,
   mailSentSuccess,
+  mockUser,
 } from '../../../../mocks';
 
 jest.mock('../../../../utils', () => ({
@@ -21,6 +24,15 @@ jest.mock('../../../../utils', () => ({
   validate: () => jest.fn(),
 }));
 
+const baseAttendeesQueryMock = ({
+  select: () => ({
+    where: () => ({
+      getQuery: () => jest.fn(),
+      getParameters: () => jest.fn(),
+    }),
+  }),
+} as unknown) as Promise<SelectQueryBuilder<User>>;
+
 const authHeader = 'Bearer fasdf7tasbdfasdfsfd';
 
 let userService: UserService;
@@ -30,11 +42,23 @@ describe('UserService', () => {
     userService = new UserService(UserRepositoryMock, appMailer);
   });
 
-  describe('private getUser', () => {
+  describe('getUser', () => {
     it('returns a user', async () => {
       jest.spyOn(UserRepositoryMock, 'findOne').mockImplementationOnce(() => singleUser);
 
-      expect(await userService['getUser'](1)).toEqual(await singleUser);
+      expect(await userService.getUser(1)).toEqual(await singleUser);
+    });
+
+    it('loads relations', async () => {
+      const findOneSpy = jest
+        .spyOn(UserRepositoryMock, 'findOne')
+        .mockImplementationOnce(() => singleUser);
+
+      await userService.getUser(1, true);
+      expect(findOneSpy).toHaveBeenCalledWith({
+        where: { id: 1 },
+        relations: ['eventAttendees'],
+      });
     });
 
     it('throws a USER_NOT_FOUND exception', async () => {
@@ -60,6 +84,98 @@ describe('UserService', () => {
         throw new Error('test failed');
       } catch (error) {
         expect(error.errorCode).toEqual(ErrorCode.USER_NOT_FOUND);
+      }
+    });
+  });
+
+  describe('baseAttendeesQuery', () => {
+    it('returns a baseQuery', async () => {
+      jest.spyOn(UserRepositoryMock, 'createQueryBuilder').mockImplementationOnce(
+        () =>
+          (({
+            leftJoinAndSelect: () =>
+              Promise.resolve('SELECT users LEFT JOIN eventAttendees'),
+          } as unknown) as SelectQueryBuilder<User>),
+      );
+
+      expect(await userService.baseAttendeesQuery()).toStrictEqual(
+        'SELECT users LEFT JOIN eventAttendees',
+      );
+    });
+  });
+
+  describe('getAttendees', () => {
+    it('returns an object with reserves and nonReserves', async () => {
+      jest
+        .spyOn(userService, 'getReservesAndNonReserves')
+        .mockImplementation(() => Promise.resolve([mockUser, mockUser]));
+
+      expect(await userService.getAttendees(1)).toStrictEqual({
+        reserves: [mockUser, mockUser],
+        nonReserves: [mockUser, mockUser],
+      });
+      jest.restoreAllMocks();
+    });
+
+    it('throws an EVENT_ATTENDEE_FETCHING_ERROR errors', async () => {
+      jest
+        .spyOn(userService, 'getReservesAndNonReserves')
+        .mockImplementationOnce(() => Promise.reject(new Error('sdfasdf')));
+
+      try {
+        await userService.getAttendees(1);
+        throw new Error('Test failed');
+      } catch (err) {
+        expect(err.errorCode).toEqual(ErrorCode.EVENT_ATTENDEE_FETCHING_ERROR);
+      }
+    });
+  });
+
+  describe('getNonAttendees', () => {
+    it('returns an array of users', async () => {
+      jest
+        .spyOn(userService, 'baseAttendeesQuery')
+        .mockImplementationOnce(() => baseAttendeesQueryMock);
+
+      jest.spyOn(UserRepositoryMock, 'createQueryBuilder').mockImplementationOnce(
+        () =>
+          (({
+            where: () => ({
+              orderBy: () => ({
+                setParameters: () => ({
+                  getMany: () => Promise.resolve([mockUser, mockUser]),
+                }),
+              }),
+            }),
+          } as unknown) as SelectQueryBuilder<User>),
+      );
+
+      expect(await userService.getNonAttendees(1)).toStrictEqual([mockUser, mockUser]);
+    });
+
+    it('throws an EVENT_ATTENDEE_FETCHING_ERROR error', async () => {
+      jest
+        .spyOn(userService, 'baseAttendeesQuery')
+        .mockImplementationOnce(() => baseAttendeesQueryMock);
+
+      jest.spyOn(UserRepositoryMock, 'createQueryBuilder').mockImplementationOnce(
+        () =>
+          (({
+            where: () => ({
+              orderBy: () => ({
+                setParameters: () => ({
+                  getMany: () => Promise.reject(new Error('aksjdflkjas')),
+                }),
+              }),
+            }),
+          } as unknown) as SelectQueryBuilder<User>),
+      );
+
+      try {
+        await userService.getNonAttendees(1);
+        throw new Error('Test failed');
+      } catch (err) {
+        expect(err.errorCode).toEqual(ErrorCode.EVENT_ATTENDEE_FETCHING_ERROR);
       }
     });
   });
@@ -95,6 +211,37 @@ describe('UserService', () => {
       } catch (error) {
         expect(error.errorCode).toEqual(ErrorCode.AUTHENTICATION_FAILED);
       }
+    });
+  });
+
+  describe('getReservesAndNonReserves', () => {
+    it('returns an array of UserDto', async () => {
+      jest.spyOn(userService, 'baseAttendeesQuery').mockImplementationOnce(
+        () =>
+          (({
+            where: () => ({
+              orderBy: () => ({
+                getMany: () => [mockUser, mockUser],
+              }),
+            }),
+          } as unknown) as Promise<SelectQueryBuilder<User>>),
+      );
+
+      jest.spyOn(UserRepositoryMock, 'createQueryBuilder').mockImplementationOnce(
+        () =>
+          (({
+            where: () => ({
+              orderBy: () => ({
+                getMany: () => Promise.resolve([mockUser, mockUser]),
+              }),
+            }),
+          } as unknown) as SelectQueryBuilder<User>),
+      );
+
+      expect(await userService.getReservesAndNonReserves(1, false)).toStrictEqual([
+        mockUser,
+        mockUser,
+      ]);
     });
   });
 
