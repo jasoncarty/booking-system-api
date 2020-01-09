@@ -1,5 +1,6 @@
 import { Connection, ConnectionOptions } from 'typeorm';
 import { PugAdapter } from '@nest-modules/mailer';
+import { join } from 'path';
 
 import {
   AppModule,
@@ -65,9 +66,7 @@ describe('AppModule', () => {
         username: 'postgres',
         password: '',
         database: 'booking-system-test',
-        entities: [
-          '/Users/jasoncarty/code/node/booking-system-api/src/**/*.entity{.ts,.js}',
-        ],
+        entities: [join(__dirname, '../', '/**/*.entity{.ts,.js}')],
         synchronize: true,
         logging: null,
       });
@@ -84,9 +83,7 @@ describe('AppModule', () => {
         username: 'postgres',
         password: '',
         database: 'dumped_db',
-        entities: [
-          '/Users/jasoncarty/code/node/booking-system-api/src/**/*.entity{.ts,.js}',
-        ],
+        entities: [join(__dirname, '../', '/**/*.entity{.ts,.js}')],
         synchronize: true,
         logging: 'all',
       });
@@ -103,7 +100,7 @@ describe('AppModule', () => {
         transport: { streamTransport: true },
         defaults: { from: '"nest-modules" <noreply@booking-system.com>' },
         template: {
-          dir: '/Users/jasoncarty/code/node/booking-system-api/src/mailTemplates',
+          dir: join(__dirname, '../mailTemplates'),
           adapter: new PugAdapter(),
           options: { strict: true },
         },
