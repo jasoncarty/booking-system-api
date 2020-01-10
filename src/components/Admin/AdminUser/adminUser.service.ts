@@ -6,11 +6,15 @@ import { Repository } from 'typeorm';
 import { generate } from 'rand-token';
 
 import { User } from '../../../Repositories/user.entity';
-import { ExceptionDictionary, ErrorCode } from '../../../proto';
 import { AppMailerService } from '../../AppMailer/appMailer.service';
 import { UserService } from '../../Public/User/user.service';
-import { AdminUserUpdateDto, AdminUserCreateDto } from './../../../proto';
-import { UserResponse } from '../../../proto/user.response.dto';
+import {
+  AdminUserUpdateDto,
+  AdminUserCreateDto,
+  ExceptionDictionary,
+  ErrorCode,
+  UserResponse,
+} from '../../../dto';
 
 @Injectable()
 export class AdminService {

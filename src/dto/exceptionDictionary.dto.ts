@@ -1,6 +1,6 @@
 import { HttpStatus } from '@nestjs/common';
 
-import { CustomException } from './../utils/customException';
+import { CustomException } from '../utils/customException';
 import { ErrorCode } from './errorCode.enum';
 
 const listOfErrors = {

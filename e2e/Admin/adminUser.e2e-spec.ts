@@ -1,5 +1,6 @@
-import { ErrorCode } from '../../src/proto';
-import { makeRequest, createAdminToken, createUserToken } from '../utils';
+import { createAdminToken, createUserToken, makeRequest } from '../utils';
+
+import { ErrorCode } from '../../src/dto';
 
 describe('AdminUser', () => {
   let adminToken: string;

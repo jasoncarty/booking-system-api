@@ -1,5 +1,5 @@
-import { SessionDto } from '../proto';
 import { ConfigService } from './../config/config.service';
+import { SessionDto } from '../dto';
 import { verify } from 'jsonwebtoken';
 
 export const verifyToken = (token: string): SessionDto => {

@@ -1,9 +1,9 @@
-import { ArgumentMetadata } from '@nestjs/common';
 import * as classValidator from 'class-validator';
+import { ArgumentMetadata } from '@nestjs/common';
 
-import { ValidationPipe } from './../validationPipe';
+import { ErrorCode } from '../../dto';
 import { ValidationError } from 'class-validator';
-import { ErrorCode } from './../../proto';
+import { ValidationPipe } from './../validationPipe';
 
 let validationPipe: ValidationPipe;
 describe('validationPipe', () => {

@@ -5,7 +5,7 @@ import {
   EventDto,
   EventCreateDto,
   EventUpdateDto,
-} from './../../../proto';
+} from '../../../dto';
 import { AdminEventService } from './adminEvent.service';
 
 @Controller('admin')

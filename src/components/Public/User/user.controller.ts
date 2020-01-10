@@ -2,12 +2,12 @@ import { Controller, Get, Req, Put, Body, Post, Param } from '@nestjs/common';
 import { Request } from 'express';
 
 import { UserService } from './user.service';
-import { UserDto } from '../../../proto';
 import {
   UserConfirmAccountDto,
+  UserDto,
   UserUpdateDto,
   UserConfirmRequestDto,
-} from './../../../proto';
+} from '../../../dto';
 
 @Controller('users')
 export class UserController {

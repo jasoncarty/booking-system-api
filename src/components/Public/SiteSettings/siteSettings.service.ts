@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { SiteSettings } from '../../../Repositories/siteSettings.entity';
-import { SiteSettingsDto } from '../../../proto';
+import { SiteSettingsDto } from '../../../dto';
 
 @Injectable()
 export class SiteSettingsService {

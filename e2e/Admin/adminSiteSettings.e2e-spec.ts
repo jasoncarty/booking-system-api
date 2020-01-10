@@ -1,6 +1,7 @@
+import { createAdminToken, createUserToken, makeRequest } from '../utils';
+
 /* eslint-disable @typescript-eslint/camelcase */
-import { ErrorCode } from '../../src/proto';
-import { makeRequest, createAdminToken, createUserToken } from '../utils';
+import { ErrorCode } from '../../src/dto';
 
 describe('AdminSiteSettings', () => {
   let adminToken: string;

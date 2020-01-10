@@ -1,18 +1,18 @@
 import * as bcryptjs from 'bcryptjs';
 import { SelectQueryBuilder } from 'typeorm';
 
-import { UserService } from '../user.service';
-import { User } from './../../../../Repositories/user.entity';
-import { ErrorCode } from '../../../../proto';
 import * as utils from '../../../../utils';
 import {
-  appMailer,
-  singleUser,
-  updatedUser,
   UserRepositoryMock,
+  appMailer,
   mailSentSuccess,
   mockUser,
+  singleUser,
+  updatedUser,
 } from '../../../../mocks';
+import { ErrorCode } from '../../../../dto';
+import { User } from './../../../../Repositories/user.entity';
+import { UserService } from '../user.service';
 
 jest.mock('../../../../utils', () => ({
   CustomException: jest.fn(),

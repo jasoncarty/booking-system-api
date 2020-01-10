@@ -1,4 +1,4 @@
-import { EventAttendee } from './../Repositories/eventAttendee.entity';
+import { EventAttendee } from '../Repositories/eventAttendee.entity';
 
 export interface EventDto {
   id: number;

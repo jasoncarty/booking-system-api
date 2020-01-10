@@ -11,7 +11,7 @@ import {
 } from 'typeorm';
 import { IsEmail } from 'class-validator';
 
-import { UserRole } from '../proto';
+import { UserRole } from '../dto';
 import { EventAttendee } from './eventAttendee.entity';
 
 /* eslint-disable-next-line @typescript-eslint/no-unused-vars */

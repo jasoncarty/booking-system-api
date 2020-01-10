@@ -1,22 +1,22 @@
 import { SelectQueryBuilder } from 'typeorm';
 
-import { EventService } from './../event.service';
-import { UserService } from './../../User/user.service';
-import { EventAttendeeService } from './../../EventAttendee/eventAttendee.service';
-import { Event } from './../../../../Repositories/event.entity';
-import { User } from './../../../../Repositories/user.entity';
-import { EventAttendee } from './../../../../Repositories/eventAttendee.entity';
-import { ErrorCode } from '../../../../proto';
 import {
-  mockEvent,
-  EventRepositoryMock,
-  singleEvent,
   EventAttendeeRepositoryMock,
-  appMailer,
+  EventRepositoryMock,
   UserRepositoryMock,
-  mockUser,
+  appMailer,
+  mockEvent,
   mockEventAttendee,
+  mockUser,
+  singleEvent,
 } from '../../../../mocks';
+import { ErrorCode } from '../../../../dto';
+import { Event } from './../../../../Repositories/event.entity';
+import { EventAttendee } from './../../../../Repositories/eventAttendee.entity';
+import { EventAttendeeService } from './../../EventAttendee/eventAttendee.service';
+import { EventService } from './../event.service';
+import { User } from './../../../../Repositories/user.entity';
+import { UserService } from './../../User/user.service';
 
 describe('EventService', () => {
   let eventService: EventService;

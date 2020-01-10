@@ -1,8 +1,8 @@
 import { ArgumentsHost, HttpStatus } from '@nestjs/common';
 
-import { HttpExceptionFilter } from './../httpExceptionFilter';
 import { CustomException } from './../customException';
-import { ErrorCode } from '../../proto';
+import { ErrorCode } from '../../dto';
+import { HttpExceptionFilter } from './../httpExceptionFilter';
 
 let httpExceptionFilter: HttpExceptionFilter;
 

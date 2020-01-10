@@ -1,15 +1,15 @@
-import { Request } from 'express';
-
-import { AdminService } from '../adminUser.service';
-import { UserService } from '../../../Public/User/user.service';
-import { ErrorCode } from '../../../../proto';
 import {
+  UserRepositoryMock,
+  allUsers,
   appMailer,
   singleUser,
-  allUsers,
   updatedUser,
-  UserRepositoryMock,
 } from '../../../../mocks';
+
+import { AdminService } from '../adminUser.service';
+import { ErrorCode } from '../../../../dto';
+import { Request } from 'express';
+import { UserService } from '../../../Public/User/user.service';
 
 jest.mock('../../../../utils', () => ({
   CustomException: jest.fn(),

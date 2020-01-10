@@ -1,16 +1,16 @@
+import {
+  EventAttendeeRepositoryMock,
+  EventRepositoryMock,
+  UserRepositoryMock,
+  appMailer,
+  mockEvent,
+} from './../../../../mocks';
+import { EventCreateDto, EventUpdateDto } from '../../../../dto';
 import { AdminEventController } from './../adminEvent.controller';
 import { AdminEventService } from './../adminEvent.service';
-import { EventService } from './../../../Public/Event/event.service';
 import { EventAttendeeService } from './../../../Public/EventAttendee/eventAttendee.service';
+import { EventService } from './../../../Public/Event/event.service';
 import { UserService } from './../../../Public/User/user.service';
-import { EventCreateDto, EventUpdateDto } from './../../../../proto';
-import {
-  mockEvent,
-  EventRepositoryMock,
-  EventAttendeeRepositoryMock,
-  appMailer,
-  UserRepositoryMock,
-} from './../../../../mocks';
 
 describe('AdminEventController', () => {
   let userService: UserService;

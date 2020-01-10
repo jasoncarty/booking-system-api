@@ -2,7 +2,7 @@
 import { Client } from 'pg';
 import { Repository, UpdateResult } from 'typeorm';
 
-import { AuthenticatedUserDto, EventDto, UserRole } from './../proto';
+import { AuthenticatedUserDto, EventDto, UserRole } from '../dto';
 import { AppMailerService } from './../components/AppMailer/appMailer.service';
 import { Event } from '../Repositories/event.entity';
 import { EventAttendee } from '../Repositories/eventAttendee.entity';

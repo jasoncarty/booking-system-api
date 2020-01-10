@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { Event } from './../../../Repositories/event.entity';
-import { EventAttendee } from './../../../Repositories/eventAttendee.entity';
 import {
   ExceptionDictionary,
   EventWithAttendeesDto,
@@ -12,7 +11,7 @@ import {
   ErrorCode,
   EventUpdateDto,
   AttendeeIdsDto,
-} from '../../../proto';
+} from '../../../dto';
 import { EventService } from '../../Public/Event/event.service';
 import { UserService } from '../../Public/User/user.service';
 import { EventAttendeeService } from '../../Public/EventAttendee/eventAttendee.service';

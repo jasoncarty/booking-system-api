@@ -2,8 +2,7 @@ import { Controller, Get, Post, Param, Body, Put, Delete, Req } from '@nestjs/co
 import { Request } from 'express';
 
 import { AdminService } from './adminUser.service';
-import { AdminUserUpdateDto, AdminUserCreateDto } from './../../../proto';
-import { UserResponse } from '../../../proto/user.response.dto';
+import { AdminUserUpdateDto, AdminUserCreateDto, UserResponse } from '../../../dto';
 
 @Controller('admin')
 export class AdminController {

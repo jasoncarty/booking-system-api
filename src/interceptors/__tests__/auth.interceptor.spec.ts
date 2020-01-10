@@ -1,11 +1,11 @@
-import { ExecutionContext, CallHandler } from '@nestjs/common';
 import * as operators from 'rxjs/operators';
+import { CallHandler, ExecutionContext } from '@nestjs/common';
 
-import { UserService } from '../../components/Public/User/user.service';
+import { AuthInterceptor, NON_PROTECTED_PATHS } from './../auth.interceptor';
+import { UserRepositoryMock, appMailer, singleUser } from './../../mocks/index';
 import { AuthService } from './../../components/Auth/auth.service';
-import { AuthInterceptor, NON_PROTECTED_PATHS, TEST_ENVS } from './../auth.interceptor';
-import { ErrorCode } from './../../proto';
-import { singleUser, UserRepositoryMock, appMailer } from './../../mocks/index';
+import { ErrorCode } from '../../dto';
+import { UserService } from '../../components/Public/User/user.service';
 
 describe('AuthInterceptor', () => {
   let authService: AuthService;

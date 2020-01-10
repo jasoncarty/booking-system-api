@@ -1,5 +1,5 @@
 import { CustomException } from './../customException';
-import { ErrorCode } from '../../proto';
+import { ErrorCode } from '../../dto';
 import { HttpStatus } from '@nestjs/common';
 
 describe('CustomException', () => {

@@ -1,5 +1,6 @@
 import { ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
-import { AttendeeIdsDto } from '../proto';
+
+import { AttendeeIdsDto } from '../dto';
 
 export const VALID_INPUT = {
   attendees: {

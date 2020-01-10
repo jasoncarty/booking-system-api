@@ -9,15 +9,18 @@ import { generate } from 'rand-token';
 
 import { User } from '../../../Repositories/user.entity';
 import { EventAttendee } from '../../../Repositories/eventAttendee.entity';
-import { UserDto, ExceptionDictionary, AttendeesDto, ErrorCode } from '../../../proto';
 import { extractToken, verifyToken, createAuthToken } from '../../../utils';
 import {
+  UserDto,
+  ExceptionDictionary,
+  AttendeesDto,
+  ErrorCode,
   UserConfirmAccountDto,
   UserUpdateDto,
   UserConfirmRequestDto,
   AuthenticationCreateDto,
   AuthenticatedUserDto,
-} from './../../../proto';
+} from '../../../dto';
 import { AppMailerService } from '../../AppMailer/appMailer.service';
 
 @Injectable()

@@ -1,8 +1,9 @@
-import { PipeTransform, Injectable, ArgumentMetadata } from '@nestjs/common';
-import { validate, ValidationError } from 'class-validator';
-import { plainToClass } from 'class-transformer';
+import { ArgumentMetadata, Injectable, PipeTransform } from '@nestjs/common';
+import { ErrorCode, ExceptionDictionary } from '../dto';
+import { ValidationError, validate } from 'class-validator';
+
 import { isArray } from 'util';
-import { ExceptionDictionary, ErrorCode } from './../proto';
+import { plainToClass } from 'class-transformer';
 
 interface ValidationExceptionMapObject {
   isEmail: object;

@@ -1,13 +1,15 @@
-import { UserService } from '../../Public/User/user.service';
-import { ErrorCode } from '../../../proto';
 import * as utils from '../../../utils';
-import { AuthService } from '../auth.service';
+
 import {
-  appMailer,
-  singleUser,
   UserRepositoryMock,
   adminUser,
+  appMailer,
+  singleUser,
 } from './../../../mocks/index';
+
+import { AuthService } from '../auth.service';
+import { ErrorCode } from '../../../dto';
+import { UserService } from '../../Public/User/user.service';
 
 describe('AuthService', () => {
   let authService: AuthService;
