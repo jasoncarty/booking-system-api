@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Param, Body, Put, Delete, Req } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, Put, Delete } from '@nestjs/common';
 
 import {
   EventWithAttendeesDto,

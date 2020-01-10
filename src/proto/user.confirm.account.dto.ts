@@ -1,5 +1,5 @@
 import { IsEmail, IsString, MinLength, Validate } from 'class-validator';
-import { IsStrongPassword } from '../../../../utils/IsStrongPassword';
+import { IsStrongPassword } from '../utils/IsStrongPassword';
 
 export class UserConfirmAccountDto {
   @IsEmail()

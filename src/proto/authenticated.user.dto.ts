@@ -1,4 +1,4 @@
-import { UserDto } from '../../../proto/user.dto';
+import { UserDto } from './user.dto';
 
 export interface AuthenticatedUserDto {
   user: UserDto;

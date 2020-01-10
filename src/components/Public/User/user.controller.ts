@@ -3,7 +3,11 @@ import { Request } from 'express';
 
 import { UserService } from './user.service';
 import { UserDto } from '../../../proto';
-import { UserConfirmAccountDto, UserUpdateDto, UserConfirmRequestDto } from './dto';
+import {
+  UserConfirmAccountDto,
+  UserUpdateDto,
+  UserConfirmRequestDto,
+} from './../../../proto';
 
 @Controller('users')
 export class UserController {

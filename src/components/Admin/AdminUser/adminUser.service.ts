@@ -9,7 +9,7 @@ import { User } from '../../../Repositories/user.entity';
 import { ExceptionDictionary, ErrorCode } from '../../../proto';
 import { AppMailerService } from '../../AppMailer/appMailer.service';
 import { UserService } from '../../Public/User/user.service';
-import { UserUpdateDto, UserCreateDto } from './dto';
+import { AdminUserUpdateDto, AdminUserCreateDto } from './../../../proto';
 import { UserResponse } from '../../../proto/user.response.dto';
 
 @Injectable()
@@ -44,7 +44,7 @@ export class AdminService {
     });
   }
 
-  async createUser(values: UserCreateDto): Promise<UserResponse> {
+  async createUser(values: AdminUserCreateDto): Promise<UserResponse> {
     const user = {
       ...values,
       verification_token: generate(40),
@@ -74,7 +74,7 @@ export class AdminService {
     }
   }
 
-  async updateUser(id: number, values: UserUpdateDto): Promise<UserResponse> {
+  async updateUser(id: number, values: AdminUserUpdateDto): Promise<UserResponse> {
     const user = await this.getUser(id);
     try {
       const userEntity = new User();

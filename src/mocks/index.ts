@@ -1,13 +1,13 @@
 /* eslint @typescript-eslint/camelcase: 0 */
-import { AuthenticatedUserDto } from './../components/Auth/dto/authenticated.user.dto';
-import { UserRole, EventDto } from './../proto';
-import { User } from '../Repositories/user.entity';
+import { Client } from 'pg';
+import { Repository, UpdateResult } from 'typeorm';
+
+import { AuthenticatedUserDto, EventDto, UserRole } from './../proto';
+import { AppMailerService } from './../components/AppMailer/appMailer.service';
 import { Event } from '../Repositories/event.entity';
 import { EventAttendee } from '../Repositories/eventAttendee.entity';
 import { SiteSettings } from './../Repositories/siteSettings.entity';
-import { AppMailerService } from './../components/AppMailer/appMailer.service';
-import { Repository, UpdateResult } from 'typeorm';
-import { Client } from 'pg';
+import { User } from '../Repositories/user.entity';
 
 export const mailSentSuccess = {
   success: true,

@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { SiteSettings } from '../../../Repositories/siteSettings.entity';
-import { SiteSettingsDto, UpdateSiteSettingsDto } from './dto';
+import { SiteSettingsDto, UpdateSiteSettingsDto } from './../../../proto';
 import { SiteSettingsService } from '../../Public/SiteSettings/siteSettings.service';
 
 @Injectable()
@@ -17,8 +17,7 @@ export class AdminSiteSettingsService {
   ) {}
 
   async updateSiteSettings(values: UpdateSiteSettingsDto): Promise<SiteSettingsDto> {
-    let settings: SiteSettingsDto;
-    settings = await this.siteSettingsService.getSiteSettings();
+    const settings = await this.siteSettingsService.getSiteSettings();
 
     const siteSettingsEntity = new SiteSettings();
     Object.assign(siteSettingsEntity, values);

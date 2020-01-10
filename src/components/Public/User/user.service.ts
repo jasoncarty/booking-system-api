@@ -11,9 +11,14 @@ import { User } from '../../../Repositories/user.entity';
 import { EventAttendee } from '../../../Repositories/eventAttendee.entity';
 import { UserDto, ExceptionDictionary, AttendeesDto, ErrorCode } from '../../../proto';
 import { extractToken, verifyToken, createAuthToken } from '../../../utils';
-import { UserConfirmAccountDto, UserUpdateDto, UserConfirmRequestDto } from './dto';
+import {
+  UserConfirmAccountDto,
+  UserUpdateDto,
+  UserConfirmRequestDto,
+  AuthenticationCreateDto,
+  AuthenticatedUserDto,
+} from './../../../proto';
 import { AppMailerService } from '../../AppMailer/appMailer.service';
-import { AuthenticationCreateDto, AuthenticatedUserDto } from '../../Auth/dto';
 
 @Injectable()
 export class UserService {

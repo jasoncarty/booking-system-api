@@ -1,8 +1,7 @@
 import { Controller, Put, Body } from '@nestjs/common';
 
 import { AdminSiteSettingsService } from './adminSiteSettings.service';
-import { SiteSettingsDto } from './dto/site.settings.dto';
-import { UpdateSiteSettingsDto } from './dto';
+import { SiteSettingsDto, UpdateSiteSettingsDto } from '../../../proto';
 
 @Controller('admin/site-settings')
 export class AdminSiteSettingsController {

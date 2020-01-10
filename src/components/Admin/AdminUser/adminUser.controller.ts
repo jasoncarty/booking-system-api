@@ -2,7 +2,7 @@ import { Controller, Get, Post, Param, Body, Put, Delete, Req } from '@nestjs/co
 import { Request } from 'express';
 
 import { AdminService } from './adminUser.service';
-import { UserUpdateDto, UserCreateDto } from './dto';
+import { AdminUserUpdateDto, AdminUserCreateDto } from './../../../proto';
 import { UserResponse } from '../../../proto/user.response.dto';
 
 @Controller('admin')
@@ -20,14 +20,14 @@ export class AdminController {
   }
 
   @Post('users/create')
-  createUser(@Body() userCreateDto: UserCreateDto): Promise<UserResponse> {
+  createUser(@Body() userCreateDto: AdminUserCreateDto): Promise<UserResponse> {
     return this.adminService.createUser(userCreateDto);
   }
 
   @Put('users/update/:id')
   updateUser(
     @Param() params,
-    @Body() userUpdateDto: UserUpdateDto,
+    @Body() userUpdateDto: AdminUserUpdateDto,
   ): Promise<UserResponse> {
     return this.adminService.updateUser(params.id, userUpdateDto);
   }
