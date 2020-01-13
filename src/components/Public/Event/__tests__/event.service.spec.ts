@@ -9,6 +9,7 @@ import {
   mockEventAttendee,
   mockUser,
   singleEvent,
+  SiteSettingsRepositoryMock,
 } from '../../../../mocks';
 import { ErrorCode } from '../../../../dto';
 import { Event } from './../../../../Repositories/event.entity';
@@ -17,14 +18,17 @@ import { EventAttendeeService } from './../../EventAttendee/eventAttendee.servic
 import { EventService } from './../event.service';
 import { User } from './../../../../Repositories/user.entity';
 import { UserService } from './../../User/user.service';
+import { SiteSettingsService } from '../../SiteSettings/siteSettings.service';
 
 describe('EventService', () => {
   let eventService: EventService;
   let userService: UserService;
+  let siteSettingsService: SiteSettingsService;
   let eventAttendeeService: EventAttendeeService;
 
   beforeEach(() => {
-    userService = new UserService(UserRepositoryMock, appMailer);
+    siteSettingsService = new SiteSettingsService(SiteSettingsRepositoryMock);
+    userService = new UserService(UserRepositoryMock, appMailer, siteSettingsService);
     eventAttendeeService = new EventAttendeeService(EventAttendeeRepositoryMock);
     eventService = new EventService(
       EventRepositoryMock,

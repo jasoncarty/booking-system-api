@@ -1,15 +1,15 @@
-import { MailerService } from '@nest-modules/mailer';
+import { MailerService, MailerOptions } from '@nest-modules/mailer';
 import { AppMailerService } from '../appMailer.service';
 
 describe('AppMailer', () => {
   let mailerService: MailerService;
   let appMailerService: AppMailerService;
 
-  const mailerOptions = {
+  const mailerOptions = ({
     transport: {
       dir: 'lkajsldf',
     },
-  };
+  } as unknown) as MailerOptions;
 
   const mailSentSuccess = {
     success: true,
@@ -27,29 +27,32 @@ describe('AppMailer', () => {
   });
 
   describe('newUserMail', () => {
+    const newUserMailOptions = {
+      to: 'some@email.com',
+      verificationToken: '987asd9f7asf',
+      userName: 'Roger Dodger',
+      siteName: 'the site',
+    };
+
     it('returns an object', async () => {
       jest
         .spyOn(mailerService, 'sendMail')
         .mockImplementation(() => Promise.resolve(mailSentSuccess));
 
-      expect(
-        await appMailerService.newUserMail(
-          'some@email.com',
-          '987asd9f7asf',
-          'Roger Dodger',
-        ),
-      ).toEqual(mailSentSuccess);
+      expect(await appMailerService.newUserMail(newUserMailOptions)).toEqual(
+        mailSentSuccess,
+      );
     });
 
-    it('throws an error', () => {
+    it('throws an error', async () => {
       const error = new Error('jlkajsdf');
       jest
         .spyOn(mailerService, 'sendMail')
         .mockImplementation(() => Promise.reject(error));
 
-      expect(
-        appMailerService.newUserMail('some@email.com', '987asd9f7asf', 'Roger Dodger'),
-      ).rejects.toEqual(error);
+      await expect(appMailerService.newUserMail(newUserMailOptions)).rejects.toEqual(
+        error,
+      );
     });
   });
 });

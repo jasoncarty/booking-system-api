@@ -72,7 +72,7 @@ export class AdminService {
   private async sendConfirmationMail(user: User): Promise<void> {
     try {
       const siteName = (await this.siteSettingsService.getSiteSettings()).site_name;
-      this.appMailer.newUserMail({
+      await this.appMailer.newUserMail({
         to: user.email,
         verificationToken: user.verification_token,
         userName: user.name,

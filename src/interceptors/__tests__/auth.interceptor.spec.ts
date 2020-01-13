@@ -2,18 +2,26 @@ import * as operators from 'rxjs/operators';
 import { CallHandler, ExecutionContext } from '@nestjs/common';
 
 import { AuthInterceptor, NON_PROTECTED_PATHS } from './../auth.interceptor';
-import { UserRepositoryMock, appMailer, singleUser } from './../../mocks/index';
+import {
+  UserRepositoryMock,
+  appMailer,
+  singleUser,
+  SiteSettingsRepositoryMock,
+} from './../../mocks/index';
 import { AuthService } from './../../components/Auth/auth.service';
 import { ErrorCode } from '../../dto';
 import { UserService } from '../../components/Public/User/user.service';
+import { SiteSettingsService } from '../../components/Public/SiteSettings/siteSettings.service';
 
 describe('AuthInterceptor', () => {
   let authService: AuthService;
   let userService: UserService;
+  let siteSettingsService: SiteSettingsService;
   let authInterceptor: AuthInterceptor;
 
   beforeEach(() => {
-    userService = new UserService(UserRepositoryMock, appMailer);
+    siteSettingsService = new SiteSettingsService(SiteSettingsRepositoryMock);
+    userService = new UserService(UserRepositoryMock, appMailer, siteSettingsService);
     authService = new AuthService(userService);
     authInterceptor = new AuthInterceptor(authService);
   });

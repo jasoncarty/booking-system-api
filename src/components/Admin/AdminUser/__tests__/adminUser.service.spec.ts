@@ -1,15 +1,18 @@
 import {
   UserRepositoryMock,
+  SiteSettingsRepositoryMock,
   allUsers,
   appMailer,
   singleUser,
   updatedUser,
+  mockSiteSettings,
 } from '../../../../mocks';
 
 import { AdminService } from '../adminUser.service';
 import { ErrorCode } from '../../../../dto';
 import { Request } from 'express';
 import { UserService } from '../../../Public/User/user.service';
+import { SiteSettingsService } from '../../../Public/SiteSettings/siteSettings.service';
 
 jest.mock('../../../../utils', () => ({
   CustomException: jest.fn(),
@@ -37,11 +40,18 @@ const otherUser = {
 
 let adminService: AdminService;
 let userService: UserService;
+let siteSettingsService: SiteSettingsService;
 
 describe('AdminService', () => {
   beforeEach(() => {
-    userService = new UserService(UserRepositoryMock, appMailer);
-    adminService = new AdminService(UserRepositoryMock, appMailer, userService);
+    siteSettingsService = new SiteSettingsService(SiteSettingsRepositoryMock);
+    userService = new UserService(UserRepositoryMock, appMailer, siteSettingsService);
+    adminService = new AdminService(
+      UserRepositoryMock,
+      appMailer,
+      userService,
+      siteSettingsService,
+    );
   });
 
   describe('private getUser', () => {
@@ -73,19 +83,22 @@ describe('AdminService', () => {
       expect(await adminService.getUsers()).toBe(await allUsers);
     });
 
-    it('throws an error', () => {
+    it('throws an error', async () => {
       const error = new Error('an error');
       jest
         .spyOn(UserRepositoryMock, 'find')
         .mockImplementationOnce(() => Promise.reject(error));
 
-      expect(adminService.getUsers()).rejects.toEqual(error);
+      await expect(adminService.getUsers()).rejects.toEqual(error);
     });
   });
 
   describe('createUser', () => {
     it('returns a created user', async () => {
       jest.spyOn(UserRepositoryMock, 'save').mockImplementationOnce(() => singleUser);
+      jest
+        .spyOn(siteSettingsService, 'getSiteSettings')
+        .mockImplementationOnce(() => mockSiteSettings);
 
       expect(
         await adminService.createUser({
@@ -118,22 +131,32 @@ describe('AdminService', () => {
       const newUserMailSpy = jest.fn();
       const _user = await singleUser;
       jest.spyOn(appMailer, 'newUserMail').mockImplementationOnce(newUserMailSpy);
+      jest
+        .spyOn(siteSettingsService, 'getSiteSettings')
+        .mockImplementationOnce(() => mockSiteSettings);
 
+      const siteSettings = await mockSiteSettings;
       expect(await adminService['sendConfirmationMail'](_user)).toBe(undefined);
       expect(newUserMailSpy).toHaveBeenCalledTimes(1);
-      expect(newUserMailSpy).toHaveBeenCalledWith(
-        _user.email,
-        _user.verification_token,
-        _user.name,
-      );
+      expect(newUserMailSpy).toHaveBeenCalledWith({
+        siteName: siteSettings.site_name,
+        to: _user.email,
+        userName: _user.name,
+        verificationToken: _user.verification_token,
+      });
     });
 
     it('throws an error', async () => {
-      jest.spyOn(appMailer, 'newUserMail').mockImplementationOnce(() => {
-        throw new Error('an error');
-      });
+      const error = new Error('an error');
+      jest
+        .spyOn(siteSettingsService, 'getSiteSettings')
+        .mockImplementationOnce(() => mockSiteSettings);
+      jest
+        .spyOn(appMailer, 'newUserMail')
+        .mockImplementationOnce(() => Promise.reject(error));
+
       const _user = await singleUser;
-      expect(() => adminService['sendConfirmationMail'](_user)).toThrow();
+      await expect(adminService['sendConfirmationMail'](_user)).rejects.toThrow();
     });
   });
 

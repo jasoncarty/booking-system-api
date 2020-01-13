@@ -4,8 +4,10 @@ import { SelectQueryBuilder } from 'typeorm';
 import * as utils from '../../../../utils';
 import {
   UserRepositoryMock,
+  SiteSettingsRepositoryMock,
   appMailer,
   mailSentSuccess,
+  mockSiteSettings,
   mockUser,
   singleUser,
   updatedUser,
@@ -13,6 +15,7 @@ import {
 import { ErrorCode } from '../../../../dto';
 import { User } from './../../../../Repositories/user.entity';
 import { UserService } from '../user.service';
+import { SiteSettingsService } from '../../SiteSettings/siteSettings.service';
 
 jest.mock('../../../../utils', () => ({
   CustomException: jest.fn(),
@@ -36,10 +39,12 @@ const baseAttendeesQueryMock = ({
 const authHeader = 'Bearer fasdf7tasbdfasdfsfd';
 
 let userService: UserService;
+let siteSettingsService: SiteSettingsService;
 
 describe('UserService', () => {
   beforeEach(() => {
-    userService = new UserService(UserRepositoryMock, appMailer);
+    siteSettingsService = new SiteSettingsService(SiteSettingsRepositoryMock);
+    userService = new UserService(UserRepositoryMock, appMailer, siteSettingsService);
   });
 
   describe('getUser', () => {
@@ -336,6 +341,9 @@ describe('UserService', () => {
     it('Adds/updates a verificationCode', async () => {
       jest.spyOn(userService, 'getUserByEmail').mockImplementationOnce(() => singleUser);
       jest.spyOn(UserRepositoryMock, 'update').mockImplementationOnce(() => updatedUser);
+      jest
+        .spyOn(siteSettingsService, 'getSiteSettings')
+        .mockImplementationOnce(() => mockSiteSettings);
 
       expect(await userService.requestConfirmation({ email: 'some@email.com' })).toEqual({
         mailSent: true,

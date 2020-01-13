@@ -2,10 +2,17 @@ import { Request } from 'express';
 
 import { UserController } from '../user.controller';
 import { UserService } from '../user.service';
-import { appMailer, singleUser, UserRepositoryMock } from '../../../../mocks/index';
+import { SiteSettingsService } from '../../SiteSettings/siteSettings.service';
+import {
+  appMailer,
+  singleUser,
+  UserRepositoryMock,
+  SiteSettingsRepositoryMock,
+} from '../../../../mocks/index';
 
 describe('UserController', () => {
   let userService: UserService;
+  let siteSettingsService: SiteSettingsService;
   let userController: UserController;
 
   const request = ({
@@ -15,7 +22,8 @@ describe('UserController', () => {
   } as unknown) as Request;
 
   beforeEach(async () => {
-    userService = new UserService(UserRepositoryMock, appMailer);
+    siteSettingsService = new SiteSettingsService(SiteSettingsRepositoryMock);
+    userService = new UserService(UserRepositoryMock, appMailer, siteSettingsService);
     userController = new UserController(userService);
   });
 
@@ -44,8 +52,14 @@ describe('UserController', () => {
 
   describe(':POST /users/confirmation/request', () => {
     it('requests confirmation', async () => {
-      jest.spyOn(userService, 'getProfile').mockImplementationOnce(() => singleUser);
-      jest.spyOn(UserRepositoryMock, 'findOne').mockImplementation(() => singleUser);
+      jest.spyOn(userService, 'requestConfirmation').mockImplementationOnce(() =>
+        Promise.resolve({
+          mailSent: true,
+          details: {
+            success: true,
+          },
+        }),
+      );
       expect(
         await userController.requestConfirmation({
           email: 'ljahsdf@ldhjkafs.com',
@@ -61,8 +75,8 @@ describe('UserController', () => {
 
   describe(':POST /users/confirmation/confirm/:verificationToken', () => {
     it('returns a confirmed user', async () => {
-      jest.spyOn(userService, 'getProfile').mockImplementationOnce(() => singleUser);
-      jest.spyOn(UserRepositoryMock, 'findOne').mockImplementationOnce(() => singleUser);
+      jest.spyOn(userService, 'confirmAccount').mockImplementationOnce(() => singleUser);
+
       expect(
         await userController.confirmAccount(
           {

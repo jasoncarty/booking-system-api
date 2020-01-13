@@ -2,6 +2,7 @@ import {
   EventAttendeeRepositoryMock,
   EventRepositoryMock,
   UserRepositoryMock,
+  SiteSettingsRepositoryMock,
   appMailer,
   mockEvent,
 } from './../../../../mocks';
@@ -11,16 +12,19 @@ import { AdminEventService } from './../adminEvent.service';
 import { EventAttendeeService } from './../../../Public/EventAttendee/eventAttendee.service';
 import { EventService } from './../../../Public/Event/event.service';
 import { UserService } from './../../../Public/User/user.service';
+import { SiteSettingsService } from '../../../Public/SiteSettings/siteSettings.service';
 
 describe('AdminEventController', () => {
   let userService: UserService;
+  let siteSettingsService: SiteSettingsService;
   let adminEventController: AdminEventController;
   let adminEventService: AdminEventService;
   let eventService: EventService;
   let eventAttendeeService: EventAttendeeService;
 
   beforeEach(() => {
-    userService = new UserService(UserRepositoryMock, appMailer);
+    siteSettingsService = new SiteSettingsService(SiteSettingsRepositoryMock);
+    userService = new UserService(UserRepositoryMock, appMailer, siteSettingsService);
     eventAttendeeService = new EventAttendeeService(EventAttendeeRepositoryMock);
     eventService = new EventService(
       EventRepositoryMock,
