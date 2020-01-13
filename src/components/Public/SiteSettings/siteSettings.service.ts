@@ -22,8 +22,7 @@ export class SiteSettingsService {
   }
 
   async getSiteSettings(): Promise<SiteSettingsDto> {
-    let settings: SiteSettingsDto;
-    settings = (await this.siteSettingsRepository.find())[0];
+    const settings = (await this.siteSettingsRepository.find())[0];
     if (!settings) {
       return await this.createSiteSettings();
     }

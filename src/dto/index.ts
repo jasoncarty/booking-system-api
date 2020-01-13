@@ -9,6 +9,7 @@ export { SessionDto } from './session.dto';
 export { UserDto } from './user.dto';
 export { UserRole } from './userRole.enum';
 export { UserResponse } from './user.response.dto';
+export { UserRequestPasswordResetDto } from './user.request.password.reset.dto';
 export { EventDto } from './event.dto';
 export { EventCreateDto } from './event.create.dto';
 export { EventUpdateDto } from './event.update.dto';

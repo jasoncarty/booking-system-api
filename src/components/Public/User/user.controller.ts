@@ -7,6 +7,7 @@ import {
   UserDto,
   UserUpdateDto,
   UserConfirmRequestDto,
+  UserRequestPasswordResetDto,
 } from '../../../dto';
 
 @Controller('users')
@@ -37,5 +38,12 @@ export class UserController {
     @Param() params,
   ): Promise<UserDto> {
     return this.service.confirmAccount(userConfirmAccountDto, params.verificationToken);
+  }
+
+  @Post('/password/request')
+  requestPasswordReset(
+    @Body() userRequestPasswordResetDto: UserRequestPasswordResetDto,
+  ): Promise<{}> {
+    return this.service.requestPasswordReset(userRequestPasswordResetDto);
   }
 }

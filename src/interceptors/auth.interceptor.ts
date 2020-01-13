@@ -13,7 +13,12 @@ import { Observable } from 'rxjs';
 import { Request } from 'express';
 import { map } from 'rxjs/operators';
 
-export const NON_PROTECTED_PATHS = ['authentication', 'verification', 'confirmation'];
+export const NON_PROTECTED_PATHS = [
+  'authentication',
+  'verification',
+  'confirmation',
+  'password',
+];
 export const TEST_ENVS = ['test', 'test-ci'];
 
 @Injectable()
