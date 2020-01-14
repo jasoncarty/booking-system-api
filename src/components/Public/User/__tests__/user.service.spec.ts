@@ -1,7 +1,7 @@
 import * as bcryptjs from 'bcryptjs';
 import { SelectQueryBuilder } from 'typeorm';
 
-import * as utils from '../../../../utils';
+import { ErrorCode } from '../../../../dto';
 import {
   UserRepositoryMock,
   SiteSettingsRepositoryMock,
@@ -12,10 +12,10 @@ import {
   singleUser,
   updatedUser,
 } from '../../../../mocks';
-import { ErrorCode } from '../../../../dto';
-import { User } from './../../../../Repositories/user.entity';
-import { UserService } from '../user.service';
+import * as utils from '../../../../utils';
 import { SiteSettingsService } from '../../SiteSettings/siteSettings.service';
+import { UserService } from '../user.service';
+import { User } from './../../../../Repositories/user.entity';
 
 jest.mock('../../../../utils', () => ({
   CustomException: jest.fn(),
@@ -361,6 +361,39 @@ describe('UserService', () => {
 
       try {
         await userService.requestConfirmation({ email: 'some@email.com' });
+        throw new Error('test failed');
+      } catch (error) {
+        expect(error.errorCode).toEqual(ErrorCode.EMAIL_SENDING_ERROR);
+      }
+    });
+  });
+
+  describe('requestPasswordReset', () => {
+    it('Adds/updates a password_reset_token', async () => {
+      jest.spyOn(userService, 'getUserByEmail').mockImplementationOnce(() => singleUser);
+      jest.spyOn(UserRepositoryMock, 'update').mockImplementationOnce(() => updatedUser);
+      jest
+        .spyOn(siteSettingsService, 'getSiteSettings')
+        .mockImplementationOnce(() => mockSiteSettings);
+
+      expect(await userService.requestPasswordReset({ email: 'some@email.com' })).toEqual(
+        {
+          mailSent: true,
+          details: mailSentSuccess,
+        },
+      );
+    });
+
+    it('throws an error', async () => {
+      const error = new Error('A really bad error was thrown');
+      jest.spyOn(appMailer, 'newUserMail').mockImplementationOnce(() => {
+        throw error;
+      });
+      jest.spyOn(userService, 'getUserByEmail').mockImplementationOnce(() => singleUser);
+      jest.spyOn(UserRepositoryMock, 'update').mockImplementationOnce(() => updatedUser);
+
+      try {
+        await userService.requestPasswordReset({ email: 'some@email.com' });
         throw new Error('test failed');
       } catch (error) {
         expect(error.errorCode).toEqual(ErrorCode.EMAIL_SENDING_ERROR);

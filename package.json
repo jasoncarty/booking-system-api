@@ -110,7 +110,7 @@
         "preset": "ts-jest"
     },
     "vsc-organize-imports": {
-        "orderSpecifiers": true,
+        "orderSpecifiers": false,
         "orderSpecifiersAsSingleLine": false,
         "baseUrl": "src",
         "emptyLinesAfterImports": 1,

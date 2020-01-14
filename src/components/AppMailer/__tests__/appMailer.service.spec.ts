@@ -1,4 +1,5 @@
 import { MailerService, MailerOptions } from '@nest-modules/mailer';
+
 import { AppMailerService } from '../appMailer.service';
 
 describe('AppMailer', () => {
@@ -53,6 +54,36 @@ describe('AppMailer', () => {
       await expect(appMailerService.newUserMail(newUserMailOptions)).rejects.toEqual(
         error,
       );
+    });
+  });
+
+  describe('resetPasswordMail', () => {
+    const resetPasswordMailOptions = {
+      to: 'someone@email.com',
+      passwordResetToken: 'a7sf987sad9f7',
+      userName: 'Someone Email',
+      siteName: 'Test site',
+    };
+
+    it('returns an object', async () => {
+      jest
+        .spyOn(mailerService, 'sendMail')
+        .mockImplementation(() => Promise.resolve(mailSentSuccess));
+
+      expect(await appMailerService.resetPasswordMail(resetPasswordMailOptions)).toEqual(
+        mailSentSuccess,
+      );
+    });
+
+    it('throws an error', async () => {
+      const error = new Error('jlkajsdf');
+      jest
+        .spyOn(mailerService, 'sendMail')
+        .mockImplementation(() => Promise.reject(error));
+
+      await expect(
+        appMailerService.resetPasswordMail(resetPasswordMailOptions),
+      ).rejects.toEqual(error);
     });
   });
 });

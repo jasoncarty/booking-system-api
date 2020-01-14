@@ -1,14 +1,14 @@
 import { Request } from 'express';
 
-import { UserController } from '../user.controller';
-import { UserService } from '../user.service';
-import { SiteSettingsService } from '../../SiteSettings/siteSettings.service';
 import {
   appMailer,
   singleUser,
   UserRepositoryMock,
   SiteSettingsRepositoryMock,
 } from '../../../../mocks/index';
+import { SiteSettingsService } from '../../SiteSettings/siteSettings.service';
+import { UserController } from '../user.controller';
+import { UserService } from '../user.service';
 
 describe('UserController', () => {
   let userService: UserService;
@@ -86,6 +86,29 @@ describe('UserController', () => {
           '8a7ds987asdf9',
         ),
       ).toBe(await singleUser);
+    });
+  });
+
+  describe(':POST /users/password/request', () => {
+    it('requests a new password', async () => {
+      jest.spyOn(userService, 'requestPasswordReset').mockImplementationOnce(() =>
+        Promise.resolve({
+          mailSent: true,
+          details: {
+            success: true,
+          },
+        }),
+      );
+      expect(
+        await userController.requestPasswordReset({
+          email: 'ljahsdf@ldhjkafs.com',
+        }),
+      ).toEqual({
+        mailSent: true,
+        details: {
+          success: true,
+        },
+      });
     });
   });
 });

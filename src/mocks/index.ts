@@ -3,11 +3,11 @@ import { Client } from 'pg';
 import { Repository, UpdateResult } from 'typeorm';
 
 import { AuthenticatedUserDto, EventDto, UserRole } from '../dto';
-import { AppMailerService } from './../components/AppMailer/appMailer.service';
 import { Event } from '../Repositories/event.entity';
 import { EventAttendee } from '../Repositories/eventAttendee.entity';
-import { SiteSettings } from './../Repositories/siteSettings.entity';
 import { User } from '../Repositories/user.entity';
+import { AppMailerService } from './../components/AppMailer/appMailer.service';
+import { SiteSettings } from './../Repositories/siteSettings.entity';
 
 export const mailSentSuccess = {
   success: true,
@@ -63,6 +63,7 @@ export const authenticatedUser = Promise.resolve({
 
 export const appMailer = ({
   newUserMail: (): {} => mailSentSuccess,
+  resetPasswordMail: (): {} => mailSentSuccess,
 } as unknown) as AppMailerService;
 
 export const mockClient = ({
