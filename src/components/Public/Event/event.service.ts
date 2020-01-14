@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { Event } from './../../../Repositories/event.entity';
-import { ExceptionDictionary, EventWithAttendeesDto, ErrorCode } from '../../../proto';
+import { ExceptionDictionary, EventWithAttendeesDto, ErrorCode } from '../../../dto';
 import { UserService } from '../User/user.service';
 import { EventAttendeeService } from '../EventAttendee/eventAttendee.service';
 

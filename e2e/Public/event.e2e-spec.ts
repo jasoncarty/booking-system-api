@@ -1,5 +1,5 @@
-import { makeRequest, createUserToken, createAdminToken } from '../utils';
-import { ErrorCode, EventWithAttendeesDto } from '../../src/proto';
+import { ErrorCode, EventWithAttendeesDto } from '../../src/dto';
+import { createAdminToken, createUserToken, makeRequest } from '../utils';
 
 describe('Events', () => {
   let userToken: string;

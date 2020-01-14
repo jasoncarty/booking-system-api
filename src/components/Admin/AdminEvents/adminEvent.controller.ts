@@ -1,11 +1,11 @@
-import { Controller, Get, Post, Param, Body, Put, Delete, Req } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, Put, Delete } from '@nestjs/common';
 
 import {
   EventWithAttendeesDto,
   EventDto,
   EventCreateDto,
   EventUpdateDto,
-} from './../../../proto';
+} from '../../../dto';
 import { AdminEventService } from './adminEvent.service';
 
 @Controller('admin')

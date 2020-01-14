@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import { ErrorCode, EventWithAttendeesDto } from '../../src/proto';
-import { makeRequest, createAdminToken, createUserToken } from '../utils';
+import { ErrorCode, EventWithAttendeesDto } from '../../src/dto';
+import { createAdminToken, createUserToken, makeRequest } from '../utils';
 
 describe('AdminEvent', () => {
   let adminToken: string;

@@ -1,6 +1,7 @@
+import { IsDateString, IsNumber, IsOptional, IsString, Validate } from 'class-validator';
+
 import { AttendeeIdsDto } from './index';
-import { IsString, IsOptional, IsNumber, IsDateString, Validate } from 'class-validator';
-import { IsAttendees } from './../utils';
+import { IsAttendees } from '../utils';
 
 export class EventUpdateDto {
   @IsOptional()

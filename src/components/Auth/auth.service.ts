@@ -1,9 +1,8 @@
 import { Injectable, Scope } from '@nestjs/common';
 
+import { ErrorCode, ExceptionDictionary, UserDto, UserRole } from '../../dto';
 import { UserService } from '../Public/User/user.service';
-import { UserRole, UserDto } from '../../proto';
 import { verifyToken } from '../../utils';
-import { ExceptionDictionary, ErrorCode } from './../../proto';
 
 @Injectable({ scope: Scope.REQUEST })
 export class AuthService {

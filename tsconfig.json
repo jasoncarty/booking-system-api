@@ -16,5 +16,10 @@
         "gulpfile.ts",
         "dist",
         "src/mocks"
+    ],
+    "include": [
+        "src/**/*.ts",
+        "scripts/**/*.ts",
+        "e2e/**/*.ts",
     ]
 }

@@ -2,8 +2,13 @@ import { Controller, Get, Req, Put, Body, Post, Param } from '@nestjs/common';
 import { Request } from 'express';
 
 import { UserService } from './user.service';
-import { UserDto } from '../../../proto';
-import { UserConfirmAccountDto, UserUpdateDto, UserConfirmRequestDto } from './dto';
+import {
+  UserConfirmAccountDto,
+  UserDto,
+  UserUpdateDto,
+  UserConfirmRequestDto,
+  UserRequestPasswordResetDto,
+} from '../../../dto';
 
 @Controller('users')
 export class UserController {
@@ -33,5 +38,12 @@ export class UserController {
     @Param() params,
   ): Promise<UserDto> {
     return this.service.confirmAccount(userConfirmAccountDto, params.verificationToken);
+  }
+
+  @Post('/password/request')
+  requestPasswordReset(
+    @Body() userRequestPasswordResetDto: UserRequestPasswordResetDto,
+  ): Promise<{}> {
+    return this.service.requestPasswordReset(userRequestPasswordResetDto);
   }
 }

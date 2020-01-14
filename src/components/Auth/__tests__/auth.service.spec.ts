@@ -1,20 +1,26 @@
-import { UserService } from '../../Public/User/user.service';
-import { ErrorCode } from '../../../proto';
 import * as utils from '../../../utils';
-import { AuthService } from '../auth.service';
+
 import {
-  appMailer,
-  singleUser,
   UserRepositoryMock,
   adminUser,
+  appMailer,
+  singleUser,
+  SiteSettingsRepositoryMock,
 } from './../../../mocks/index';
+
+import { AuthService } from '../auth.service';
+import { ErrorCode } from '../../../dto';
+import { UserService } from '../../Public/User/user.service';
+import { SiteSettingsService } from '../../Public/SiteSettings/siteSettings.service';
 
 describe('AuthService', () => {
   let authService: AuthService;
   let userService: UserService;
+  let siteSettingsService: SiteSettingsService;
 
   beforeEach(() => {
-    userService = new UserService(UserRepositoryMock, appMailer);
+    siteSettingsService = new SiteSettingsService(SiteSettingsRepositoryMock);
+    userService = new UserService(UserRepositoryMock, appMailer, siteSettingsService);
     authService = new AuthService(userService);
   });
 

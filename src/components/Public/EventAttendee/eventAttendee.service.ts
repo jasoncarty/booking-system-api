@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 
 import { EventAttendee } from './../../../Repositories/eventAttendee.entity';
 import { Event } from './../../../Repositories/event.entity';
-import { ExceptionDictionary, ErrorCode } from '../../../proto';
+import { ExceptionDictionary, ErrorCode } from '../../../dto';
 
 @Injectable()
 export class EventAttendeeService {

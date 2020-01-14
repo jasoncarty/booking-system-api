@@ -1,6 +1,7 @@
 import { SelectQueryBuilder } from 'typeorm';
 
 import { EventService } from './../../../Public/Event/event.service';
+import { SiteSettingsService } from '../../../Public/SiteSettings/siteSettings.service';
 import { AdminEventService } from './../adminEvent.service';
 import { UserService } from './../../../Public/User/user.service';
 import { EventAttendeeService } from './../../../Public/EventAttendee/eventAttendee.service';
@@ -10,6 +11,7 @@ import {
   mockEvent,
   EventRepositoryMock,
   EventAttendeeRepositoryMock,
+  SiteSettingsRepositoryMock,
   appMailer,
   UserRepositoryMock,
   mockUser,
@@ -19,12 +21,14 @@ import {
 
 describe('AdminEventService', () => {
   let eventService: EventService;
+  let siteSettingsService: SiteSettingsService;
   let userService: UserService;
   let eventAttendeeService: EventAttendeeService;
   let adminEventService: AdminEventService;
 
   beforeEach(() => {
-    userService = new UserService(UserRepositoryMock, appMailer);
+    siteSettingsService = new SiteSettingsService(SiteSettingsRepositoryMock);
+    userService = new UserService(UserRepositoryMock, appMailer, siteSettingsService);
     eventAttendeeService = new EventAttendeeService(EventAttendeeRepositoryMock);
     eventService = new EventService(
       EventRepositoryMock,

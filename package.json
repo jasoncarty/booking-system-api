@@ -33,6 +33,7 @@
         "@nestjs/core": "^6.10.13",
         "@nestjs/platform-express": "^6.10.13",
         "@nestjs/typeorm": "^6.2.0",
+        "@types/nodemailer": "^6.4.0",
         "bcrypt": "^3.0.7",
         "bcryptjs": "^2.4.3",
         "class-transformer": "^0.2.3",
@@ -40,6 +41,7 @@
         "dotenv": "^8.2.0",
         "idx": "^2.5.6",
         "jsonwebtoken": "^8.5.1",
+        "nodemailer": "^6.4.2",
         "pug": "^2.0.4",
         "rand-token": "^0.4.0",
         "reflect-metadata": "^0.1.13",
@@ -106,5 +108,44 @@
         "coverageDirectory": "<rootDir>/coverage",
         "testEnvironment": "node",
         "preset": "ts-jest"
-    }
+    },
+    "vsc-organize-imports": {
+        "orderSpecifiers": false,
+        "orderSpecifiersAsSingleLine": false,
+        "baseUrl": "src",
+        "emptyLinesAfterImports": 1,
+        "emptyLinesBetweenFilledGroups": 1,
+        "groups": [
+           {
+              "groups": [
+                 "global"
+              ],
+              "sortBy": "path",
+              "emptyLines": true
+           },
+           {
+              "groups": [
+                 "absolute"
+              ],
+              "sortBy": "path",
+              "emptyLines": true
+           },
+           {
+              "groups": [
+                 "relative"
+              ],
+              "sortBy": "path",
+              "emptyLines": true
+           },
+           {
+              "groups": [
+                 "globalDirect",
+                 "absoluteDirect",
+                 "relativeDirect"
+              ],
+              "sortBy": "path",
+              "emptyLines": true
+           }
+        ]
+     }
 }

@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { SiteSettings } from '../../../Repositories/siteSettings.entity';
-import { SiteSettingsDto } from '../../Admin/AdminSiteSettings/dto/site.settings.dto';
+import { SiteSettingsDto } from '../../../dto';
 
 @Injectable()
 export class SiteSettingsService {
@@ -22,8 +22,7 @@ export class SiteSettingsService {
   }
 
   async getSiteSettings(): Promise<SiteSettingsDto> {
-    let settings: SiteSettingsDto;
-    settings = (await this.siteSettingsRepository.find())[0];
+    const settings = (await this.siteSettingsRepository.find())[0];
     if (!settings) {
       return await this.createSiteSettings();
     }

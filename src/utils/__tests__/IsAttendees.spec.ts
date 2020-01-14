@@ -1,6 +1,5 @@
-import { ValidatorConstraintInterface } from 'class-validator';
 import { IsAttendees, VALID_INPUT } from './../IsAttendees';
-import { AttendeeIdsDto } from './../../proto';
+import { AttendeeIdsDto } from '../../dto';
 
 describe('IsAttendees', () => {
   let isAttendees: IsAttendees;

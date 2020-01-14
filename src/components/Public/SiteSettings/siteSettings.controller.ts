@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 
+import { SiteSettingsDto } from '../../../dto';
 import { SiteSettingsService } from './siteSettings.service';
-import { SiteSettingsDto } from '../../Admin/AdminSiteSettings/dto';
 
 @Controller('site-settings')
 export class SiteSettingsController {

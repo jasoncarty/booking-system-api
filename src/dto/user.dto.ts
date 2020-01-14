@@ -1,5 +1,5 @@
+import { EventAttendee } from '../Repositories/eventAttendee.entity';
 import { UserRole } from './userRole.enum';
-import { EventAttendee } from './../Repositories/eventAttendee.entity';
 
 export interface UserDto {
   id: number;

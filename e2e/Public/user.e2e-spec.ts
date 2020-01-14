@@ -1,6 +1,6 @@
+import { createAdminToken, createUserToken, makeRequest } from '../utils';
+import { ErrorCode } from '../../src/dto';
 import { User } from '../../src/Repositories/user.entity';
-import { ErrorCode } from '../../src/proto';
-import { makeRequest, createUserToken, createAdminToken } from '../utils';
 
 describe('User', () => {
   let userToken: string;

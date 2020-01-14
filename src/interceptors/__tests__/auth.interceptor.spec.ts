@@ -1,19 +1,27 @@
-import { ExecutionContext, CallHandler } from '@nestjs/common';
 import * as operators from 'rxjs/operators';
+import { CallHandler, ExecutionContext } from '@nestjs/common';
 
-import { UserService } from '../../components/Public/User/user.service';
+import { AuthInterceptor, NON_PROTECTED_PATHS } from './../auth.interceptor';
+import {
+  UserRepositoryMock,
+  appMailer,
+  singleUser,
+  SiteSettingsRepositoryMock,
+} from './../../mocks/index';
 import { AuthService } from './../../components/Auth/auth.service';
-import { AuthInterceptor, NON_PROTECTED_PATHS, TEST_ENVS } from './../auth.interceptor';
-import { ErrorCode } from './../../proto';
-import { singleUser, UserRepositoryMock, appMailer } from './../../mocks/index';
+import { ErrorCode } from '../../dto';
+import { UserService } from '../../components/Public/User/user.service';
+import { SiteSettingsService } from '../../components/Public/SiteSettings/siteSettings.service';
 
 describe('AuthInterceptor', () => {
   let authService: AuthService;
   let userService: UserService;
+  let siteSettingsService: SiteSettingsService;
   let authInterceptor: AuthInterceptor;
 
   beforeEach(() => {
-    userService = new UserService(UserRepositoryMock, appMailer);
+    siteSettingsService = new SiteSettingsService(SiteSettingsRepositoryMock);
+    userService = new UserService(UserRepositoryMock, appMailer, siteSettingsService);
     authService = new AuthService(userService);
     authInterceptor = new AuthInterceptor(authService);
   });

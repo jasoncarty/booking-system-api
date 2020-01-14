@@ -3,6 +3,7 @@ import { Request } from 'express';
 import { EventController } from '../event.controller';
 import { EventService } from '../event.service';
 import { UserService } from './../../User/user.service';
+import { SiteSettingsService } from '../../SiteSettings/siteSettings.service';
 import { EventAttendeeService } from './../../EventAttendee/eventAttendee.service';
 import {
   mockEvent,
@@ -11,16 +12,19 @@ import {
   EventAttendeeRepositoryMock,
   appMailer,
   UserRepositoryMock,
+  SiteSettingsRepositoryMock,
 } from '../../../../mocks/index';
 
 describe('EventController', () => {
   let eventService: EventService;
   let eventController: EventController;
   let userService: UserService;
+  let siteSettingsService: SiteSettingsService;
   let eventAttendeeService: EventAttendeeService;
 
   beforeEach(() => {
-    userService = new UserService(UserRepositoryMock, appMailer);
+    siteSettingsService = new SiteSettingsService(SiteSettingsRepositoryMock);
+    userService = new UserService(UserRepositoryMock, appMailer, siteSettingsService);
     eventAttendeeService = new EventAttendeeService(EventAttendeeRepositoryMock);
     eventService = new EventService(
       EventRepositoryMock,

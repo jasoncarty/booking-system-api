@@ -1,13 +1,21 @@
 import { AuthController } from '../auth.controller';
 import { UserService } from '../../Public/User/user.service';
-import { appMailer, authenticatedUser, UserRepositoryMock } from './../../../mocks';
+import { SiteSettingsService } from '../../Public/SiteSettings/siteSettings.service';
+import {
+  appMailer,
+  authenticatedUser,
+  UserRepositoryMock,
+  SiteSettingsRepositoryMock,
+} from './../../../mocks';
 
 describe('AuthController', () => {
   let userService: UserService;
+  let siteSettingsService: SiteSettingsService;
   let authController: AuthController;
 
   beforeEach(() => {
-    userService = new UserService(UserRepositoryMock, appMailer);
+    siteSettingsService = new SiteSettingsService(SiteSettingsRepositoryMock);
+    userService = new UserService(UserRepositoryMock, appMailer, siteSettingsService);
     authController = new AuthController(userService);
   });
 

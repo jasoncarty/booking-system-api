@@ -6,11 +6,16 @@ import { Repository } from 'typeorm';
 import { generate } from 'rand-token';
 
 import { User } from '../../../Repositories/user.entity';
-import { ExceptionDictionary, ErrorCode } from '../../../proto';
 import { AppMailerService } from '../../AppMailer/appMailer.service';
 import { UserService } from '../../Public/User/user.service';
-import { UserUpdateDto, UserCreateDto } from './dto';
-import { UserResponse } from '../../../proto/user.response.dto';
+import { SiteSettingsService } from '../../Public/SiteSettings/siteSettings.service';
+import {
+  AdminUserUpdateDto,
+  AdminUserCreateDto,
+  ExceptionDictionary,
+  ErrorCode,
+  UserResponse,
+} from '../../../dto';
 
 @Injectable()
 export class AdminService {
@@ -19,6 +24,7 @@ export class AdminService {
     private readonly userRepository: Repository<User>,
     private readonly appMailer: AppMailerService,
     private readonly userService: UserService,
+    private readonly siteSettingsService: SiteSettingsService,
   ) {}
 
   async getUser(id: number): Promise<UserResponse> {
@@ -44,7 +50,7 @@ export class AdminService {
     });
   }
 
-  async createUser(values: UserCreateDto): Promise<UserResponse> {
+  async createUser(values: AdminUserCreateDto): Promise<UserResponse> {
     const user = {
       ...values,
       verification_token: generate(40),
@@ -63,9 +69,15 @@ export class AdminService {
     return savedUser;
   }
 
-  private sendConfirmationMail(user: User): void {
+  private async sendConfirmationMail(user: User): Promise<void> {
     try {
-      this.appMailer.newUserMail(user.email, user.verification_token, user.name);
+      const siteName = (await this.siteSettingsService.getSiteSettings()).site_name;
+      await this.appMailer.newUserMail({
+        to: user.email,
+        verificationToken: user.verification_token,
+        userName: user.name,
+        siteName,
+      });
     } catch (err) {
       throw ExceptionDictionary({
         stack: err.stack,
@@ -74,7 +86,7 @@ export class AdminService {
     }
   }
 
-  async updateUser(id: number, values: UserUpdateDto): Promise<UserResponse> {
+  async updateUser(id: number, values: AdminUserUpdateDto): Promise<UserResponse> {
     const user = await this.getUser(id);
     try {
       const userEntity = new User();

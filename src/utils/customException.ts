@@ -1,5 +1,5 @@
+import { ErrorCode } from '../dto';
 import { HttpStatus } from '@nestjs/common';
-import { ErrorCode } from '../proto';
 
 export class CustomException extends Error {
   constructor(

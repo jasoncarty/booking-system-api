@@ -1,19 +1,24 @@
 import {
+  CallHandler,
+  ExecutionContext,
+  HttpStatus,
   Injectable,
   NestInterceptor,
-  ExecutionContext,
-  CallHandler,
-  HttpStatus,
 } from '@nestjs/common';
+import { ErrorCode, ExceptionDictionary } from '../dto';
+import { createAuthToken, extractToken } from './../utils';
+
+import { AuthService } from './../components/Auth/auth.service';
 import { Observable } from 'rxjs';
 import { Request } from 'express';
 import { map } from 'rxjs/operators';
 
-import { extractToken, createAuthToken } from './../utils';
-import { AuthService } from './../components/Auth/auth.service';
-import { ExceptionDictionary, ErrorCode } from './../proto';
-
-export const NON_PROTECTED_PATHS = ['authentication', 'verification', 'confirmation'];
+export const NON_PROTECTED_PATHS = [
+  'authentication',
+  'verification',
+  'confirmation',
+  'password',
+];
 export const TEST_ENVS = ['test', 'test-ci'];
 
 @Injectable()

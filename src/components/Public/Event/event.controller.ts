@@ -2,7 +2,7 @@ import { Controller, Get, Param, Post, Req } from '@nestjs/common';
 import { Request } from 'express';
 
 import { EventService } from './event.service';
-import { EventWithAttendeesDto } from './../../../proto';
+import { EventWithAttendeesDto } from '../../../dto';
 
 @Controller('events')
 export class EventController {

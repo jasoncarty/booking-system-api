@@ -1,23 +1,23 @@
+import { MailerModule, PugAdapter } from '@nest-modules/mailer';
 import { Module, Scope } from '@nestjs/common';
-import { APP_FILTER, APP_PIPE, APP_INTERCEPTOR } from '@nestjs/core';
-import { PugAdapter, MailerModule } from '@nest-modules/mailer';
+import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Connection } from 'typeorm';
 import { join } from 'path';
+import { Connection } from 'typeorm';
 
+import { AdminEventModule } from './components/Admin/AdminEvents/adminEvent.module';
+import { AdminSiteSettingsModule } from './components/Admin/AdminSiteSettings/adminSiteSettings.module';
+import { AdminModule } from './components/Admin/AdminUser/adminUser.module';
+import { AuthModule } from './components/Auth/auth.module';
+import { EventModule } from './components/Public/Event/event.module';
+import { EventAttendeeModule } from './components/Public/EventAttendee/eventAttendee.module';
+import { SiteSettingsModule } from './components/Public/SiteSettings/siteSettings.module';
+import { UserModule } from './components/Public/User/user.module';
 import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
-import { UserModule } from './components/Public/User/user.module';
-import { EventModule } from './components/Public/Event/event.module';
-import { AdminEventModule } from './components/Admin/AdminEvents/adminEvent.module';
-import { EventAttendeeModule } from './components/Public/EventAttendee/eventAttendee.module';
+import { AuthInterceptor, LoggingInterceptor, TimeoutInterceptor } from './interceptors';
 import { HttpExceptionFilter } from './utils/httpExceptionFilter';
 import { ValidationPipe } from './utils/validationPipe';
-import { AuthModule } from './components/Auth/auth.module';
-import { AdminModule } from './components/Admin/AdminUser/adminUser.module';
-import { AdminSiteSettingsModule } from './components/Admin/AdminSiteSettings/adminSiteSettings.module';
-import { SiteSettingsModule } from './components/Public/SiteSettings/siteSettings.module';
-import { TimeoutInterceptor, AuthInterceptor, LoggingInterceptor } from './interceptors';
 
 export const getMailTransport = (configService: ConfigService): object | string => {
   return configService.envConfig.NODE_ENV === 'production'

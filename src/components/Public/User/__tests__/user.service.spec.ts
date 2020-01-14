@@ -1,18 +1,21 @@
 import * as bcryptjs from 'bcryptjs';
 import { SelectQueryBuilder } from 'typeorm';
 
-import { UserService } from '../user.service';
-import { User } from './../../../../Repositories/user.entity';
-import { ErrorCode } from '../../../../proto';
-import * as utils from '../../../../utils';
+import { ErrorCode } from '../../../../dto';
 import {
+  UserRepositoryMock,
+  SiteSettingsRepositoryMock,
   appMailer,
+  mailSentSuccess,
+  mockSiteSettings,
+  mockUser,
   singleUser,
   updatedUser,
-  UserRepositoryMock,
-  mailSentSuccess,
-  mockUser,
 } from '../../../../mocks';
+import * as utils from '../../../../utils';
+import { SiteSettingsService } from '../../SiteSettings/siteSettings.service';
+import { UserService } from '../user.service';
+import { User } from './../../../../Repositories/user.entity';
 
 jest.mock('../../../../utils', () => ({
   CustomException: jest.fn(),
@@ -36,10 +39,12 @@ const baseAttendeesQueryMock = ({
 const authHeader = 'Bearer fasdf7tasbdfasdfsfd';
 
 let userService: UserService;
+let siteSettingsService: SiteSettingsService;
 
 describe('UserService', () => {
   beforeEach(() => {
-    userService = new UserService(UserRepositoryMock, appMailer);
+    siteSettingsService = new SiteSettingsService(SiteSettingsRepositoryMock);
+    userService = new UserService(UserRepositoryMock, appMailer, siteSettingsService);
   });
 
   describe('getUser', () => {
@@ -336,6 +341,9 @@ describe('UserService', () => {
     it('Adds/updates a verificationCode', async () => {
       jest.spyOn(userService, 'getUserByEmail').mockImplementationOnce(() => singleUser);
       jest.spyOn(UserRepositoryMock, 'update').mockImplementationOnce(() => updatedUser);
+      jest
+        .spyOn(siteSettingsService, 'getSiteSettings')
+        .mockImplementationOnce(() => mockSiteSettings);
 
       expect(await userService.requestConfirmation({ email: 'some@email.com' })).toEqual({
         mailSent: true,
@@ -353,6 +361,39 @@ describe('UserService', () => {
 
       try {
         await userService.requestConfirmation({ email: 'some@email.com' });
+        throw new Error('test failed');
+      } catch (error) {
+        expect(error.errorCode).toEqual(ErrorCode.EMAIL_SENDING_ERROR);
+      }
+    });
+  });
+
+  describe('requestPasswordReset', () => {
+    it('Adds/updates a password_reset_token', async () => {
+      jest.spyOn(userService, 'getUserByEmail').mockImplementationOnce(() => singleUser);
+      jest.spyOn(UserRepositoryMock, 'update').mockImplementationOnce(() => updatedUser);
+      jest
+        .spyOn(siteSettingsService, 'getSiteSettings')
+        .mockImplementationOnce(() => mockSiteSettings);
+
+      expect(await userService.requestPasswordReset({ email: 'some@email.com' })).toEqual(
+        {
+          mailSent: true,
+          details: mailSentSuccess,
+        },
+      );
+    });
+
+    it('throws an error', async () => {
+      const error = new Error('A really bad error was thrown');
+      jest.spyOn(appMailer, 'newUserMail').mockImplementationOnce(() => {
+        throw error;
+      });
+      jest.spyOn(userService, 'getUserByEmail').mockImplementationOnce(() => singleUser);
+      jest.spyOn(UserRepositoryMock, 'update').mockImplementationOnce(() => updatedUser);
+
+      try {
+        await userService.requestPasswordReset({ email: 'some@email.com' });
         throw new Error('test failed');
       } catch (error) {
         expect(error.errorCode).toEqual(ErrorCode.EMAIL_SENDING_ERROR);

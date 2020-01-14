@@ -1,14 +1,16 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import { EventAttendeeService } from './../eventAttendee.service';
+
 import {
   EventAttendeeRepositoryMock,
   mockEvent,
   mockEventAttendee,
   mockUser,
 } from './../../../../mocks';
+
+import { ErrorCode } from '../../../../dto';
 import { Event } from './../../../../Repositories/event.entity';
 import { EventAttendee } from './../../../../Repositories/eventAttendee.entity';
-import { ErrorCode } from '../../../../proto';
+import { EventAttendeeService } from './../eventAttendee.service';
 
 describe('EventAttendeeService', () => {
   let eventAttendeeService: EventAttendeeService;

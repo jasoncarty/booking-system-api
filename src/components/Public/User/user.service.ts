@@ -9,11 +9,21 @@ import { generate } from 'rand-token';
 
 import { User } from '../../../Repositories/user.entity';
 import { EventAttendee } from '../../../Repositories/eventAttendee.entity';
-import { UserDto, ExceptionDictionary, AttendeesDto, ErrorCode } from '../../../proto';
 import { extractToken, verifyToken, createAuthToken } from '../../../utils';
-import { UserConfirmAccountDto, UserUpdateDto, UserConfirmRequestDto } from './dto';
+import {
+  UserDto,
+  ExceptionDictionary,
+  AttendeesDto,
+  ErrorCode,
+  UserConfirmAccountDto,
+  UserUpdateDto,
+  UserConfirmRequestDto,
+  AuthenticationCreateDto,
+  AuthenticatedUserDto,
+  UserRequestPasswordResetDto,
+} from '../../../dto';
 import { AppMailerService } from '../../AppMailer/appMailer.service';
-import { AuthenticationCreateDto, AuthenticatedUserDto } from '../../Auth/dto';
+import { SiteSettingsService } from '../SiteSettings/siteSettings.service';
 
 @Injectable()
 export class UserService {
@@ -21,6 +31,7 @@ export class UserService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly appMailer: AppMailerService,
+    private readonly siteSettingsService: SiteSettingsService,
   ) {}
 
   async getUser(id: number, loadRelations = false): Promise<UserDto> {
@@ -160,11 +171,13 @@ export class UserService {
     await this.userRepository.update(user.id, userEntity);
 
     try {
-      const sentMail = await this.appMailer.newUserMail(
-        user.email,
-        user.verification_token,
-        user.name,
-      );
+      const siteName = (await this.siteSettingsService.getSiteSettings()).site_name;
+      const sentMail = await this.appMailer.newUserMail({
+        to: user.email,
+        verificationToken: user.verification_token,
+        userName: user.name,
+        siteName,
+      });
       return {
         mailSent: true,
         details: sentMail,
@@ -182,6 +195,33 @@ export class UserService {
   async orderResetPassword(values: object): Promise {
     // do some updating here
   }*/
+
+  async requestPasswordReset({ email }: UserRequestPasswordResetDto): Promise<{}> {
+    const user = await this.getUserByEmail(email);
+    const userEntity = new User();
+    userEntity.password_reset_token = generate(40);
+    userEntity.password_reset_token_sent_at = new Date();
+    await this.userRepository.update(user.id, userEntity);
+
+    try {
+      const siteName = (await this.siteSettingsService.getSiteSettings()).site_name;
+      const sentMail = await this.appMailer.resetPasswordMail({
+        to: user.email,
+        passwordResetToken: user.password_reset_token,
+        userName: user.name,
+        siteName,
+      });
+      return {
+        mailSent: true,
+        details: sentMail,
+      };
+    } catch (err) {
+      throw ExceptionDictionary({
+        stack: err.stack,
+        errorCode: ErrorCode.EMAIL_SENDING_ERROR,
+      });
+    }
+  }
 
   async confirmAccount(
     values: UserConfirmAccountDto,

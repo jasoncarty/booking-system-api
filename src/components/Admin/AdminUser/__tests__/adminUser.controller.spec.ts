@@ -1,14 +1,22 @@
 import { Request } from 'express';
 
 import { UserService } from '../../../Public/User/user.service';
+import { SiteSettingsService } from '../../../Public/SiteSettings/siteSettings.service';
 import { AdminController } from '../adminUser.controller';
 import { AdminService } from '../adminUser.service';
-import { appMailer, UserRepositoryMock, allUsers, singleUser } from '../../../../mocks';
+import {
+  appMailer,
+  UserRepositoryMock,
+  allUsers,
+  singleUser,
+  SiteSettingsRepositoryMock,
+} from '../../../../mocks';
 
 describe('AdminController', () => {
   let adminService: AdminService;
   let adminController: AdminController;
   let userService: UserService;
+  let siteSettingsService: SiteSettingsService;
 
   const request = ({
     headers: {
@@ -17,8 +25,14 @@ describe('AdminController', () => {
   } as unknown) as Request;
 
   beforeEach(() => {
-    userService = new UserService(UserRepositoryMock, appMailer);
-    adminService = new AdminService(UserRepositoryMock, appMailer, userService);
+    siteSettingsService = new SiteSettingsService(SiteSettingsRepositoryMock);
+    userService = new UserService(UserRepositoryMock, appMailer, siteSettingsService);
+    adminService = new AdminService(
+      UserRepositoryMock,
+      appMailer,
+      userService,
+      siteSettingsService,
+    );
     adminController = new AdminController(adminService);
   });
 
